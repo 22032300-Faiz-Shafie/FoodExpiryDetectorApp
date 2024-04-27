@@ -19,7 +19,12 @@
   .btn-oval {
     border-radius: 50px;
     padding: 10px 20px;
+    
   }
+  .img-fluid {
+        max-width: 65px; 
+        max-height: 65px; 
+    }
 </style>
 </head>
 <body>
@@ -28,23 +33,23 @@
 <div class="container">
  
   <div class="row justify-content-center">
-    <div class="col">
-      <button type="submit" class="btn btn-primary" value="settingButton" id="settingButton"><span class="bi bi-gear-fill h1"></span></button>
+    <div class="col-3">
+      <button type="submit" class="btn btn-primary" value="settingButton" id="settingButton"><i class="bi bi-gear-fill h1"></i></button>
     </div>
-    <div class="col">
-      <h1 class="fw-bold text-center">Your List</h1>
+    <div class="col-6">
+      <h1 class="fw-bold text-center">Your List <i class="bi bi-egg-fried"></i></h1>
     </div>
-    <div class="col">
-      <div class="mb-3">
-        <label for="formGroupExampleInput" class="form-label"></label>
-        <input type="text" class="form-control" id="searchlist" placeholder="search list">
-      </div>  
+    <div class="col-3">
         </div>
       </div>
  
   
 
-
+      <div class="m-3">
+        <label for="formGroupExampleInput" class="form-label"></label>
+        <input type="text" class="form-control" id="searchlist" placeholder="search list">
+      </div>  
+      
 <!--group for Add food and food category drop down-->
 <div class="text-center"> 
 <div class="btn-group mb-5 mt-3" role="group">
@@ -62,46 +67,64 @@
   </div>
 </div>
 </div>
+<hr>
 <!--tables for food-->
 <div class="table-responsive">
 <table class="table">
   <thead>
-    <tr class="table-primary">
-      <th></th>
-      <th class="text-center" scope="col" style="font-size: 2em;">canned</th>
-      <th></th>
+    <tr class="table">
+      <th class="text-center" scope="col">canned</th>
+      <th>food</th>
+      <th>expire date</th>
+      <th>actions</th>
     </tr>
   </thead>
   <tbody>
-    <tr class="table-danger">
+    <tr class="table">
       <td><img src="foodImage/canned/luncheon.jpg"  class="img-fluid"></td>
       <td>Luncheon meat x2</td>
-      <td>expires in: 3 days</td>
+      <td><span class="text-danger">3 days</span></td>
+      <td>
+        <button type="submit" class="btn btn-danger" value="deleteButton" id="deleteButton">delete</button>
+        <a href="editfood.html" class="btn btn-warning" role="editButton">edit Food</a>
+      </td>
     </tr>
-    <tr class="table-success">
+    <tr class="table">
       <td><img src="foodImage/canned/fish.jpg"  class="img-fluid"></td>
       <td>fish x2</td>
-      <td>expires in: 60 days</td>
+      <td><span class="text-success">60 days</span></td>
+      <td>
+      <button type="submit" class="btn btn-danger" value="deleteButton" id="deleteButton">delete</button>
+      <a href="editfood.html" class="btn btn-warning" role="editButton">edit Food</a>
+    </td>
     </tr>
+
   </tbody>
 </table>
 <div class="table-responsive">
   <table class="table">
     <thead>
-      <tr class="table-primary">
-        <th></th>
-        <th class="text-center" scope="col" style="font-size: 2em;">drinks</th>
-        <th></th>
+      <tr class="table">
+        <th class="text-center" scope="col">drinks</th>
+        <th>food</th>
+        <th>expire date</th>
+        <th>actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="table-warning">
+      <tr class="table">
         <td><img src="foodImage/drinks/milo.jpg"  class="img-fluid"></td>
         <td>Luncheon meat x2</td>
-        <td>expires in: 7 days</td>
+        <td><span class="text-warning">7 days</span>
+        </td>
+        <td>
+            <button type="submit" class="btn btn-danger" value="deleteButton" id="deleteButton">delete</button>
+            <a href="editfood.html" class="btn btn-warning" role="editButton">edit Food</a>
+          </td>
       </tr>
 </div>
 </div>
+
 <!--
 <div class="container mt-5 text-center">
   <div class="category-oval">Canned</div>
