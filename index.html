@@ -5,6 +5,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <title>Food expiry detector</title>
+<!--CSS For different styles-->
+<!--category oval creates an oval shape block for the category label-->
+<style>
+  .category-oval {
+      display: block;
+      padding: 10px 50px;
+      background-color: #222426; 
+      color: #ffffff; 
+      border-radius: 30px; 
+      margin: 10px auto;
+  }
+  .btn-oval {
+    border-radius: 50px;
+    padding: 10px 20px;
+  }
+</style>
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -48,6 +64,35 @@
 </div>
 </div>
 
+<!--Category And Food Items-->
+<div class="container mt-5 text-center">
+  <div class="category-oval">Canned</div>
+    <div>
+      <div class="btn btn-lg w-100 btn-oval mb-3" style="background-color: #0080ff;">
+        <img src="https://i5.walmartimages.ca/images/Enlarge/1c1/_en/00057072001954_a1c1_en.jpg" width="100" height="100">
+        <p>
+          Luncheon x2 <br> expires in 4 days
+        </p>
+      </div>
+      <div class="btn btn-lg w-100 btn-oval" style="background-color: #0080ff;">
+        <img src="https://thumbs.dreamstime.com/b/steaks-fresh-fish-supermarket-steaks-different-fresh-fish-supermarket-167632919.jpg" width="100" height="100">
+        <p>
+          Fish x2 <br> expires in 60 days
+        </p>
+      </div>
+    </div>
+  <div class="category-oval">Drinks</div>
+  <div>
+    <div class="btn btn-lg w-100 btn-oval" style="background-color: #0080ff;">
+      <img src="https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/13147515_XL1_20221025.jpg" width="100" height="100">
+      <p>
+        Milo x15 <br> expires in 17 days
+      </p>
+    </div>
+  </div>
 </div>
+</div>
+
+
 </body>
 </html>
