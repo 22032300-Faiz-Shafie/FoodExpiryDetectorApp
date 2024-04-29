@@ -15,6 +15,13 @@
     />
 
     <!--Custom style for css-->
+    <style>
+      .center{
+        margin: 0 auto;
+        width: 50%;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
     <script
@@ -28,12 +35,12 @@
       <a href="index.html" class="btn btn-lg btn-dark" role="button">Go back</a>
 
       <!--Placeholder Food Image for now-->
-      <div class="mt-3">
+      <div class="mt-3 center">
         <img src="foodImage/snacks/oreo.jpg" width="200" height="200" />
       </div>
 
       <!--Upload Food Image Button-->
-      <div class="mt-3">
+      <div class="mt-3 center">
         <label for="FoodImage" class="form-label">Upload Food Image:</label>
         <input
           type="file"
@@ -44,7 +51,7 @@
       </div>
 
       <!--Expiry Date Label-->
-      <div class="mt-3 col-9">
+      <div class="mt-3 col-9 center">
         <label for="ExpireDate" class="form-label">Expiry Date:</label>
         <input
           type="date"
@@ -55,7 +62,7 @@
       </div>
 
       <!--Food Name Label-->
-      <div class="mt-3 col-9">
+      <div class="mt-3 col-9 center">
         <label for="nameOfFood" class="form-label">Food Name:</label>
         <input
           type="text"
@@ -66,7 +73,7 @@
       </div>
 
       <!--Quantity Label-->
-      <div class="mt-3 col-9">
+      <div class="mt-3 col-9 center">
         <label for="quantity" class="form-label">Quantity:</label>
         <input
           type="number"
@@ -77,7 +84,7 @@
       </div>
 
       <!--Category Dropdown Button-->
-      <div class="dropdown mt-3 mb-3">
+      <div class="dropdown mt-3 mb-3 center">
         <div class="col-9">
           <label for="category" class="form-label">Category:</label>
         </div>
@@ -101,7 +108,7 @@
       </div>
 
       <!--Save And Delete Button-->
-      <div class="mt-3 mb-3 col-6" role="button">
+      <div class="mt-3 mb-3 col-6 center" role="button">
         <button class="btn btn-primary btn-success">Save</button>
         <button class="btn btn-primary btn-danger">Delete</button>
       </div>
