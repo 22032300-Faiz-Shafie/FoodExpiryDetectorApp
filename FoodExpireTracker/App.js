@@ -13,7 +13,7 @@ export default function App() {
     <NavigationContainer>
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="addFoodScreen" component={AddFoodScreen} options={{ headerStyle: { backgroundColor: 'lightgreen' } }} />
+      <Stack.Screen name="addFoodScreen" component={AddFoodScreen} options={{ headerStyle: { backgroundColor: 'green' },title:"add food" }} />
     </Stack.Navigator>
   </NavigationContainer>
 );
@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.backGround}>
       <ScrollView>
         <View style={{ flex: 1, height: 200, backgroundColor: "lightgreen", borderRadius: 30 }}>
-          <StatusBar backgroundColor="lightgreen" barStyle="default" />
+          <StatusBar backgroundColor="green" barStyle="default" />
           <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}>Elsa's List</Text>
           <Image source={logoImg} style={{ width: 100, height: 100, alignSelf: "center" }} />
         </View>
@@ -48,5 +48,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 20
-  }
+  },
+  input:{
+   height: 40,
+   margin: 12,
+   padding: 10,
+   borderWidth: 1
+},text: {
+  fontSize: 30,
+  padding: 10
+}
 });
