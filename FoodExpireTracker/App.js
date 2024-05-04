@@ -1,13 +1,60 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Pressable, Image, ScrollView, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Image, ScrollView, Button, FlatList, SafeAreaView} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddFoodScreen from "./Screens/AddFoodScreen";
-import displayFood from './displayFood';
+import {db} from "./firebaseConfig"
+import { doc, onSnapshot, query, collection, deleteDoc} from "firebase/firestore";
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
 const addImg = require("./assets/add.png")
+
+
+
+function FetchFoodData() {
+  const [foodsfetch, setFoodsfetch] = useState([]);
+  const foodsCol = collection(db, "foodCollection");
+
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data()
+        });
+      });
+      setFoodsfetch(foods);
+    
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    //Currently has issue with adding date. Ui needs improvement. 
+    <FlatList 
+      data={foodsfetch}
+      renderItem={({ item }) => {
+
+        return (
+          <SafeAreaView >
+          <View key={item.id}  style={{backgroundColor:"white",margin:10}}>
+            <Text>{item.data.foodName}</Text>
+            <Text>{item.data.quantity}</Text>
+            <Button title="delete" onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}  />
+    
+          </View>
+        </SafeAreaView>
+        );
+      }}
+    />
+  );
+}
+
 
 export default function App() {
   return (
@@ -23,7 +70,6 @@ export default function App() {
 
 
 
-
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.backGround}>
@@ -32,8 +78,8 @@ const HomeScreen = ({ navigation }) => {
           <StatusBar backgroundColor="green" barStyle="default" />
           <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}>Elsa's List</Text>
           <Image source={logoImg} style={{ width: 100, height: 100, alignSelf: "center" }} />
-
         </View>
+   <View><FetchFoodData/></View>
       </ScrollView>
       <View style={styles.addFoodButton}>
           <Pressable onPress={() => navigation.navigate("addFoodScreen")}>
@@ -48,7 +94,7 @@ const styles = StyleSheet.create({
   backGround: {
     flex: 1,
     justifyContent: "flex-start",
-    backgroundColor: "#FFF5F5F5",
+    backgroundColor: "lightgrey",
   }, 
   addFoodButton: {
     position: "absolute",
@@ -64,4 +110,6 @@ const styles = StyleSheet.create({
   fontSize: 30,
   padding: 10
 }
+
 });
+

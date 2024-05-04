@@ -3,24 +3,10 @@ import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { collection, addDoc, doc } from 'firebase/firestore';
 
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 
-//ideally need to figure out how to have this in the firebaseConfig.js file
-const firebaseConfig = {
-  apiKey: "AIzaSyB-ZTcNYafw-ISQxlCKgPrgjSlHWvMBxVE",
-  authDomain: "foodexpirytracker-e0cde.firebaseapp.com",
-  projectId: "foodexpirytracker-e0cde",
-  storageBucket: "foodexpirytracker-e0cde.appspot.com",
-  messagingSenderId: "50978091911",
-  appId: "1:50978091911:web:321e29f1d9c72bfadb1922",
-  measurementId: "G-5L4EQD1TGM"
-};
-
-const app = initializeApp(firebaseConfig);
+import {db} from "../firebaseConfig"
 
 
-const db = getFirestore(app);
 
 
 const AddFoodScreen = () => {
@@ -54,7 +40,7 @@ const AddFoodScreen = () => {
   
       const docRef = await addDoc(collection(db, 'foodCollection'), foodData);
       console.log('Document written with ID: ', docRef.id);
-  
+
       setFoodName("");
       setQuantity("");
       setExpiryDate("");
