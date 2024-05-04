@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Pressable, Image, ScrollView, Button } from 're
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddFoodScreen from "./Screens/AddFoodScreen";
+import displayFood from './displayFood';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
@@ -17,7 +18,11 @@ export default function App() {
     </Stack.Navigator>
   </NavigationContainer>
 );
+
 }
+
+
+
 
 const HomeScreen = ({ navigation }) => {
   return (
@@ -27,6 +32,7 @@ const HomeScreen = ({ navigation }) => {
           <StatusBar backgroundColor="green" barStyle="default" />
           <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}>Elsa's List</Text>
           <Image source={logoImg} style={{ width: 100, height: 100, alignSelf: "center" }} />
+
         </View>
       </ScrollView>
       <View style={styles.addFoodButton}>
