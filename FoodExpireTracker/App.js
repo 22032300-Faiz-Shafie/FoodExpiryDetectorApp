@@ -7,6 +7,7 @@ import AddFoodScreen from "./Screens/AddFoodScreen";
 import {db} from "./firebaseConfig"
 import { doc, onSnapshot, query, collection, deleteDoc} from "firebase/firestore";
 
+
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
 const addImg = require("./assets/add.png")
@@ -45,7 +46,7 @@ function FetchFoodData() {
           <View key={item.id}  style={{backgroundColor:"white",margin:10}}>
             <Text>{item.data.foodName}</Text>
             <Text>{item.data.quantity}</Text>
-            <Text>{item.data.expiryDate}</Text>
+            <Text>{item.data.expiryDate.toDate().toLocaleString()}</Text>
             <Button title="delete" onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}  />
   
           </View>

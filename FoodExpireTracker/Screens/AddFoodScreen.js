@@ -27,6 +27,8 @@ const AddFoodScreen = () => {
     console.warn("A date has been picked: ", date);
     hideDatePicker();
     setExpiryDate(date)
+    console.log(expiryDate)
+    console.log(date)
   };
   
   const handleAddFood = async () => {
