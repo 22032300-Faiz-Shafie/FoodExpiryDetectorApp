@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View, ScrollView} from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { collection, addDoc, doc } from 'firebase/firestore';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Button, TextInput } from 'react-native-paper';
+import { PaperProvider, Button, TextInput } from 'react-native-paper';
 
 import {db} from "../firebaseConfig"
 
@@ -49,46 +49,39 @@ const AddFoodScreen = () => {
     }
   }; 
 
-  const theme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      primary: 'lightgreen',
-      secondary: 'black',
-    },
-  };
-
   return (
-    <PaperProvider theme={theme}>
-      <View style={{backgroundColor: theme.colors.primary, flex: 1, justifyContent: "flex-start"}}>
-        <TextInput
-          style={styles.input2}
-          value={foodName}
-          onChangeText={setFoodName}
-          label="Enter Food Name"
-          mode='flat'
-        />
-        <TextInput
-          style={styles.input2}
-          value={quantity}
-          onChangeText={setQuantity}
-          label="Enter quantity"
-          keyboardType="number-pad"
-        />
-        <View style={styles.buttonC}>
-          <Button mode="contained-tonal" buttonColor="green" onPress={showDatePicker}>Choose Expiry date</Button>
+    <PaperProvider>
+      <ScrollView>
+        <View style={{backgroundColor: "lightgreen", flex: 1, justifyContent: "flex-start"}}>
+          <TextInput
+            style={styles.input2}
+            value={foodName}
+            onChangeText={setFoodName}
+            label="Enter Food Name"
+            mode='flat'
+          />
+          <TextInput
+            style={styles.input2}
+            value={quantity}
+            onChangeText={setQuantity}
+            label="Enter quantity"
+            keyboardType="number-pad"
+          />
+          <View style={styles.buttonC}>
+            <Button mode="contained-tonal" buttonColor="green" onPress={showDatePicker}>Choose Expiry date</Button>
+          </View>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            value={expiryDate}
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
+          <View style={styles.submitButton}>
+            <Button icon="upload" mode="contained-tonal" buttonColor="green" onPress={handleAddFood}>Submit</Button>
+          </View>
         </View>
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          value={expiryDate}
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
-        />
-        <View style={styles.buttonC}>
-          <Button icon="upload" mode="contained-tonal" buttonColor="green" onPress={handleAddFood}>Submit</Button>
-        </View>
-      </View>
+      </ScrollView>
     </PaperProvider>
   );
 };
@@ -103,12 +96,17 @@ const styles = StyleSheet.create({
     backgroundColor: "white"
   },
   input2: {
-    borderRadius: 10,
     margin: 12,
-    padding: 10,
     borderWidth: 1,
     width: '95%',
     marginVertical: 10,
+  },
+  submitButton: {
+    borderRadius: 10,
+    padding: 10,
+    margin: 100,
+    marginVertical: 475,
+    width: '50%'
   },
   buttonC: {
     borderRadius: 10,
