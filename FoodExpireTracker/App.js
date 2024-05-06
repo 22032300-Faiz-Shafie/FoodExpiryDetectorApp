@@ -47,6 +47,7 @@ function FetchFoodData() {
             <Text>{item.data.foodName}</Text>
             <Text>{item.data.quantity}</Text>
             <Text>{item.data.expiryDate.toDate().toLocaleString()}</Text>
+            <Text>{item.data.category}</Text>
             <Button title="delete" onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}  />
   
           </View>

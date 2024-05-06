@@ -14,6 +14,7 @@ const AddFoodScreen = () => {
   const [quantity, setQuantity] = useState(""); 
   const [expiryDate, setExpiryDate] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [category, setCategory] = useState("");
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -37,7 +38,8 @@ const AddFoodScreen = () => {
       const foodData = {
         foodName: foodName,
         quantity: quantity,
-        expiryDate: expiryDate
+        expiryDate: expiryDate,
+        category: category
       };
   
       const docRef = await addDoc(collection(db, 'foodCollection'), foodData);
@@ -46,6 +48,7 @@ const AddFoodScreen = () => {
       setFoodName("");
       setQuantity("");
       setExpiryDate("");
+      setCategory("");
     } catch (error) {
       console.error('Error adding document: ', error);
     }
@@ -66,8 +69,14 @@ const AddFoodScreen = () => {
             style={styles.input2}
             value={quantity}
             onChangeText={setQuantity}
-            label="Enter quantity"
+            label="Enter Quantity"
             keyboardType="number-pad"
+          />
+          <TextInput
+            style={styles.input2}
+            value={category}
+            onChangeText={setCategory}
+            label="Enter Category"
           />
           <View style={styles.buttonC}>
             <Button mode="contained-tonal" buttonColor="green" onPress={showDatePicker}>Choose Expiry date</Button>
@@ -80,7 +89,7 @@ const AddFoodScreen = () => {
             onCancel={hideDatePicker}
           />
           <View style={styles.submitButton}>
-            <Button icon="upload" mode="contained-tonal" buttonColor="green" onPress={handleAddFood}>Submit</Button>
+            <Button icon="upload" mode="contained-tonal" buttonColor="green" onPress={handleAddFood}>Add</Button>
           </View>
         </View>
       </ScrollView>
@@ -107,7 +116,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     margin: 100,
-    marginVertical: 475,
+    marginVertical: 210,
     width: '50%'
   },
   buttonC: {
