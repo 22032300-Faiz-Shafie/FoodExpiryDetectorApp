@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, ScrollView} from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { collection, addDoc, doc } from 'firebase/firestore';
 import { PaperProvider, Button, TextInput } from 'react-native-paper';
+import DropDown from "react-native-paper-dropdown";
 
 import {db} from "../firebaseConfig"
 
@@ -14,7 +15,40 @@ const AddFoodScreen = () => {
   const [quantity, setQuantity] = useState(""); 
   const [expiryDate, setExpiryDate] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(""); 
+  //To hide or show dropdown
+  const [showDropDown, setShowDropDown] = useState(false);
+  //List for the category. Want more categories? Add here
+  const categoryList = [
+    {
+      label: 'Beverages',
+      value: 'Beverages',
+    },
+    {
+      label: 'Snack',
+      value: 'Snack',
+    },
+    {
+      label: 'Dairy',
+      value: 'Dairy',
+    },
+    {
+      label: 'Meat',
+      value: 'Meat',
+    },
+    {
+      label: 'Canned Food',
+      value: 'Canned Food',
+    },
+    {
+      label: 'Frozen Food',
+      value: 'Frozen Food',
+    },
+    {
+      label: 'Condiments',
+      value: 'Condiments',
+    },
+  ]
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -58,6 +92,7 @@ const AddFoodScreen = () => {
     <PaperProvider>
       <ScrollView>
         <View style={{backgroundColor: "lightgreen", flex: 1, justifyContent: "flex-start"}}>
+
           <TextInput
             style={styles.input2}
             value={foodName}
@@ -65,6 +100,7 @@ const AddFoodScreen = () => {
             label="Enter Food Name"
             mode='flat'
           />
+
           <TextInput
             style={styles.input2}
             value={quantity}
@@ -72,15 +108,15 @@ const AddFoodScreen = () => {
             label="Enter Quantity"
             keyboardType="number-pad"
           />
-          <TextInput
-            style={styles.input2}
-            value={category}
-            onChangeText={setCategory}
-            label="Enter Category"
-          />
+          
+          <SafeAreaView style={styles.input2}>
+            <DropDown dropDownContainerHeight={300} label={'Category'} mode='flat' visible={showDropDown} showDropDown={() => setShowDropDown(true)} onDismiss={() => setShowDropDown(false)} value={category} setValue={setCategory} list={categoryList} dropDownStyle={styles.dropDownStyle}/>
+          </SafeAreaView>
+
           <View style={styles.buttonC}>
             <Button mode="contained-tonal" buttonColor="green" onPress={showDatePicker}>Choose Expiry date</Button>
           </View>
+
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="date"
@@ -88,9 +124,11 @@ const AddFoodScreen = () => {
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}
           />
+
           <View style={styles.submitButton}>
             <Button icon="upload" mode="contained-tonal" buttonColor="green" onPress={handleAddFood}>Add</Button>
           </View>
+
         </View>
       </ScrollView>
     </PaperProvider>
@@ -123,7 +161,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     margin:5
-  }
+  },
+  //This changes the position of the dropdown, for some reason by default the dropdown is in the middle of the screen
+  dropDownStyle: {
+    marginTop: -50,
+  },
 });
 
 export default AddFoodScreen;
