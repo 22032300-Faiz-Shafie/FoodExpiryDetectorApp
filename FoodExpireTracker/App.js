@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddFoodScreen from "./Screens/AddFoodScreen";
 import {db} from "./firebaseConfig"
 import { doc, onSnapshot, query, collection, deleteDoc} from "firebase/firestore";
-import {Button, IconButton, MD3Colors, Divider} from 'react-native-paper';
+import {Button, IconButton, MD3Colors, Divider, FAB} from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
@@ -43,10 +43,20 @@ function FetchFoodData() {
 
         return (
           <SafeAreaView >
-         <View key={item.id} style={{ backgroundColor: "white",margin:3,marginHorizontal:5, borderRadius: 15, flexDirection: 'row', alignItems: 'center', padding:10}}>
+         <View key={item.id} style={{backgroundColor: "white", flexDirection: 'row', alignItems: 'center', padding:10,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.4,
+      shadowRadius: 4,
+      
+      elevation: 4,
+         }}>
     <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 35 }}>{item.data.foodName} 
-            <Text style={{ fontSize: 20 }}> x{item.data.quantity}</Text>
+        <Text style={{ fontSize: 25 }}>{item.data.foodName} 
+            <Text style={{ fontSize: 18 }}> x{item.data.quantity}</Text>
         </Text>
         <Text>{item.data.category}</Text>
         <Text>expires on: {item.data.expiryDate.toDate().toLocaleString()}</Text>
@@ -57,6 +67,8 @@ function FetchFoodData() {
         size={40}
         onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
     />
+    <Divider/>
+   
 </View>
 
         </SafeAreaView>
@@ -93,9 +105,12 @@ const HomeScreen = ({ navigation }) => {
    <View><FetchFoodData/></View>
       </ScrollView>
       <View style={styles.addFoodButton}>
-          <Pressable onPress={() => navigation.navigate("addFoodScreen")}>
-            <Image source={addImg} style={{ width: 70, height: 70 }} />
-          </Pressable>
+      <FAB 
+    icon="plus"
+    rippleColor='green'
+  
+    onPress={() =>  navigation.navigate("addFoodScreen")}
+  />
         </View>
     </View>
   );
@@ -105,7 +120,7 @@ const styles = StyleSheet.create({
   backGround: {
     flex: 1,
     justifyContent: "flex-start",
-    backgroundColor: "lightgrey",
+    backgroundColor: "white",
   }, 
   addFoodButton: {
     position: "absolute",
