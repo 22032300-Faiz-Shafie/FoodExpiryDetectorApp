@@ -1,12 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, Image, ScrollView, Button, FlatList, SafeAreaView} from 'react-native';
+import { StyleSheet, Text, View, Pressable, Image, ScrollView, FlatList, SafeAreaView} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddFoodScreen from "./Screens/AddFoodScreen";
 import {db} from "./firebaseConfig"
 import { doc, onSnapshot, query, collection, deleteDoc} from "firebase/firestore";
-
+import {Button, IconButton, MD3Colors, Divider} from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
@@ -43,14 +43,22 @@ function FetchFoodData() {
 
         return (
           <SafeAreaView >
-          <View key={item.id}  style={{backgroundColor:"white",margin:10}}>
-            <Text>{item.data.foodName}</Text>
-            <Text>{item.data.quantity}</Text>
-            <Text>{item.data.expiryDate.toDate().toLocaleString()}</Text>
-            <Text>{item.data.category}</Text>
-            <Button title="delete" onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}  />
-  
-          </View>
+         <View key={item.id} style={{ backgroundColor: "white",margin:3,marginHorizontal:5, borderRadius: 15, flexDirection: 'row', alignItems: 'center', padding:10}}>
+    <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 35 }}>{item.data.foodName} 
+            <Text style={{ fontSize: 20 }}> x{item.data.quantity}</Text>
+        </Text>
+        <Text>{item.data.category}</Text>
+        <Text>expires on: {item.data.expiryDate.toDate().toLocaleString()}</Text>
+    </View>
+    <IconButton
+        icon="delete"
+        iconColor={MD3Colors.error50}
+        size={40}
+        onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
+    />
+</View>
+
         </SafeAreaView>
         );
       }}
@@ -79,7 +87,7 @@ const HomeScreen = ({ navigation }) => {
       <ScrollView>
         <View style={{ flex: 1, height: 200, backgroundColor: "lightgreen", borderRadius: 30 }}>
           <StatusBar backgroundColor="green" barStyle="default" />
-          <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}>Elsa's List</Text>
+          <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}>Food List</Text>
           <Image source={logoImg} style={{ width: 100, height: 100, alignSelf: "center" }} />
         </View>
    <View><FetchFoodData/></View>
