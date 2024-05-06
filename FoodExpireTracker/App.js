@@ -55,8 +55,9 @@ function FetchFoodData() {
       elevation: 4,
          }}>
     <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 25 }}>{item.data.foodName} 
-            <Text style={{ fontSize: 18 }}> x{item.data.quantity}</Text>
+    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.data.foodName}
+
+            <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
         </Text>
         <Text>{item.data.category}</Text>
         <Text>expires on: {item.data.expiryDate.toDate().toLocaleString()}</Text>
@@ -64,9 +65,10 @@ function FetchFoodData() {
     <IconButton
         icon="delete"
         iconColor={MD3Colors.error50}
-        size={40}
+        size={30}
         onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
     />
+    
     <Divider/>
    
 </View>
