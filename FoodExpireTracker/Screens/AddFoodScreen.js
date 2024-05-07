@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, ScrollView} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, ScrollView, TouchableOpacity} from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { collection, addDoc, doc } from 'firebase/firestore';
 import { PaperProvider, Button, TextInput } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
+import { Camera, CameraType } from 'expo-camera';
 
 import {db} from "../firebaseConfig"
 
@@ -16,9 +17,9 @@ const AddFoodScreen = () => {
   const [expiryDate, setExpiryDate] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [category, setCategory] = useState(""); 
-  //To hide or show dropdown
+  //To hide or show dropdown -Faiz
   const [showDropDown, setShowDropDown] = useState(false);
-  //List for the category. Want more categories? Add here
+  //List for the category. Want more categories? Add here -Faiz
   const categoryList = [
     {
       label: 'Beverages',
@@ -50,12 +51,22 @@ const AddFoodScreen = () => {
     },
   ]
 
+  //Camera Stuff -Faiz
+  const [cameraType, setCameraType] = useState(CameraType.back);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [cameraVisible, setCameraVisible] = useState(false);
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
 
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
+  };
+
+  //Toggle Camera Visibility -Faiz
+  const toggleCamera = () => {
+    setCameraVisible(!cameraVisible);
   };
 
   const handleConfirm = (date) => {
@@ -88,10 +99,45 @@ const AddFoodScreen = () => {
     }
   }; 
 
+  //Below are displayed when permissions are not granted -Faiz
+  if (!permission) {
+    // Camera permissions are still loading -Faiz
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet -Faiz
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Button mode="contained-tonal" buttonColor="green" onPress={requestPermission}>Grant Permission</Button>
+      </View>
+    );
+  }
+
+  //Changes Camera type, whether it's the front camera or back camera -Faiz
+  function toggleCameraType() {
+    setCameraType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
+  }
+
   return (
     <PaperProvider>
-      <ScrollView>
-        <View style={{backgroundColor: "lightgreen", flex: 1, justifyContent: "flex-start"}}>
+      <ScrollView style={{backgroundColor: "lightgreen"}}>
+        <View style={{flex: 1, justifyContent: "flex-start"}}>
+        {/* Below will display either an empty view or the camera preview based on cameraVisible variable -Faiz*/}
+        {cameraVisible ? (          
+          <Camera style={styles.camera} type={cameraType}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+                <Text style={styles.text}>Flip Camera</Text>
+              </TouchableOpacity>
+            </View>
+          </Camera>) : (<View></View>)}
+          
+          {/* This button will show camera preview on press. In the future it could navigate to a new Camera screen perhaps -Faiz*/}
+          <View style={styles.buttonC}>
+            <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={toggleCamera}>Scan Image</Button>
+          </View>
 
           <TextInput
             style={styles.input2}
@@ -154,7 +200,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     margin: 100,
-    marginVertical: 210,
+    marginVertical: 100,
     width: '50%'
   },
   buttonC: {
@@ -162,9 +208,31 @@ const styles = StyleSheet.create({
     padding: 10,
     margin:5
   },
-  //This changes the position of the dropdown, for some reason by default the dropdown is in the middle of the screen
+  //This changes the position of the dropdown, for some reason by default the dropdown is in the middle of the screen -Faiz
   dropDownStyle: {
     marginTop: -50,
+  },
+  //Below are all for the camera styles -Faiz
+  camera: {
+    flex: 1,
+    marginHorizontal: 50,
+    marginVertical: 10,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 
