@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddFoodScreen from "./Screens/AddFoodScreen";
 import {db} from "./firebaseConfig"
 import { doc, onSnapshot, query, collection, deleteDoc} from "firebase/firestore";
-import {Button, IconButton, MD3Colors, Divider, FAB} from 'react-native-paper';
+import {Icon, Button, IconButton, MD3Colors, Divider, FAB} from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
@@ -79,6 +79,55 @@ function FetchFoodData() {
     />
   );
 }
+//This function queries and retrieves information from the database, from there it will compare each item's expiration date with a date that is set 3 days from now, if an expiration date falls within 3 days it will add it to the filtered array from there the filtered array of expiring items will be displayed in a flatlist -Faiz
+function CheckExpiryDate() {
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  var today = new Date();
+  const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000)
+ 
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      for(const food of foods){
+ 
+        if(food.data.expiryDate.toDate() <= threeDaysFromNow){
+          filteringFoodItems.push(food);
+        }
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+ 
+    return () => unsubscribe();
+  }, []);
+ 
+  return(
+    <View>
+    <View style={{flexDirection: "row", marginBottom: 10, marginTop: 10}}>
+      <Icon source={"alert-circle"} size={35}/>
+      <Text style={{fontSize: 25}}>Fruits that are expiring in 3 days: </Text>
+    </View>
+      <FlatList data={filteredFoodItems} renderItem={({ item }) => {
+        return(
+          <SafeAreaView style={{borderWidth: 1, marginHorizontal: 5}}>
+            <Text key={item.id} style={{fontSize: 15, padding: 0, marginHorizontal: 5,}}>FRUIT NAME: {item.data.foodName}</Text>
+            <Text style={{fontSize: 15, padding: 0, marginHorizontal: 5}}>EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}</Text>
+          </SafeAreaView>
+           
+        );
+ 
+      }}/>
+    </View>
+  )
+}
 
 
 export default function App() {
@@ -105,6 +154,7 @@ const HomeScreen = ({ navigation }) => {
           <Image source={logoImg} style={{ width: 100, height: 100, alignSelf: "center" }} />
         </View>
    <View><FetchFoodData/></View>
+   <View><CheckExpiryDate/></View>
       </ScrollView>
       <View style={styles.addFoodButton}>
       <FAB 
