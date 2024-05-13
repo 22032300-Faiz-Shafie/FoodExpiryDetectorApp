@@ -17,6 +17,7 @@ const AddFoodScreen = () => {
   const [expiryDate, setExpiryDate] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [category, setCategory] = useState(""); 
+  
   //To hide or show dropdown -Faiz
   const [showDropDown, setShowDropDown] = useState(false);
   //List for the category. Want more categories? Add here -Faiz
@@ -77,6 +78,7 @@ const AddFoodScreen = () => {
     console.log(date)
   };
   
+    
   const handleAddFood = async () => {
     try {
       // Create a new document object
@@ -98,6 +100,9 @@ const AddFoodScreen = () => {
       console.error('Error adding document: ', error);
     }
   }; 
+
+    
+
 
   //Below are displayed when permissions are not granted -Faiz
   if (!permission) {

@@ -11,12 +11,24 @@ import {Icon, Button, IconButton, MD3Colors, Divider, FAB} from 'react-native-pa
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
 const addImg = require("./assets/add.png")
+const [currentDate, setcurrentDate] = useState("")
 
-
+function Fetchdistltillexp() {
+useEffect(() => {
+  var date = new Date().getDate()
+  var month = new Date().getMonth() + 1
+  var year = new Date().getFullYear()
+  setcurrentDate(
+    date + '/' + month + '/' + year + '/'
+  )
+}, [])
+}
 
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
+
+
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -29,18 +41,18 @@ function FetchFoodData() {
         });
       });
       setFoodsfetch(foods);
-    
+   
     });
-
+ 
     return () => unsubscribe();
   }, []);
-
+ 
   return (
-    //Currently has issue with adding date. Ui needs improvement. 
-    <FlatList 
+    //Currently has issue with adding date. Ui needs improvement.
+    <FlatList
       data={foodsfetch}
       renderItem={({ item }) => {
-
+ 
         return (
           <SafeAreaView >
          <View key={item.id} style={{backgroundColor: "white", flexDirection: 'row', alignItems: 'center', padding:10,
@@ -51,15 +63,16 @@ function FetchFoodData() {
       },
       shadowOpacity: 0.4,
       shadowRadius: 4,
-      
+     
       elevation: 4,
          }}>
     <View style={{ flex: 1 }}>
     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.data.foodName}
-
-            <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+ 
+        <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
         </Text>
         <Text>{item.data.category}</Text>
+        <Text>expires in: {item.data.expiryDate.toDate().getMonth().toLocaleString() - currentDate.toDate().getMonth().toLocaleString() + " months" + item.data.expiryDate.toDate().getDate().toLocaleString() - currentDate.toDate().getDate().toLocaleString() + " days"}</Text>
         <Text>expires on: {item.data.expiryDate.toDate().toLocaleString()}</Text>
     </View>
     <IconButton
@@ -68,11 +81,11 @@ function FetchFoodData() {
         size={30}
         onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
     />
-    
+   
     <Divider/>
    
 </View>
-
+ 
         </SafeAreaView>
         );
       }}
@@ -128,8 +141,8 @@ function CheckExpiryDate() {
     </View>
   )
 }
-
-
+ 
+ 
 export default function App() {
   return (
     <NavigationContainer>
@@ -139,11 +152,11 @@ export default function App() {
     </Stack.Navigator>
   </NavigationContainer>
 );
-
+ 
 }
-
-
-
+ 
+ 
+ 
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.backGround}>
@@ -154,26 +167,27 @@ const HomeScreen = ({ navigation }) => {
           <Image source={logoImg} style={{ width: 100, height: 100, alignSelf: "center" }} />
         </View>
    <View><FetchFoodData/></View>
+   <View><Fetchdistltillexp/></View>
    <View><CheckExpiryDate/></View>
       </ScrollView>
       <View style={styles.addFoodButton}>
-      <FAB 
+      <FAB
     icon="plus"
     rippleColor='green'
-  
+ 
     onPress={() =>  navigation.navigate("addFoodScreen")}
   />
         </View>
     </View>
   );
 }
-
+ 
 const styles = StyleSheet.create({
   backGround: {
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "white",
-  }, 
+  },
   addFoodButton: {
     position: "absolute",
     bottom: 20,
@@ -188,6 +202,7 @@ const styles = StyleSheet.create({
   fontSize: 30,
   padding: 10
 }
-
+ 
 });
-
+ 
+ 
