@@ -11,18 +11,6 @@ import {Icon, Button, IconButton, MD3Colors, Divider, FAB} from 'react-native-pa
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
 const addImg = require("./assets/add.png")
-const [currentDate, setcurrentDate] = useState("")
-
-function Fetchdistltillexp() {
-useEffect(() => {
-  var date = new Date().getDate()
-  var month = new Date().getMonth() + 1
-  var year = new Date().getFullYear()
-  setcurrentDate(
-    date + '/' + month + '/' + year + '/'
-  )
-}, [])
-}
 
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
@@ -72,7 +60,7 @@ function FetchFoodData() {
         <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
         </Text>
         <Text>{item.data.category}</Text>
-        <Text>expires in: {item.data.expiryDate.toDate().getMonth().toLocaleString() - currentDate.toDate().getMonth().toLocaleString() + " months" + item.data.expiryDate.toDate().getDate().toLocaleString() - currentDate.toDate().getDate().toLocaleString() + " days"}</Text>
+        <Text>expires in: </Text>
         <Text>expires on: {item.data.expiryDate.toDate().toLocaleString()}</Text>
     </View>
     <IconButton
@@ -112,9 +100,10 @@ function CheckExpiryDate() {
       });
       for(const food of foods){
  
-        if(food.data.expiryDate.toDate() <= threeDaysFromNow){
+        if(food.data.expiryDate.toDate() <= threeDaysFromNow && food.data.expiryDate.toDate() > today){
           filteringFoodItems.push(food);
         }
+        
       }
       setFilteredFoodItems(filteringFoodItems);
     });
@@ -141,7 +130,53 @@ function CheckExpiryDate() {
     </View>
   )
 }
+function CheckExpired() {
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  var today = new Date();
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data()
+        })
+      });
+      for(const food of foods){
  
+        if(food.data.expiryDate.toDate() < today){
+          filteringFoodItems.push(food);
+        }
+        
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+ 
+    return () => unsubscribe();
+  }, []);
+ 
+  return(
+    <View>
+    <View style={{flexDirection: "row", marginBottom: 10, marginTop: 10}}>
+      <Icon source={"alert-circle"} size={35}/>
+      <Text style={{fontSize: 25}}>Fruits that are expired: </Text>
+    </View>
+      <FlatList data={filteredFoodItems} renderItem={({ item }) => {
+        return(
+          <SafeAreaView style={{borderWidth: 1, marginHorizontal: 5}}>
+            <Text key={item.id} style={{fontSize: 15, padding: 0, marginHorizontal: 5,}}>FRUIT NAME: {item.data.foodName}</Text>
+            <Text style={{fontSize: 15, padding: 0, marginHorizontal: 5}}>EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}</Text>
+          </SafeAreaView>
+           
+        );
+ 
+      }}/>
+    </View>
+  )
+}
  
 export default function App() {
   return (
@@ -167,7 +202,7 @@ const HomeScreen = ({ navigation }) => {
           <Image source={logoImg} style={{ width: 100, height: 100, alignSelf: "center" }} />
         </View>
    <View><FetchFoodData/></View>
-   <View><Fetchdistltillexp/></View>
+   <View><CheckExpired/></View>
    <View><CheckExpiryDate/></View>
       </ScrollView>
       <View style={styles.addFoodButton}>
