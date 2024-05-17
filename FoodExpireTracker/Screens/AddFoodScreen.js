@@ -4,8 +4,8 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { collection, addDoc, doc } from 'firebase/firestore';
 import { PaperProvider, Button, TextInput } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
-import { Camera, CameraType } from 'expo-camera';
-
+import { Camera, CameraType, VideoQuality } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 import {db} from "../firebaseConfig"
 
 
@@ -101,7 +101,25 @@ const AddFoodScreen = () => {
     }
   }; 
 
-    
+  //code to send the image to python. Should try to encode uri to base64 before sending -Don
+const sendToPython = async (uri) =>{
+}
+//code to take photo
+const takePhoto = async () => {
+  const cameraResp = await ImagePicker.launchCameraAsync({
+    allowsEditing: true,
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    quality: 1,
+    allowsEditing: false,
+  });
+
+  if (!cameraResp.canceled) {
+    console.log(cameraResp.assets[0].uri); //to test the URI
+
+  } else {
+    console.log('Camera was canceled');
+  }
+};
 
 
   //Below are displayed when permissions are not granted -Faiz
@@ -124,6 +142,7 @@ const AddFoodScreen = () => {
   function toggleCameraType() {
     setCameraType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
+ 
 
   return (
     <PaperProvider>
@@ -141,7 +160,10 @@ const AddFoodScreen = () => {
           
           {/* This button will show camera preview on press. In the future it could navigate to a new Camera screen perhaps -Faiz*/}
           <View style={styles.buttonC}>
-            <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={toggleCamera}>Scan Image</Button>
+            <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={toggleCamera}>toggle cmaera</Button>
+          </View>
+          <View style={styles.buttonC}>
+            <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={takePhoto}>take photo</Button>
           </View>
 
           <TextInput
