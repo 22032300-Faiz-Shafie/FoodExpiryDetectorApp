@@ -6,6 +6,7 @@ import { PaperProvider, Button, TextInput } from 'react-native-paper';
 import DropDown from "react-native-paper-dropdown";
 import { Camera, CameraType, VideoQuality } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import {db} from "../firebaseConfig"
 
 
@@ -101,10 +102,24 @@ const AddFoodScreen = () => {
     }
   }; 
 
-  //code to send the image to python. Should try to encode uri to base64 before sending -Don
+  //code to send the image to python through Flask. Probably need to add more error handling
 const sendToPython = async (uri) =>{
+  const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' }); //encode uri to base64 before sending
+  //wraps base64 data in "base64" key
+  const data = { 
+    base64: base64
+  };
+  console.log (JSON.stringify(base64))
+  fetch('http://192.168.31.1:3000/image',{ //use FLASK IP
+    method: 'POST',
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify(data)
+   
+  }).then (()=>{
+    console.log("food added")
+  })
 }
-//code to take photo
+//code to take photo 
 const takePhoto = async () => {
   const cameraResp = await ImagePicker.launchCameraAsync({
     allowsEditing: true,
@@ -115,6 +130,7 @@ const takePhoto = async () => {
 
   if (!cameraResp.canceled) {
     console.log(cameraResp.assets[0].uri); //to test the URI
+    sendToPython(cameraResp.assets[0].uri) 
 
   } else {
     console.log('Camera was canceled');
@@ -125,7 +141,7 @@ const takePhoto = async () => {
   //Below are displayed when permissions are not granted -Faiz
   if (!permission) {
     // Camera permissions are still loading -Faiz
-    return <View />;
+    return <View />
   }
 
   if (!permission.granted) {
