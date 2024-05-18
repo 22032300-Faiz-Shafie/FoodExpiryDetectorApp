@@ -22,6 +22,7 @@ function FetchFoodData() {
     const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const foods = [];
+      const filteringFoodItems = []
       querySnapshot.forEach((doc) => {
         foods.push({
           id: doc.id,
@@ -29,7 +30,14 @@ function FetchFoodData() {
         });
       });
       setFoodsfetch(foods);
-   
+      for(const food of foods){
+ 
+        if(food.data.isadded==true){
+       filteringFoodItems.push(food);
+        }
+        
+      }
+      setFoodsfetch(filteringFoodItems);
     });
  
     return () => unsubscribe();
@@ -100,7 +108,7 @@ function CheckExpiryDate() {
       });
       for(const food of foods){
  
-        if(food.data.expiryDate.toDate() <= threeDaysFromNow && food.data.expiryDate.toDate() > today){
+        if(food.data.expiryDate.toDate() <= threeDaysFromNow && food.data.expiryDate.toDate() > today && food.data.isadded==false){
           filteringFoodItems.push(food);
         }
         
@@ -147,7 +155,7 @@ function CheckExpired() {
       });
       for(const food of foods){
  
-        if(food.data.expiryDate.toDate() < today){
+        if(food.data.expiryDate.toDate() < today && food.data.isadded==false){
           filteringFoodItems.push(food);
         }
         

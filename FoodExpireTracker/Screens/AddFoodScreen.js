@@ -1,108 +1,14 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, ScrollView, TouchableOpacity} from 'react-native';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { collection, addDoc, doc } from 'firebase/firestore';
-import { PaperProvider, Button, TextInput } from 'react-native-paper';
-import DropDown from "react-native-paper-dropdown";
-import { Camera, CameraType, VideoQuality } from 'expo-camera';
+import { StatusBar } from 'expo-status-bar';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Image, ScrollView, FlatList, SafeAreaView} from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import {db} from "../firebaseConfig"
+import { doc, onSnapshot, query, collection, deleteDoc, updateDoc} from "firebase/firestore";
+import {Icon, Button, IconButton, MD3Colors, Divider, PaperProvider} from 'react-native-paper';
 
-
-
-
-const AddFoodScreen = () => {
-  const [foodName, setFoodName] = useState(""); 
-  const [quantity, setQuantity] = useState(""); 
-  const [expiryDate, setExpiryDate] = useState("");
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [category, setCategory] = useState(""); 
-  
-  //To hide or show dropdown -Faiz
-  const [showDropDown, setShowDropDown] = useState(false);
-  //List for the category. Want more categories? Add here -Faiz
-  const categoryList = [
-    {
-      label: 'Beverages',
-      value: 'Beverages',
-    },
-    {
-      label: 'Snack',
-      value: 'Snack',
-    },
-    {
-      label: 'Dairy',
-      value: 'Dairy',
-    },
-    {
-      label: 'Meat',
-      value: 'Meat',
-    },
-    {
-      label: 'Canned Food',
-      value: 'Canned Food',
-    },
-    {
-      label: 'Frozen Food',
-      value: 'Frozen Food',
-    },
-    {
-      label: 'Condiments',
-      value: 'Condiments',
-    },
-  ]
-
-  //Camera Stuff -Faiz
-  const [cameraType, setCameraType] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [cameraVisible, setCameraVisible] = useState(false);
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  //Toggle Camera Visibility -Faiz
-  const toggleCamera = () => {
-    setCameraVisible(!cameraVisible);
-  };
-
-  const handleConfirm = (date) => {
-    console.warn("A date has been picked: ", date);
-    hideDatePicker();
-    setExpiryDate(date)
-    console.log(expiryDate)
-    console.log(date)
-  };
-  
-    
-  const handleAddFood = async () => {
-    try {
-      // Create a new document object
-      const foodData = {
-        foodName: foodName,
-        quantity: quantity,
-        expiryDate: expiryDate,
-        category: category
-      };
-  
-      const docRef = await addDoc(collection(db, 'foodCollection'), foodData);
-      console.log('Document written with ID: ', docRef.id);
-
-      setFoodName("");
-      setQuantity("");
-      setExpiryDate("");
-      setCategory("");
-    } catch (error) {
-      console.error('Error adding document: ', error);
-    }
-  }; 
-
-  //code to send the image to python through Flask. Probably need to add more error handling
+const Stack = createNativeStackNavigator();
 const sendToPython = async (uri) =>{
   const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' }); //encode uri to base64 before sending
   //wraps base64 data in "base64" key
@@ -138,145 +44,139 @@ const takePhoto = async () => {
 };
 
 
-  //Below are displayed when permissions are not granted -Faiz
-  if (!permission) {
-    // Camera permissions are still loading -Faiz
-    return <View />
+function FetchFoodData() {
+  const [foodsfetch, setFoodsfetch] = useState([]);
+  const foodsCol = collection(db, "foodCollection");
+  
+  const makeAdded = (id) => {
+    updateDoc(doc(db, "foodCollection", id), {
+      isadded: true
+    });
   }
+  
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet -Faiz
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button mode="contained-tonal" buttonColor="green" onPress={requestPermission}>Grant Permission</Button>
-      </View>
-    );
-  }
-
-  //Changes Camera type, whether it's the front camera or back camera -Faiz
-  function toggleCameraType() {
-    setCameraType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
-  }
+  useEffect(() => {
+      const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = []
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data()
+        });
+      });
+      setFoodsfetch(foods);
+      for(const food of foods){
  
+        if(food.data.isadded==false){
+       filteringFoodItems.push(food);
+        }
+        
+      }
+      setFoodsfetch(filteringFoodItems);
+    });
+ 
+    return () => unsubscribe();
+  }, []);
+ 
+  return (
+    //Currently has issue with adding date. Ui needs improvement.
+    <FlatList
+      data={foodsfetch}
+      renderItem={({ item }) => {
+ 
+        return (
+          <SafeAreaView >
+         <View key={item.id} style={{backgroundColor: "white", flexDirection: 'row', alignItems: 'center', padding:10,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.4,
+      shadowRadius: 4,
+     
+      elevation: 4,
+         }}>
+    <View style={{ flex: 1 }}>
+    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.data.foodName}
+ 
+        <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+        </Text>
+        <Text>{item.data.category}</Text>
+        <Text>expires in: </Text>
+        <Text>expires on: {item.data.expiryDate.toDate().toLocaleString()}</Text>
+    </View >
+    <IconButton 
+    size={30}
+    icon="check"
+    onPress={() => makeAdded(item.id)}
+     />
+    <IconButton
+        icon="delete"
+        iconColor={MD3Colors.error50}
+        size={30}
+        onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
+    />
+    
+    <Divider/>
+   
+</View>
+ 
+        </SafeAreaView>
+        );
+      }}
+    />
+  );
+}
 
+ 
+export default function App() {
   return (
     <PaperProvider>
-      <ScrollView style={{backgroundColor: "lightgreen"}}>
-        <View style={{flex: 1, justifyContent: "flex-start"}}>
-        {/* Below will display either an empty view or the camera preview based on cameraVisible variable -Faiz*/}
-        {cameraVisible ? (          
-          <Camera style={styles.camera} type={cameraType}>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-                <Text style={styles.text}>Flip Camera</Text>
-              </TouchableOpacity>
-            </View>
-          </Camera>) : (<View></View>)}
-          
-          {/* This button will show camera preview on press. In the future it could navigate to a new Camera screen perhaps -Faiz*/}
-          <View style={styles.buttonC}>
-            <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={toggleCamera}>toggle cmaera</Button>
-          </View>
+    <View style={styles.backGround}>
+      <ScrollView>
+        <View style={{ flex: 1, height: 200, backgroundColor: "lightgreen",  borderBottomLeftRadius: 30, borderBottomRightRadius: 30}}>
+          <StatusBar backgroundColor="green" barStyle="default" />
+          <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}></Text>
           <View style={styles.buttonC}>
             <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={takePhoto}>take photo</Button>
           </View>
-
-          <TextInput
-            style={styles.input2}
-            value={foodName}
-            onChangeText={setFoodName}
-            label="Enter Food Name"
-            mode='flat'
-          />
-
-          <TextInput
-            style={styles.input2}
-            value={quantity}
-            onChangeText={setQuantity}
-            label="Enter Quantity"
-            keyboardType="number-pad"
-          />
-          
-          <SafeAreaView style={styles.input2}>
-            <DropDown dropDownContainerHeight={300} label={'Category'} mode='flat' visible={showDropDown} showDropDown={() => setShowDropDown(true)} onDismiss={() => setShowDropDown(false)} value={category} setValue={setCategory} list={categoryList} dropDownStyle={styles.dropDownStyle}/>
-          </SafeAreaView>
-
-          <View style={styles.buttonC}>
-            <Button mode="contained-tonal" buttonColor="green" onPress={showDatePicker}>Choose Expiry date</Button>
-          </View>
-
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            value={expiryDate}
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-          />
-
-          <View style={styles.submitButton}>
-            <Button icon="upload" mode="contained-tonal" buttonColor="green" onPress={handleAddFood}>Add</Button>
-          </View>
-
         </View>
+        <View style ={{alignSelf: "center"}}><Text style={{fontSize: 25}}>confirm foods to add</Text></View>
+   <View><FetchFoodData/></View>
       </ScrollView>
-    </PaperProvider>
-  );
-};
-
+        </View>
+      </PaperProvider>
+  )}
+  
+ 
 const styles = StyleSheet.create({
-  input: {
-    borderRadius: 10,
-    height: 40,
-    margin: 12,
-    padding: 10,
-    borderWidth: 1,
-    backgroundColor: "white"
-  },
-  input2: {
-    margin: 12,
-    borderWidth: 1,
-    width: '95%',
-    marginVertical: 10,
-  },
-  submitButton: {
-    borderRadius: 10,
-    padding: 10,
-    margin: 100,
-    marginVertical: 100,
-    width: '50%'
-  },
-  buttonC: {
-    borderRadius: 10,
-    padding: 10,
-    margin:5
-  },
-  //This changes the position of the dropdown, for some reason by default the dropdown is in the middle of the screen -Faiz
-  dropDownStyle: {
-    marginTop: -50,
-  },
-  //Below are all for the camera styles -Faiz
-  camera: {
+  backGround: {
     flex: 1,
-    marginHorizontal: 50,
-    marginVertical: 10,
+    justifyContent: "flex-start",
+    backgroundColor: "white",
   },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
+  addFoodButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20
   },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-  },
+  input:{
+   height: 40,
+   margin: 12,
+   padding: 10,
+   borderWidth: 1
+},text: {
+  fontSize: 30,
+  padding: 10
+}, buttonC: {
+  borderRadius: 10,
+  padding: 10,
+  margin:5
+}
+ 
 });
-
-export default AddFoodScreen;
+ 
+ 
