@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import {db} from "../firebaseConfig"
-import { doc, onSnapshot, query, collection, deleteDoc, updateDoc} from "firebase/firestore";
+import { doc, onSnapshot, query, collection, deleteDoc, updateDoc, writeBatch} from "firebase/firestore";
 import {Icon, Button, IconButton, MD3Colors, Divider, PaperProvider} from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
@@ -47,14 +47,35 @@ const takePhoto = async () => {
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
-  
+
+//confirms all foods at once and sets isadded to true
+  const makeAllAdded = async () => {
+    const updateBatch = writeBatch(db);
+    for (const item of foodsfetch){
+      updateBatch.update(doc(db, "foodCollection", item.id), {
+      isadded: true
+    }
+  );
+}
+
+await updateBatch.commit();
+  }
   const makeAdded = (id) => {
     updateDoc(doc(db, "foodCollection", id), {
       isadded: true
     });
   }
-  
 
+  const makeAllDeleted = async () => {
+    const deleteBatch = writeBatch(db);
+    for (const item of foodsfetch){
+      deleteBatch.delete(doc(db, "foodCollection", item.id), {
+    }
+  );
+}
+await deleteBatch.commit();
+  }
+ 
   useEffect(() => {
       const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -81,7 +102,8 @@ function FetchFoodData() {
   }, []);
  
   return (
-    //Currently has issue with adding date. Ui needs improvement.
+    <PaperProvider>
+    <View style ={{flex:1}}>
     <FlatList
       data={foodsfetch}
       renderItem={({ item }) => {
@@ -123,12 +145,18 @@ function FetchFoodData() {
     <Divider/>
    
 </View>
- 
         </SafeAreaView>
         );
       }}
     />
+  <View style={{justifyContent: "center"}}>
+      <Button icon="check" mode="contained-tonal" buttonColor="green" onPress={makeAllAdded}>Confirm All</Button>
+      <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={makeAllDeleted}>delete All</Button>
+    </View>
+    </View>
+    </PaperProvider>
   );
+
 }
 
  

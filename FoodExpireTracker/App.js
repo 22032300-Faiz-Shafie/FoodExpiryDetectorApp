@@ -108,7 +108,7 @@ function CheckExpiryDate() {
       });
       for(const food of foods){
  
-        if(food.data.expiryDate.toDate() <= threeDaysFromNow && food.data.expiryDate.toDate() > today && food.data.isadded==false){
+        if(food.data.expiryDate.toDate() <= threeDaysFromNow && food.data.expiryDate.toDate() > today && food.data.isadded==true){
           filteringFoodItems.push(food);
         }
         
@@ -155,7 +155,7 @@ function CheckExpired() {
       });
       for(const food of foods){
  
-        if(food.data.expiryDate.toDate() < today && food.data.isadded==false){
+        if(food.data.expiryDate.toDate() < today && food.data.isadded==true){
           filteringFoodItems.push(food);
         }
         
