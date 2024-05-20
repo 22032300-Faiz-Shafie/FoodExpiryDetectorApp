@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Pressable, Image, ScrollView, FlatList, SafeAre
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddFoodScreen from "./Screens/AddFoodScreen";
+import AiAccuracyForm from "./Screens/AiAccuracyForm";
 import {db} from "./firebaseConfig"
 import { doc, onSnapshot, query, collection, deleteDoc} from "firebase/firestore";
 import {Icon, Button, IconButton, MD3Colors, Divider, FAB} from 'react-native-paper';
@@ -192,6 +193,7 @@ export default function App() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="addFoodScreen" component={AddFoodScreen} options={{ headerStyle: { backgroundColor: 'green' },title:"Add food" }} />
+      <Stack.Screen name="aiAccuracyForm" component={AiAccuracyForm} options={{ headerStyle: { backgroundColor: 'green'}, title: "AI Accuracy Form"}}/>
     </Stack.Navigator>
   </NavigationContainer>
 );
@@ -216,11 +218,19 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.addFoodButton}>
       <FAB
     icon="plus"
-    rippleColor='green'
+    rippleColor='purple'
  
     onPress={() =>  navigation.navigate("addFoodScreen")}
   />
         </View>
+      <View style={styles.aiAccuracyFormButton}>
+      <FAB 
+      icon="ballot"
+      rippleColor="purple"
+
+      onPress={() =>  navigation.navigate("aiAccuracyForm")}
+      />
+      </View>
     </View>
   );
 }
@@ -233,7 +243,12 @@ const styles = StyleSheet.create({
   },
   addFoodButton: {
     position: "absolute",
-    bottom: 20,
+    bottom: 80,
+    right: 20
+  },
+  aiAccuracyFormButton: {
+    position: "absolute",
+    bottom:10,
     right: 20
   },
   input:{
