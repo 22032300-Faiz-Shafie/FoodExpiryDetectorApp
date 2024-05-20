@@ -12,7 +12,8 @@ import {Icon, Button, IconButton, MD3Colors, Divider, FAB} from 'react-native-pa
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
 const addImg = require("./assets/add.png")
-
+//fetches all food with isadded as true, so that only added foods are displayed
+//should add edit button in the future
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
@@ -45,7 +46,6 @@ function FetchFoodData() {
   }, []);
  
   return (
-    //Currently has issue with adding date. Ui needs improvement.
     <FlatList
       data={foodsfetch}
       renderItem={({ item }) => {
@@ -189,6 +189,7 @@ function CheckExpired() {
  
 export default function App() {
   return (
+    //add new screens here for navigation -Don
     <NavigationContainer>
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />

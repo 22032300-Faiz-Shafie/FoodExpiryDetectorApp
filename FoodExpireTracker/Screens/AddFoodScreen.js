@@ -9,14 +9,14 @@ import { doc, onSnapshot, query, collection, deleteDoc, updateDoc, writeBatch} f
 import {Icon, Button, IconButton, MD3Colors, Divider, PaperProvider} from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
+//inserts image and sends it to python, the image will then be used for computer vision -Don
 const sendToPython = async (uri) =>{
-  const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' }); //encode uri to base64 before sending
-  //wraps base64 data in "base64" key
+  const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' }); 
   const data = { 
     base64: base64
   };
   console.log (JSON.stringify(base64))
-  fetch('http://192.168.31.1:3000/image',{ //use FLASK IP
+  fetch('http://192.168.31.1:3000/image',{ //use FLASK IP in app.py -Don
     method: 'POST',
     headers: {"content-type": "application/json"},
     body: JSON.stringify(data)
@@ -25,8 +25,8 @@ const sendToPython = async (uri) =>{
     console.log("food added")
   })
 }
-//code to take photo 
-const takePhoto = async () => {
+//code to take photo
+const takePhoto = async (setImageUri) => {
   const cameraResp = await ImagePicker.launchCameraAsync({
     allowsEditing: true,
     mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -35,20 +35,23 @@ const takePhoto = async () => {
   });
 
   if (!cameraResp.canceled) {
-    console.log(cameraResp.assets[0].uri); //to test the URI
-    sendToPython(cameraResp.assets[0].uri) 
+    const uri = cameraResp.assets[0].uri;
+    setImageUri(uri);
+    console.log(uri); 
+    sendToPython(uri) 
 
   } else {
     console.log('Camera was canceled');
   }
 };
 
-
+//fetches all food with isadded as false, to enable users to confirm before they add, or delete to not add, gives user more control -Don
+//should add edit button in the future -Don
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
 
-//confirms all foods at once and sets isadded to true
+
   const makeAllAdded = async () => {
     const updateBatch = writeBatch(db);
     for (const item of foodsfetch){
@@ -104,6 +107,10 @@ await deleteBatch.commit();
   return (
     <PaperProvider>
     <View style ={{flex:1}}>
+    <View style={styles.buttonContainer}>
+      <Button icon="check"  mode="contained-tonal" Type="contained" buttonColor="lightgreen"  onPress={makeAllAdded}>Confirm All</Button>
+      <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={makeAllDeleted}>delete All</Button>
+    </View>
     <FlatList
       data={foodsfetch}
       renderItem={({ item }) => {
@@ -149,10 +156,7 @@ await deleteBatch.commit();
         );
       }}
     />
-  <View style={{justifyContent: "center"}}>
-      <Button icon="check" mode="contained-tonal" buttonColor="green" onPress={makeAllAdded}>Confirm All</Button>
-      <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={makeAllDeleted}>delete All</Button>
-    </View>
+
     </View>
     </PaperProvider>
   );
@@ -161,35 +165,44 @@ await deleteBatch.commit();
 
  
 export default function App() {
+  const [imageUri, setImageUri] = useState(null);
+
   return (
     <PaperProvider>
-    <View style={styles.backGround}>
-      <ScrollView>
-        <View style={{ flex: 1, height: 200, backgroundColor: "lightgreen",  borderBottomLeftRadius: 30, borderBottomRightRadius: 30}}>
-          <StatusBar backgroundColor="green" barStyle="default" />
-          <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}></Text>
-          <View style={styles.buttonC}>
-            <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={takePhoto}>take photo</Button>
+      <SafeAreaView style={styles.container}>
+        <ScrollView>
+          <View style={{ flex: 1, height: 200, backgroundColor: "lightgreen",  borderBottomLeftRadius: 30, borderBottomRightRadius: 30}}>
+            <StatusBar backgroundColor="green" barStyle="default" />
+            <View style ={{padding:10,}}>
+            {imageUri && (
+              <Image
+                source={{ uri: imageUri, alignItems:"center" }}
+                style={styles.displayImage} // Added style to make the image fill the container
+              />
+            )}
+            </View>
+            <View style={styles.takePhotoButton}>
+              <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={() => takePhoto(setImageUri)}>Take Photo</Button>
+            </View>
           </View>
-        </View>
-        <View style ={{alignSelf: "center"}}><Text style={{fontSize: 25}}>confirm foods to add</Text></View>
-   <View><FetchFoodData/></View>
-      </ScrollView>
-        </View>
-      </PaperProvider>
-  )}
+          <View><FetchFoodData/></View>
+        </ScrollView>
+      </SafeAreaView>
+    </PaperProvider>
+  );
+}
   
  
 const styles = StyleSheet.create({
-  backGround: {
+  container: {
     flex: 1,
     justifyContent: "flex-start",
     backgroundColor: "white",
   },
-  addFoodButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20
+  takePhotoButton: {
+    flex: 1,
+  justifyContent: "flex-end",
+  marginHorizontal: 40
   },
   input:{
    height: 40,
@@ -199,12 +212,18 @@ const styles = StyleSheet.create({
 },text: {
   fontSize: 30,
   padding: 10
-}, buttonC: {
-  borderRadius: 10,
+
+}, 
+buttonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'center',
   padding: 10,
-  margin:5
+  backgroundColor: 'white',
+}, displayImage:{
+  height:140, 
+resizeMode:"contain"
+
 }
+
  
 });
- 
- 
