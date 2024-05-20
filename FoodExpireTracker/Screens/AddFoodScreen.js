@@ -25,10 +25,9 @@ const sendToPython = async (uri) =>{
     console.log("food added")
   })
 }
-//code to take photo
+//code to take photo -Don
 const takePhoto = async (setImageUri) => {
   const cameraResp = await ImagePicker.launchCameraAsync({
-    allowsEditing: true,
     mediaTypes: ImagePicker.MediaTypeOptions.All,
     quality: 1,
     allowsEditing: false,
@@ -118,15 +117,7 @@ await deleteBatch.commit();
         return (
           <SafeAreaView >
          <View key={item.id} style={{backgroundColor: "white", flexDirection: 'row', alignItems: 'center', padding:10,
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.4,
-      shadowRadius: 4,
-     
-      elevation: 4,
+
          }}>
     <View style={{ flex: 1 }}>
     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.data.foodName}
@@ -177,7 +168,7 @@ export default function App() {
             {imageUri && (
               <Image
                 source={{ uri: imageUri, alignItems:"center" }}
-                style={styles.displayImage} // Added style to make the image fill the container
+                style={styles.displayImage} 
               />
             )}
             </View>
