@@ -1,30 +1,56 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, Image, ScrollView, FlatList, SafeAreaView} from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
-import {db} from "../firebaseConfig"
-import { doc, onSnapshot, query, collection, deleteDoc, updateDoc, writeBatch} from "firebase/firestore";
-import {Icon, Button, IconButton, MD3Colors, Divider, PaperProvider} from 'react-native-paper';
+import { StatusBar } from "expo-status-bar";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Image,
+  ScrollView,
+  FlatList,
+  SafeAreaView,
+} from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { db } from "../firebaseConfig";
+import {
+  doc,
+  onSnapshot,
+  query,
+  collection,
+  deleteDoc,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore";
+import {
+  Icon,
+  Button,
+  IconButton,
+  MD3Colors,
+  Divider,
+  PaperProvider,
+} from "react-native-paper";
 
 const Stack = createNativeStackNavigator();
 //inserts image and sends it to python, the image will then be used for computer vision -Don
-const sendToPython = async (uri) =>{
-  const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' }); 
-  const data = { 
-    base64: base64
+const sendToPython = async (uri) => {
+  const base64 = await FileSystem.readAsStringAsync(uri, {
+    encoding: "base64",
+  });
+  const data = {
+    base64: base64,
   };
-  console.log (JSON.stringify(base64))
-  fetch('http://192.168.31.1:3000/image',{ //use FLASK IP in app.py -Don
-    method: 'POST',
-    headers: {"content-type": "application/json"},
-    body: JSON.stringify(data)
-   
-  }).then (()=>{
-    console.log("food added")
-  })
-}
+  console.log(JSON.stringify(base64));
+  fetch("http://192.168.31.1:3000/image", {
+    //use FLASK IP in app.py -Don
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(data),
+  }).then(() => {
+    console.log("food added");
+  });
+};
 //code to take photo -Don
 const takePhoto = async (setImageUri) => {
   const cameraResp = await ImagePicker.launchCameraAsync({
@@ -36,11 +62,10 @@ const takePhoto = async (setImageUri) => {
   if (!cameraResp.canceled) {
     const uri = cameraResp.assets[0].uri;
     setImageUri(uri);
-    console.log(uri); 
-    sendToPython(uri) 
-
+    console.log(uri);
+    sendToPython(uri);
   } else {
-    console.log('Camera was canceled');
+    console.log("Camera was canceled");
   }
 };
 
@@ -50,111 +75,130 @@ function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
 
-
   const makeAllAdded = async () => {
     const updateBatch = writeBatch(db);
-    for (const item of foodsfetch){
+    for (const item of foodsfetch) {
       updateBatch.update(doc(db, "foodCollection", item.id), {
-      isadded: true
+        isadded: true,
+      });
     }
-  );
-}
 
-await updateBatch.commit();
-  }
+    await updateBatch.commit();
+  };
   const makeAdded = (id) => {
     updateDoc(doc(db, "foodCollection", id), {
-      isadded: true
+      isadded: true,
     });
-  }
+  };
 
   const makeAllDeleted = async () => {
     const deleteBatch = writeBatch(db);
-    for (const item of foodsfetch){
-      deleteBatch.delete(doc(db, "foodCollection", item.id), {
+    for (const item of foodsfetch) {
+      deleteBatch.delete(doc(db, "foodCollection", item.id), {});
     }
-  );
-}
-await deleteBatch.commit();
-  }
- 
+    await deleteBatch.commit();
+  };
+
   useEffect(() => {
-      const q = query(foodsCol);
+    const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const foods = [];
-      const filteringFoodItems = []
+      const filteringFoodItems = [];
       querySnapshot.forEach((doc) => {
         foods.push({
           id: doc.id,
-          data: doc.data()
+          data: doc.data(),
         });
       });
       setFoodsfetch(foods);
-      for(const food of foods){
- 
-        if(food.data.isadded==false){
-       filteringFoodItems.push(food);
+      for (const food of foods) {
+        if (food.data.isadded == false) {
+          filteringFoodItems.push(food);
         }
-        
       }
       setFoodsfetch(filteringFoodItems);
     });
- 
+
     return () => unsubscribe();
   }, []);
- 
+
   return (
     <PaperProvider>
-    <View style ={{flex:1}}>
-    <View style={styles.buttonContainer}>
-      <Button icon="check"  mode="contained-tonal" Type="contained" buttonColor="lightgreen"  onPress={makeAllAdded}>Confirm All</Button>
-      <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={makeAllDeleted}>delete All</Button>
-    </View>
-    <FlatList
-      data={foodsfetch}
-      renderItem={({ item }) => {
- 
-        return (
-          <SafeAreaView >
-         <View key={item.id} style={{backgroundColor: "white", flexDirection: 'row', alignItems: 'center', padding:10,
+      <View style={{ flex: 1 }}>
+        <View style={styles.buttonContainer}>
+          <Button
+            icon="check"
+            mode="contained-tonal"
+            Type="contained"
+            buttonColor="lightgreen"
+            onPress={makeAllAdded}
+          >
+            Confirm All
+          </Button>
+          <Button
+            icon="delete"
+            mode="contained-tonal"
+            buttonColor="red"
+            onPress={makeAllDeleted}
+          >
+            delete All
+          </Button>
+        </View>
+        <FlatList
+          data={foodsfetch}
+          renderItem={({ item }) => {
+            return (
+              <SafeAreaView>
+                <View
+                  key={item.id}
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 10,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                      {item.data.foodName}
 
-         }}>
-    <View style={{ flex: 1 }}>
-    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.data.foodName}
- 
-        <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
-        </Text>
-        <Text>{item.data.category}</Text>
-        <Text>expires in: </Text>
-        <Text>expires on: {item.data.expiryDate.toDate().toLocaleString()}</Text>
-    </View >
-    <IconButton 
-    size={30}
-    icon="check"
-    onPress={() => makeAdded(item.id)}
-     />
-    <IconButton
-        icon="delete"
-        iconColor={MD3Colors.error50}
-        size={30}
-        onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
-    />
-    
-    <Divider/>
-   
-</View>
-        </SafeAreaView>
-        );
-      }}
-    />
+                      <Text style={{ fontSize: 16 }}>
+                        {" "}
+                        x{item.data.quantity}
+                      </Text>
+                    </Text>
+                    <Text>{item.data.category}</Text>
+                    <Text>expires in: </Text>
+                    <Text>
+                      expires on:{" "}
+                      {item.data.expiryDate.toDate().toLocaleString()}
+                    </Text>
+                  </View>
+                  <IconButton
+                    size={30}
+                    icon="check"
+                    onPress={() => makeAdded(item.id)}
+                  />
+                  <IconButton
+                    icon="delete"
+                    iconColor={MD3Colors.error50}
+                    size={30}
+                    onPress={() =>
+                      deleteDoc(doc(db, "foodCollection", item.id))
+                    }
+                  />
 
-    </View>
+                  <Divider />
+                </View>
+              </SafeAreaView>
+            );
+          }}
+        />
+      </View>
     </PaperProvider>
   );
-
 }
 
- 
 export default function App() {
   const [imageUri, setImageUri] = useState(null);
 
@@ -162,28 +206,44 @@ export default function App() {
     <PaperProvider>
       <SafeAreaView style={styles.container}>
         <ScrollView>
-          <View style={{ flex: 1, height: 200, backgroundColor: "lightgreen",  borderBottomLeftRadius: 30, borderBottomRightRadius: 30}}>
+          <View
+            style={{
+              flex: 1,
+              height: 200,
+              backgroundColor: "lightgreen",
+              borderBottomLeftRadius: 30,
+              borderBottomRightRadius: 30,
+            }}
+          >
             <StatusBar backgroundColor="green" barStyle="default" />
-            <View style ={{padding:10,}}>
-            {imageUri && (
-              <Image
-                source={{ uri: imageUri, alignItems:"center" }}
-                style={styles.displayImage} 
-              />
-            )}
-            </View>
-            <View style={styles.takePhotoButton}>
-              <Button icon="camera" mode="contained-tonal" buttonColor="green" onPress={() => takePhoto(setImageUri)}>Take Photo</Button>
+            <View style={{ padding: 10 }}>
+              {imageUri && (
+                <Image
+                  source={{ uri: imageUri, alignItems: "center" }}
+                  style={styles.displayImage}
+                />
+              )}
             </View>
           </View>
-          <View><FetchFoodData/></View>
+          <View style={styles.takePhotoButton}>
+            <Button
+              icon="camera"
+              mode="contained-tonal"
+              buttonColor="green"
+              onPress={() => takePhoto(setImageUri)}
+            >
+              Take Photo
+            </Button>
+          </View>
+          <View>
+            <FetchFoodData />
+          </View>
         </ScrollView>
       </SafeAreaView>
     </PaperProvider>
   );
 }
-  
- 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -192,29 +252,28 @@ const styles = StyleSheet.create({
   },
   takePhotoButton: {
     flex: 1,
-  justifyContent: "flex-end",
-  marginHorizontal: 40
+    justifyContent: "flex-end",
+    marginHorizontal: 40,
+    paddingTop: 10,
   },
-  input:{
-   height: 40,
-   margin: 12,
-   padding: 10,
-   borderWidth: 1
-},text: {
-  fontSize: 30,
-  padding: 10
-
-}, 
-buttonContainer: {
-  flexDirection: 'row',
-  justifyContent: 'center',
-  padding: 10,
-  backgroundColor: 'white',
-}, displayImage:{
-  height:140, 
-resizeMode:"contain"
-
-}
-
- 
+  input: {
+    height: 40,
+    margin: 12,
+    padding: 10,
+    borderWidth: 1,
+  },
+  text: {
+    fontSize: 30,
+    padding: 10,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    padding: 10,
+    backgroundColor: "white",
+  },
+  displayImage: {
+    height: 180,
+    resizeMode: "contain",
+  },
 });
