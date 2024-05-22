@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Pressable, Image, ScrollView, FlatList, SafeAreaView} from 'react-native';
+import { StyleSheet, Text, View, Pressable, Image, ScrollView, FlatList, SafeAreaView, Alert} from 'react-native';
 import DropDown from "react-native-paper-dropdown";
 import React, { useState, useEffect } from 'react';
 import { PaperProvider, Button, TextInput } from 'react-native-paper';
 import { doc, onSnapshot, query, collection, deleteDoc, addDoc, updateDoc} from "firebase/firestore";
 import {db} from "../firebaseConfig"
 import Slider from '@react-native-community/slider';
+import * as Clipboard from 'expo-clipboard';
 
 export default function App(){
     const foodsCol = collection(db, "foodCollection");
@@ -122,6 +123,11 @@ export default function App(){
 
                     const docRef = await addDoc(collection(db, 'fruitAiAccuracyFormReports'), fruitScoreData);
                     console.log("The following Ai Accuracy Form Report Document was written with ID: ", docRef.id);
+
+                    //This copies the Reference ID to the user's clipboard to easily update or delete in the future, clipboard must be enabled from the user's siide though for this to work -Faiz
+                    await Clipboard.setStringAsync(docRef.id);
+                    Alert.alert('Copied to Clipboard', `Reference Id: "${docRef.id}" has been copied to your clipboard.`);
+
                     setNewAiAccuracyReportRefId(docRef.id);
                 }}
             }
@@ -168,6 +174,13 @@ export default function App(){
         <PaperProvider>
         <ScrollView style={{backgroundColor: "lightgreen"}}>
             <View>
+                {isAiAccuracyReportRefIdVisible ? (
+                        <View style={styles.input2}> 
+                            <Text>Thank you for submitting a Fruit Ai Accuracy Form Report. Here is the Reference ID: {newAiAccuracyReportRefId}</Text> 
+                        </View>
+                ): null}
+            </View>
+            <View>
                 <TextInput 
                 style={styles.input2}
                 value={aiAccuracyReportRefId}
@@ -203,13 +216,6 @@ export default function App(){
             <View style={styles.deleteButton}>
                 <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={handleDeleteAiFruitAccuracyReport}>Delete</Button>
             </View>
-            <View>
-                {isAiAccuracyReportRefIdVisible ? (
-                    <View style={styles.input2}> 
-                        <Text>Thank you for submitting a Fruit Ai Accuracy Form Report. Here is the Reference ID: {newAiAccuracyReportRefId}</Text> 
-                    </View>
-                ): null}
-            </View>
         </ScrollView>
         </PaperProvider>
     )
@@ -234,22 +240,22 @@ const styles = StyleSheet.create({
     submitButton: {
         borderRadius: 10,
         padding: 10,
-        marginHorizontal: 100,
+        marginHorizontal: 50,
         marginTop: 10,
-        width: '50%'
+        width: '75%'
     },
     updateButton: {
         borderRadius: 10,
         padding: 10,
-        marginHorizontal: 100,
+        marginHorizontal: 50,
         marginTop: 5,
-        width: '50%'
+        width: '75%'
     },
     deleteButton: {
         borderRadius: 10,
         padding: 10,
-        marginHorizontal: 100,
+        marginHorizontal: 50,
         marginTop: 5,
-        width: '50%'
+        width: '75%'
     },
 })
