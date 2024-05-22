@@ -24,6 +24,7 @@ import {
   collection,
   deleteDoc,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import {
   Icon,
@@ -73,13 +74,23 @@ function FetchFoodData() {
 1)ability to edit ripeness later
 2)display expiry date
 3)error handling
-4)use dropdown box instead of radio to select fruit -Don*/
+ -Don*/
   }
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [foodName, setFoodName] = useState("");
     const [quantity, setQuantity] = useState("");
 
+    useEffect(() => {
+      fetchEditingFoodData(itemID);
+    }, [itemID]);
+
+    const fetchEditingFoodData = async (itemID) => {
+      const docRef = doc(db, "foodCollection", itemID);
+      const docSnap = await getDoc(docRef);
+      setFoodName(docSnap.data().foodName);
+      setQuantity(docSnap.data().quantity.toString());
+    };
     const handleEditFood = async () => {
       try {
         await updateDoc(doc(db, "foodCollection", itemID), {
@@ -136,7 +147,7 @@ function FetchFoodData() {
                 buttonColor="green"
                 onPress={handleEditFood}
               >
-                Add
+                Edit
               </Button>
             </View>
           </Modal>
