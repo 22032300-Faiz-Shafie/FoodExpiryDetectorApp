@@ -73,20 +73,28 @@ export default function App(){
     }, [])
 
     //Updates Document Object with the new fields that were selected before hitting submit -Faiz
-    const handleEditFruitAccuracyScore = async () =>{
+    const handleUpdateAiFruitAccuracyReport = async () =>{
         try{
-            const fruitScoreData = {
-                aiAccuracyScore: sliderValue,
-                aiAccuracyRemark: aiAccuracyRemark
-            };
 
             for(const fruitObject of fruit){
                 if(selectedFruit == fruitObject.value){
-                    const docRef = await updateDoc(doc(db, "foodCollection", fruitObject.id), fruitScoreData);
-                    console.log(`Document ${fruitObject.id} updated`);
+                    for(const AiReport of aiAccuracyReport){
+                        if(aiAccuracyReportRefId === AiReport.id){
+
+                            const fruitScoreData = {
+                                fruitReferenceId: fruitObject.id,
+                                aiAccuracyScore: sliderValue,
+                                aiAccuracyRemark: aiAccuracyRemark
+                            };
+
+                            const docRef = await updateDoc(doc(db, "fruitAiAccuracyFormReports", AiReport.id), fruitScoreData);
+                            console.log(`Document ${AiReport.id} updated`);
+                        }
+                    }
                 }
             }
 
+            setAiAccuracyReportRefId("");
             setShowDropDown(false);
             setSelectedFruit('');
             setAiAccuracyRemark("");
@@ -165,10 +173,10 @@ export default function App(){
                 <Button icon="upload" mode="contained-tonal" buttonColor="green" onPress={handleAddAiFruitAccuracyReport}>Submit</Button>
             </View>
             <View style={styles.updateButton}>
-                <Button icon="update" mode="contained-tonal" buttonColor="cyan" onPress={handleEditFruitAccuracyScore}>Update</Button>
+                <Button icon="update" mode="contained-tonal" buttonColor="cyan" onPress={handleUpdateAiFruitAccuracyReport}>Update</Button>
             </View>
             <View style={styles.deleteButton}>
-                <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={handleEditFruitAccuracyScore}>Delete</Button>
+                <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={handleUpdateAiFruitAccuracyReport}>Delete</Button>
             </View>
             <View>
                 {isAiAccuracyReportRefIdVisible ? (
