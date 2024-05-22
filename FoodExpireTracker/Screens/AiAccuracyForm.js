@@ -72,7 +72,7 @@ export default function App(){
         fetchData();
     }, [])
 
-    //Updates Document Object with the new fields that were selected before hitting submit -Faiz
+    //Updates Document Object with the new fields that were selected before hitting update button -Faiz
     const handleUpdateAiFruitAccuracyReport = async () =>{
         try{
 
@@ -108,6 +108,7 @@ export default function App(){
 
     }
 
+    //Creates a Document Object with the fields that were selected and then adds them to the database -Faiz
     const handleAddAiFruitAccuracyReport = async () =>{
         try{
 
@@ -135,6 +136,30 @@ export default function App(){
         }
         catch(error){
             console.error('Error Adding Document: ', error);
+        }
+    }
+
+    //Deletes a Document Object specified by their document reference id -Faiz
+    const handleDeleteAiFruitAccuracyReport = async () => {
+        try{
+
+            for(const AiReport of aiAccuracyReport){
+                if(aiAccuracyReportRefId === AiReport.id){
+
+                    const docRef = await deleteDoc(doc(db, "fruitAiAccuracyFormReports", AiReport.id));
+                    console.log(`Document ${AiReport.id} deleted`);
+                }
+            }
+
+            setAiAccuracyReportRefId("");
+            setShowDropDown(false);
+            setSelectedFruit('');
+            setAiAccuracyRemark("");
+            setSliderValue(0);
+            setDropdownKey(prevKey => prevKey + 1);
+        }
+        catch(error){
+            console.log("Error Deleting Document: ", error);
         }
     }
     
@@ -176,7 +201,7 @@ export default function App(){
                 <Button icon="update" mode="contained-tonal" buttonColor="cyan" onPress={handleUpdateAiFruitAccuracyReport}>Update</Button>
             </View>
             <View style={styles.deleteButton}>
-                <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={handleUpdateAiFruitAccuracyReport}>Delete</Button>
+                <Button icon="delete" mode="contained-tonal" buttonColor="red" onPress={handleDeleteAiFruitAccuracyReport}>Delete</Button>
             </View>
             <View>
                 {isAiAccuracyReportRefIdVisible ? (
