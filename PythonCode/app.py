@@ -26,5 +26,7 @@ def add_Image():
 def hello_world():
     return "<p>Hello, Worlds!</p>"
 
+#use own IP address, code below currently might not be working, to still use flask in terminal do 
+#"flask run --host=<your machine IP> --port=<Your port used>" make sure it corresponds to ip address set on addFoodScreen  -Don
 if __name__ == "__main__":
-    app.run(host='192.168.31.1', port=3000, debug=True) #use own IP address -Don
+    app.run(host="192.168.31.1", port=5000, debug=True) 
