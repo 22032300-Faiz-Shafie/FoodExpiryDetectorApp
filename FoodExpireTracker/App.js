@@ -192,7 +192,7 @@ function FetchFoodData() {
 
                   <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                 </Text>
-                <Text>{item.data.category}</Text>
+                
                 <Text>expires in: </Text>
                 <Text>
                   expires on: {item.data.expiryDate.toDate().toLocaleString()}
@@ -381,7 +381,7 @@ const HomeScreen = ({ navigation }) => {
         >
           <StatusBar backgroundColor="green" barStyle="default" />
           <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}>
-            Food List
+            Fruit List
           </Text>
           <Image
             source={logoImg}
