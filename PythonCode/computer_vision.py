@@ -4,8 +4,8 @@ fruit_expiry_days = {
     "Mango_Ripe": 5,
     "Mango_Unripe": 8,
     "Pineapple_Overripe": 1,
-    "Pineapple_Ripe": 1,
-    "Pineapple_Unripe": 1,
+    "Pineapple_Ripe": 4,
+    "Pineapple_Unripe": 3,
     "Apple_Overripe": 1,
     "Apple_Ripe": 1,
     "Apple_Unripe": 1
