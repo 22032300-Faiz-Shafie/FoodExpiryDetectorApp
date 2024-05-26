@@ -14,14 +14,19 @@ while True:
     model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
 
     #Takes input from user to run which jpg image file -Faiz
-    speecificImage = input("Enter the file name without the format: ")
+    #speecificImage = input("Enter the file name without the format: ")
 
     #Load the image, utilize absolute path to the location of the image which is inside customtestimages folder -Faiz
-    image_path = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\customtestimages\\" + speecificImage + ".jpg" # or file, Path, PIL, OpenCV, numpy, list
+    #image_path = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\customtestimages\\" + speecificImage + ".jpg" # or file, Path, PIL, OpenCV, numpy, list
+
+    #Added and drag and drop method which is far easier, just open the customtestimages folder and drag it to the terminal. Also made it so that you type exit, it will end progrram. -Faiz
+    dragAndDropImage = input("Drag and drop image here: ")
+    if(dragAndDropImage == "exit"):
+        break
 
     #Process image using cv2 -Faiz
     #Read image -Faiz
-    image = cv2.imread(image_path)
+    image = cv2.imread(dragAndDropImage)
 
     #Resize image to 416x416 -Faiz
     image_resized = cv2.resize(image, (416, 416))
@@ -56,6 +61,6 @@ while True:
     
 
     #Ending the infinite while loop -Faiz
-    done = input("Are you done? (yes/no): ")
-    if(done == "yes" or done == "y" or done == "Yes" or done == "Y"):
-        break
+    #done = input("Are you done? (yes/no): ")
+    #if(done == "yes" or done == "y" or done == "Yes" or done == "Y"):
+    #    break
