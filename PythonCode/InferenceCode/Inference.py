@@ -42,7 +42,7 @@ while True:
     results.show()
 
     fruit_classes = {}
-
+   # Results turned in pandas dataframe -Don
     data = results.pandas().xyxy[0]
 
     for fruitClass in data['name']:

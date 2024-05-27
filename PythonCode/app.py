@@ -5,28 +5,7 @@ import base64
 import uuid
 app = Flask(__name__)
 
-#This section probably not the best idea, probably should use JSON instead to put data into firestore
-#later edit in your own expiry days for your fruits -Don
-# fruit_expiry_days = {
-#     "Mango_Overripe": 1,
-#     "Mango_Ripe": 5,
-#     "Mango_Unripe": 8,
-#     "Pineapple_Overripe": 1,
-#     "Pineapple_Ripe": 1,
-#     "Pineapple_Unripe": 1,
-#     "Apple_Overripe": 1,
-#     "Apple_Ripe": 1,
-#     "Apple_Unripe": 1
-   
-# }
-# results ="9 Apple_Unripe"
-# def ExtractFruit_Class(results):
-#  for fruit_class in fruit_expiry_days:
 
-#      if fruit_class in results:
-#       splitFruit_Ripeness= str(fruit_class).split("_")
-#       data = {"foodName": splitFruit_Ripeness[0], "ripeness": splitFruit_Ripeness[1]}
-#       print(splitFruit_Ripeness[0]+splitFruit_Ripeness[1])
     
 #adds image from camera to image folder, which is then used for computer vision -Don
 @app.route('/image', methods=['POST'])
