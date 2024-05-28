@@ -33,6 +33,9 @@ def add_Image():
 @app.route('/predict', methods=['GET'])
 def predict():
     try:
+        #Don
+        #model = torch.hub.load('.', 'custom', path="C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
+        #imagePath = "C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"     
         model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
         imagePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"
         image = cv2.imread(imagePath)
@@ -65,3 +68,5 @@ def predict():
 #use own IP address. Run Flask by pressing the "Run Python File" on top left  -Don
 if __name__ == "__main__":
     app.run(host="192.168.18.24", port=5000, debug=True) 
+    #Don
+    #app.run(host="192.168.31.1", port=5000, debug=True) 

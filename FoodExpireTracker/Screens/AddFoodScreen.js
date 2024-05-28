@@ -43,6 +43,8 @@ const sendToPython = async (uri) => {
   };
   console.log(JSON.stringify(base64));
   fetch("http://192.168.18.24:5000/image", {
+    //Don
+    //fetch("http://192.168.31.1:5000/image", {
     //use FLASK IP in app.py -Don
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -76,25 +78,26 @@ function FetchFoodData() {
   const foodsCol = collection(db, "foodCollection");
 
   //This a combines both makeAllAdded function and handleInference function, activated by the confirm all button. -Faiz
-  const combinedAdded = async () =>{
+  const combinedAdded = async () => {
     makeAllAdded();
     handleInference();
-  }
+  };
 
   //This handles Inference, makes a http request using flask to our app.py python. -Faiz
   const handleInference = async () => {
-    try{
+    try {
       //Utilize own ip address and port. -Faiz
       const response = await fetch("http://192.168.18.24:5000/predict", {
-        method: 'GET',
+        //Don
+        //const response = await fetch("http://192.168.31.1:5000/predict", {
+        method: "GET",
       });
 
       const data = await response.json();
+    } catch (error) {
+      console.log("Error: ", error);
     }
-    catch(error){
-      console.log("Error: ",error);
-    }
-  }
+  };
 
   const makeAllAdded = async () => {
     const updateBatch = writeBatch(db);
