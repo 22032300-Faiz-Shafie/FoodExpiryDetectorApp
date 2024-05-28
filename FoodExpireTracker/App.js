@@ -336,7 +336,7 @@ function CheckExpired() {
   );
 }
 
-/* function WarningDashboardVisibility(){
+function WarningDashboardVisibility(){
   const [isWarningDashboardVisible, setIsWarningDashboardVisible] = useState(false);
 
   const handleToggleWarningDashboardVisibility = async () =>{
@@ -350,9 +350,16 @@ function CheckExpired() {
 
   return(
     <View>
-      <Button onPress={handleToggleWarningDashboardVisibility}>
-        Test
+      <View style={{ flexDirection:"row" }}>
+        <View><Button onPress={handleToggleWarningDashboardVisibility}>
+        Expired
       </Button>
+      </View>
+      <View><Button onPress={handleToggleWarningDashboardVisibility}>
+        Expiring in 3 days
+      </Button>
+      </View>
+      </View>
       <View>
         {isWarningDashboardVisible ? (
           <CheckExpired />
@@ -360,7 +367,7 @@ function CheckExpired() {
       </View>
     </View>
   )
-} */
+} 
 
 export default function App() {
   return (
@@ -418,7 +425,7 @@ const HomeScreen = ({ navigation }) => {
           <FetchFoodData />
         </View>
         <View>
-{/*           <WarningDashboardVisibility /> */}
+          <WarningDashboardVisibility /> 
         </View>
       </ScrollView>
       <View style={styles.addFoodButton}>
