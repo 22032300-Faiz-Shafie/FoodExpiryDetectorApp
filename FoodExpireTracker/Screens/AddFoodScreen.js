@@ -42,7 +42,7 @@ const sendToPython = async (uri) => {
     base64: base64,
   };
   console.log(JSON.stringify(base64));
-  fetch("http://192.168.31.1:3000/image", {
+  fetch("http://192.168.18.24:5000/image", {
     //use FLASK IP in app.py -Don
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -74,6 +74,27 @@ const takePhoto = async (setImageUri) => {
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
+
+  //This a combines both makeAllAdded function and handleInference function, activated by the confirm all button. -Faiz
+  const combinedAdded = async () =>{
+    makeAllAdded();
+    handleInference();
+  }
+
+  //This handles Inference, makes a http request using flask to our app.py python. -Faiz
+  const handleInference = async () => {
+    try{
+      //Utilize own ip address and port. -Faiz
+      const response = await fetch("http://192.168.18.24:5000/predict", {
+        method: 'GET',
+      });
+
+      const data = await response.json();
+    }
+    catch(error){
+      console.log("Error: ",error);
+    }
+  }
 
   const makeAllAdded = async () => {
     const updateBatch = writeBatch(db);
@@ -131,7 +152,7 @@ function FetchFoodData() {
             mode="contained-tonal"
             Type="contained"
             buttonColor="lightgreen"
-            onPress={makeAllAdded}
+            onPress={combinedAdded}
           >
             Confirm All
           </Button>
