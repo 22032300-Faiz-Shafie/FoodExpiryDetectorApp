@@ -191,7 +191,6 @@ function FetchFoodData() {
                         x{item.data.quantity}
                       </Text>
                     </Text>
-                    <Text>{item.data.category}</Text>
                     <Text>expires in: </Text>
                     <Text>
                       expires on:{" "}
