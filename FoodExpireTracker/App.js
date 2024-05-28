@@ -336,6 +336,32 @@ function CheckExpired() {
   );
 }
 
+/* function WarningDashboardVisibility(){
+  const [isWarningDashboardVisible, setIsWarningDashboardVisible] = useState(false);
+
+  const handleToggleWarningDashboardVisibility = async () =>{
+    if(isWarningDashboardVisible === false){
+      setIsWarningDashboardVisible(true)
+    }
+    else{
+      setIsWarningDashboardVisible(false)
+    }
+  }
+
+  return(
+    <View>
+      <Button onPress={handleToggleWarningDashboardVisibility}>
+        Test
+      </Button>
+      <View>
+        {isWarningDashboardVisible ? (
+          <CheckExpired />
+          ): <CheckExpiryDate />}
+      </View>
+    </View>
+  )
+} */
+
 export default function App() {
   return (
     //add new screens here for navigation -Don
@@ -392,10 +418,7 @@ const HomeScreen = ({ navigation }) => {
           <FetchFoodData />
         </View>
         <View>
-          <CheckExpired />
-        </View>
-        <View>
-          <CheckExpiryDate />
+{/*           <WarningDashboardVisibility /> */}
         </View>
       </ScrollView>
       <View style={styles.addFoodButton}>
