@@ -10,8 +10,11 @@ pathlib.PosixPath = pathlib.WindowsPath
 #Inference using torch api -Faiz
 #Infinite while loop to make it easier to do multiple Inferences -Faiz
 while True:
-    #Loading the model, utilize absolute path to the location of the model -Faiz
-    model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
+    #Loading the old model, utilize absolute path to the location of the model -Faiz
+    #model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
+
+    #Loading the new model, utilize absolute path to the location of the model -Faiz
+    model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best2.pt", source='local')
 
     #Takes input from user to run which jpg image file -Faiz
     #speecificImage = input("Enter the file name without the format: ")

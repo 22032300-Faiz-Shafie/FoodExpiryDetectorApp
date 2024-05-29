@@ -36,7 +36,7 @@ def predict():
         #Don
         #model = torch.hub.load('.', 'custom', path="C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
         #imagePath = "C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"     
-        model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
+        model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best2.pt", source='local')
         imagePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"
         image = cv2.imread(imagePath)
         image_resized = cv2.resize(image, (416, 416))
