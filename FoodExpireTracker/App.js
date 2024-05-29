@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   Modal,
   Alert,
+  Dimensions,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -192,7 +193,7 @@ function FetchFoodData() {
 
                   <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                 </Text>
-                
+
                 <Text>expires in: </Text>
                 <Text>
                   expires on: {item.data.expiryDate.toDate().toLocaleString()}
@@ -336,38 +337,38 @@ function CheckExpired() {
   );
 }
 
-function WarningDashboardVisibility(){
-  const [isWarningDashboardVisible, setIsWarningDashboardVisible] = useState(false);
+function WarningDashboardVisibility() {
+  const [isWarningDashboardVisible, setIsWarningDashboardVisible] =
+    useState(false);
 
-  const handleToggleWarningDashboardVisibility = async () =>{
-    if(isWarningDashboardVisible === false){
-      setIsWarningDashboardVisible(true)
+  const handleToggleWarningDashboardVisibility = async () => {
+    if (isWarningDashboardVisible === false) {
+      setIsWarningDashboardVisible(true);
+    } else {
+      setIsWarningDashboardVisible(false);
     }
-    else{
-      setIsWarningDashboardVisible(false)
-    }
-  }
+  };
 
-  return(
+  return (
     <View>
-      <View style={{ flexDirection:"row" }}>
-        <View><Button onPress={handleToggleWarningDashboardVisibility}>
-        Expired
-      </Button>
-      </View>
-      <View><Button onPress={handleToggleWarningDashboardVisibility}>
-        Expiring in 3 days
-      </Button>
-      </View>
+      <View style={{ flexDirection: "row" }}>
+        <View>
+          <Button onPress={handleToggleWarningDashboardVisibility}>
+            Expired
+          </Button>
+        </View>
+        <View>
+          <Button onPress={handleToggleWarningDashboardVisibility}>
+            Expiring in 3 days
+          </Button>
+        </View>
       </View>
       <View>
-        {isWarningDashboardVisible ? (
-          <CheckExpired />
-          ): <CheckExpiryDate />}
+        {isWarningDashboardVisible ? <CheckExpired /> : <CheckExpiryDate />}
       </View>
     </View>
-  )
-} 
+  );
+}
 
 export default function App() {
   return (
@@ -425,7 +426,7 @@ const HomeScreen = ({ navigation }) => {
           <FetchFoodData />
         </View>
         <View>
-          <WarningDashboardVisibility /> 
+          <WarningDashboardVisibility />
         </View>
       </ScrollView>
       <View style={styles.addFoodButton}>
@@ -446,6 +447,8 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
+const windowHeight = Dimensions.get("window").height;
+const modalheight = windowHeight - 200;
 const styles = StyleSheet.create({
   backGround: {
     flex: 1,
@@ -486,7 +489,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     shadowColor: "#000",
     width: 400,
-    height: 570,
+    height: modalheight,
     shadowOffset: {
       width: 0,
       height: 2,
