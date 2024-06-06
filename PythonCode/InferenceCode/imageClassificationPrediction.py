@@ -6,7 +6,7 @@ from tensorflow.keras.utils import img_to_array
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import LabelBinarizer
 
-image="SinglePineapple1.jpg"
+image="images.jpg"
 image_path="PythonCode\\InferenceCode\\customtestimages\\" + image
 
 modelPath="PythonCode\\InferenceCode\\imageClassificationModels\\PineappleModelV1.keras"
@@ -33,4 +33,4 @@ proba = model.predict(image)
 idx = np.argmax(proba)
 label = lb.classes_[idx]
 
-print("pineapple was bought " + str(label) +" days ago")
+print("this Pineapple is " + str(label) +" days after being bought")
