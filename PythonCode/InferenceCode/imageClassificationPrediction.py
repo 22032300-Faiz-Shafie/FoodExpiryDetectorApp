@@ -6,12 +6,12 @@ from tensorflow.keras.utils import img_to_array
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import LabelBinarizer
 
-image="images.jpg"
+image="pineapple-fruit-healthy-food.jpg"
 image_path="PythonCode\\InferenceCode\\customtestimages\\" + image
 
 modelPath="PythonCode\\InferenceCode\\imageClassificationModels\\PineappleModelV1.keras"
 model = load_model(modelPath, custom_objects=None, compile=True, safe_mode=True)
-model.compile(optimizer=model.optimizer, loss=model.loss, metrics=model.metrics, steps_per_execution=1)
+
 
 # load the image
 image = cv2.imread(image_path)
