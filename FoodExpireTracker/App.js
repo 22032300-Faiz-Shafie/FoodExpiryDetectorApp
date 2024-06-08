@@ -17,6 +17,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AddFoodScreen from "./Screens/AddFoodScreen";
 import AiAccuracyForm from "./Screens/AiAccuracyForm";
+import LoginScreen from "./Screens/LoginScreen";
+import SignUpScreen from "./Screens/SignUpScreen";
 import { db } from "./firebaseConfig";
 import {
   doc,
@@ -396,6 +398,22 @@ export default function App() {
             title: "AI Accuracy Form",
           }}
         />
+        <Stack.Screen
+        name="loginScreen"
+        component={LoginScreen}
+        options={{
+          headerStyle: {backgroundColor: "green"},
+          title: "Login Screen",
+        }}
+        />
+        <Stack.Screen
+        name="signUpScreen"
+        component={SignUpScreen}
+        options={{
+          headerStyle: {backgroundColor: "green"},
+          title: "Sign Up Screen",
+        }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -429,6 +447,13 @@ const HomeScreen = ({ navigation }) => {
           <WarningDashboardVisibility />
         </View>
       </ScrollView>
+      <View style={styles.loginButton}>
+        <FAB
+          icon="login"
+          rippleColor="purple"
+          onPress={() => navigation.navigate("loginScreen")}
+        />
+      </View>
       <View style={styles.addFoodButton}>
         <FAB
           icon="plus"
@@ -463,6 +488,11 @@ const styles = StyleSheet.create({
   aiAccuracyFormButton: {
     position: "absolute",
     bottom: 10,
+    right: 20,
+  },
+  loginButton: {
+    position: "absolute",
+    bottom:150,
     right: 20,
   },
   input: {
