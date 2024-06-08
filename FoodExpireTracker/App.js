@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext} from "react";
 import {
   StyleSheet,
   Text,
@@ -41,6 +41,8 @@ import {
   RadioButton,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
+import { AuthProvider } from './Screens/AuthContext';
+import AuthContext from './Screens/AuthContext';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/favicon.png");
@@ -375,6 +377,7 @@ function WarningDashboardVisibility() {
 export default function App() {
   return (
     //add new screens here for navigation -Don
+    <AuthProvider>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
@@ -416,10 +419,20 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </AuthProvider>
   );
 }
 
 const HomeScreen = ({ navigation }) => {
+  
+  const { isLoggedIn, logout } = useContext(AuthContext);
+
+  //Handles logout, calls upon logout method which sets isLoggedIn to false. -Faiz 
+  const handleLogout = () => {
+    logout();
+    Alert.alert("","You Have Successfully Logged Out");
+  }
+
   return (
     <View style={styles.backGround}>
       <ScrollView>
@@ -441,33 +454,48 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
         <View>
-          <FetchFoodData />
+          {isLoggedIn ? <FetchFoodData /> : null}
         </View>
         <View>
-          <WarningDashboardVisibility />
+          {isLoggedIn ? <WarningDashboardVisibility /> : null}
         </View>
       </ScrollView>
-      <View style={styles.loginButton}>
-        <FAB
-          icon="login"
-          rippleColor="purple"
-          onPress={() => navigation.navigate("loginScreen")}
-        />
-      </View>
-      <View style={styles.addFoodButton}>
+      { isLoggedIn ? 
+      (<View style={styles.addFoodButton}>
         <FAB
           icon="plus"
           rippleColor="purple"
           onPress={() => navigation.navigate("addFoodScreen")}
         />
-      </View>
-      <View style={styles.aiAccuracyFormButton}>
+      </View>) : null
+      }
+      { isLoggedIn ? 
+      (<View style={styles.aiAccuracyFormButton}>
         <FAB
           icon="ballot"
           rippleColor="purple"
           onPress={() => navigation.navigate("aiAccuracyForm")}
         />
-      </View>
+      </View>) : null
+      }
+      { !isLoggedIn ?
+      (<View style={styles.loginButton}>
+        <FAB
+          icon="login"
+          rippleColor="purple"
+          onPress={() => navigation.navigate("loginScreen")}
+        />
+      </View>) : null
+      }
+      { isLoggedIn ?
+      (<View style={styles.loginButton}>
+        <FAB
+          icon="logout"
+          rippleColor="purple"
+          onPress={handleLogout}
+        />
+      </View>) : null
+      }
     </View>
   );
 };
@@ -487,12 +515,12 @@ const styles = StyleSheet.create({
   },
   aiAccuracyFormButton: {
     position: "absolute",
-    bottom: 10,
+    bottom: 150,
     right: 20,
   },
   loginButton: {
     position: "absolute",
-    bottom:150,
+    bottom:10,
     right: 20,
   },
   input: {
