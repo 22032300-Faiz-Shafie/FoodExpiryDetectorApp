@@ -11,7 +11,7 @@ function LoginScreen({navigation}) {
     const [password, setPassword] = useState("");
     const [secureTextEntry, setSecureTextEntry] = React.useState(true);
     const loginInformationCol = collection(db, "loginInformation");
-    const { login, isLoggedIn } = useContext(AuthContext);
+    const { login, isLoggedIn, loggingInID } = useContext(AuthContext);
     const [loginInformation, setLoginInformation] = useState([]);
     const [loginFound, setLoginFound] = React.useState(false);
 
@@ -47,6 +47,7 @@ function LoginScreen({navigation}) {
         for(const loginObject of loginInformation){
             if(loginObject.data.username === username && loginObject.data.password === password){
                 login();
+                loggingInID(loginObject.id);
                 setLoginFound(true);
                 Alert.alert("","You Have Successfully Logged In");
                 navigation.navigate('Home');

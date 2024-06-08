@@ -51,6 +51,7 @@ const addImg = require("./assets/add.png");
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
+  const { loginID } = useContext(AuthContext);
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -65,7 +66,7 @@ function FetchFoodData() {
       });
       setFoodsfetch(foods);
       for (const food of foods) {
-        if (food.data.isadded == true) {
+        if (food.data.isadded === true && food.data.userID === loginID) {
           filteringFoodItems.push(food);
         }
       }
@@ -424,7 +425,7 @@ export default function App() {
 }
 
 const HomeScreen = ({ navigation }) => {
-  
+
   const { isLoggedIn, logout } = useContext(AuthContext);
 
   //Handles logout, calls upon logout method which sets isLoggedIn to false. -Faiz 

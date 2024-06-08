@@ -7,7 +7,7 @@ import { doc, onSnapshot, query, collection, deleteDoc, addDoc, updateDoc} from 
 function SignUpScreen({navigation}) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [secureTextEntry, setSecureTextEntry] = React.useState(true);
+    const [secureTextEntry, setSecureTextEntry] = useState(true);
 
     //Toggle whether the secureentry is true to false, which helps obscure password -Faiz
     const toggleSecureEntry = () => {
@@ -28,6 +28,7 @@ function SignUpScreen({navigation}) {
 
             setUsername("");
             setPassword("");
+            navigation.navigate('Home');
         }
         catch(error){
             console.error('Error Adding Document: ', error);
