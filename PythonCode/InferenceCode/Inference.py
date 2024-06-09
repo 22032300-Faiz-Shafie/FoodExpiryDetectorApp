@@ -32,7 +32,7 @@ while True:
     image = cv2.imread(dragAndDropImage)
 
     #Resize image to 416x416 -Faiz
-    image_resized = cv2.resize(image, (416, 416))
+    image_resized = cv2.resize(image, (640, 640))
 
     #Restore colour to image -Faiz
     image_rgb = cv2.cvtColor(image_resized, cv2.COLOR_BGR2RGB)
