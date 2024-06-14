@@ -33,6 +33,23 @@ import {
 } from "react-native-paper";
 
 const Stack = createNativeStackNavigator();
+
+//This handles Inference, makes a http request using flask to our app.py python. -Faiz
+const handleInference = async () => {
+  try {
+    //Utilize own ip address and port. -Faiz
+    const response = await fetch("http://192.168.18.24:5000/predict", {
+      //Don
+      //const response = await fetch("http://192.168.31.1:5000/predict", {
+      method: "GET",
+    });
+
+    const data = await response.json();
+  } catch (error) {
+    console.log("Error: ", error);
+  }
+};
+
 //inserts image and sends it to python, the image will then be used for computer vision -Don
 const sendToPython = async (uri) => {
   const base64 = await FileSystem.readAsStringAsync(uri, {
@@ -66,6 +83,7 @@ const takePhoto = async (setImageUri) => {
     setImageUri(uri);
     console.log(uri);
     sendToPython(uri);
+    handleInference();
   } else {
     console.log("Camera was canceled");
   }
@@ -76,28 +94,6 @@ const takePhoto = async (setImageUri) => {
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
-
-  //This a combines both makeAllAdded function and handleInference function, activated by the confirm all button. -Faiz
-  const combinedAdded = async () => {
-    makeAllAdded();
-    handleInference();
-  };
-
-  //This handles Inference, makes a http request using flask to our app.py python. -Faiz
-  const handleInference = async () => {
-    try {
-      //Utilize own ip address and port. -Faiz
-      const response = await fetch("http://192.168.18.24:5000/predict", {
-        //Don
-        //const response = await fetch("http://192.168.31.1:5000/predict", {
-        method: "GET",
-      });
-
-      const data = await response.json();
-    } catch (error) {
-      console.log("Error: ", error);
-    }
-  };
 
   const makeAllAdded = async () => {
     const updateBatch = writeBatch(db);
@@ -155,7 +151,7 @@ function FetchFoodData() {
             mode="contained-tonal"
             Type="contained"
             buttonColor="lightgreen"
-            onPress={combinedAdded}
+            onPress={makeAllAdded}
           >
             Confirm All
           </Button>

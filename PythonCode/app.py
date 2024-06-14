@@ -1,17 +1,17 @@
 from flask import Flask, request
-from PIL import Image
+import PIL.Image
 from io import BytesIO
 import base64
 import uuid
 app = Flask(__name__)
 import torch
 import cv2
-from IPython.display import Image, clear_output, display
 import pathlib
 temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
 
-
+#Variable that holds the path of the image folder -Faiz
+storedImageFilePath = "../../images/newImage" + str(uuid.uuid4())+".jpg"
 
     
 #adds image from camera to image folder, which is then used for computer vision -Don
@@ -22,8 +22,8 @@ def add_Image():
         data = request.json 
         base64_image = data.get('base64') 
         decodedData = base64.b64decode((base64_image)) 
-        image = Image.open(BytesIO(decodedData)) 
-        image.save("images/newImage"+ str(uuid.uuid4())+".jpg", "JPEG") #the image here might not need to be stored, and instead just goes into computer vision directly -Don
+        image = PIL.Image.open(BytesIO(decodedData)) 
+        image.save(storedImageFilePath, "JPEG") #the image here might not need to be stored, and instead just goes into computer vision directly -Don
         return "success"   
     except Exception as e:
         print(e)
@@ -37,7 +37,7 @@ def predict():
         #model = torch.hub.load('.', 'custom', path="C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
         #imagePath = "C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"     
         model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best2.pt", source='local')
-        imagePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"
+        imagePath = storedImageFilePath
         image = cv2.imread(imagePath)
         image_resized = cv2.resize(image, (416, 416))
         image_rgb = cv2.cvtColor(image_resized, cv2.COLOR_BGR2RGB)
