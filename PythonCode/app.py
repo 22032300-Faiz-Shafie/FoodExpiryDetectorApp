@@ -10,8 +10,14 @@ import pathlib
 temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
 
-#Variable that holds the path of the image folder -Faiz
-storedImageFilePath = "../../images/newImage" + str(uuid.uuid4())+".jpg"
+#REQUIRE PERSONALIZED CHANGE. Location of hubconf needed for first AI Model, utilize your own absolute path -Faiz
+hubconfLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5"
+
+#REQUIRE PERSONALIZED CHANGE. Location of your own image folder, utilize your own absolute path -Faiz
+imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images"
+
+#Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
+storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
 
     
 #adds image from camera to image folder, which is then used for computer vision -Don
@@ -36,7 +42,7 @@ def predict():
         #Don
         #model = torch.hub.load('.', 'custom', path="C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
         #imagePath = "C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"     
-        model = torch.hub.load('.', 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best2.pt", source='local')
+        model = torch.hub.load(hubconfLocation, 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best2.pt", source='local')
         imagePath = storedImageFilePath
         image = cv2.imread(imagePath)
         image_resized = cv2.resize(image, (416, 416))
