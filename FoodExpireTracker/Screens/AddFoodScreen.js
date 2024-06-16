@@ -13,7 +13,7 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { db } from "../firebaseConfig";
+import { db, storage } from "../firebaseConfig";
 import {
   doc,
   onSnapshot,
@@ -26,11 +26,12 @@ import {
 import {
   Icon,
   Button,
-  IconButton,
+  IconButton, 
   MD3Colors,
   Divider,
   PaperProvider,
 } from "react-native-paper";
+import { ref, uploadBytesResumable} from "firebase/storage";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +50,37 @@ const handleInference = async () => {
     console.log("Error: ", error);
   }
 };
+
+//This uploads an image of the fruit to the Firebase storage. It converts the uri of the image into a blob before uploading it. -Faiz
+const uploadFruitImageToFirebase = async(uri) => {
+  try{
+    //Convert uri into a blob which is one of the suitable format type to upload files to firebase storage -Faiz
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    
+    // Create a reference to the file in Firebase Storage -Faiz
+    const storageRef = ref(storage, `images/test.jpg`);
+
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    uploadTask.on(
+      'state_changed',
+      snapshot => {
+        // Observe the progess of uploading the image -Faiz
+        console.log(`Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%`);
+      },
+      error => {
+        console.error('Error Uploading Fruit Image: ', error);
+      },
+      () => {
+        console.log('Image uploaded successfully!');
+      }
+    );
+  }
+  catch(error){
+    console.error("Error Uploading Fruit Image: ", error);
+  }
+}
 
 //inserts image and sends it to python, the image will then be used for computer vision -Don
 const sendToPython = async (uri) => {
@@ -84,6 +116,7 @@ const takePhoto = async (setImageUri) => {
     console.log(uri);
     sendToPython(uri);
     handleInference();
+    uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");
   }
