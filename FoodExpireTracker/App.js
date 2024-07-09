@@ -199,7 +199,9 @@ function FetchFoodData() {
                   <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                 </Text>
 
-                <Text>expires in: </Text>
+                <Text> 
+                  expires in: 
+                </Text>
                 <Text>
                   expires on: {item.data.expiryDate.toDate().toLocaleString()}
                 </Text>
@@ -221,6 +223,68 @@ function FetchFoodData() {
         );
       }}
     />
+  );
+}
+
+function CheckExpiryDate5() {
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  var today = new Date();
+  const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
+
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      for (const food of foods) {
+        if (
+          food.data.expiryDate.toDate() <= FiveDaysFromNow &&
+          food.data.expiryDate.toDate() > today &&
+          food.data.isadded == true
+        ) {
+          filteringFoodItems.push(food);
+        }
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <View>
+      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
+        <Icon source={"alert-circle"} size={35} />
+        <Text style={{ fontSize: 25 }}>
+          Fruits that are expiring in 5 days:{" "}
+        </Text>
+      </View>
+      <FlatList
+        data={filteredFoodItems}
+        renderItem={({ item }) => {
+          return (
+            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
+              <Text
+                key={item.id}
+                style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+              >
+                FRUIT NAME: {item.data.foodName}
+              </Text>
+              <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
+                EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+              </Text>
+            </SafeAreaView>
+          );
+        }}
+      />
+    </View>
   );
 }
 //This function queries and retrieves information from the database, from there it will compare each item's expiration date with a date that is set 3 days from now, if an expiration date falls within 3 days it will add it to the filtered array from there the filtered array of expiring items will be displayed in a flatlist -Faiz
@@ -343,7 +407,7 @@ function CheckExpired() {
 }
 
 function WarningDashboardVisibility() {
-  const [isWarningDashboardVisible, setIsWarningDashboardVisible] =
+  /*const [isWarningDashboardVisible, setIsWarningDashboardVisible] =
     useState(false);
 
   const handleToggleWarningDashboardVisibility = async () => {
@@ -367,9 +431,46 @@ function WarningDashboardVisibility() {
             Expiring in 3 days
           </Button>
         </View>
+        <View>
+          <Button onPress={handleToggleWarningDashboardVisibility}>
+            Expiring in 5 days
+          </Button>
+        </View>
       </View>
       <View>
         {isWarningDashboardVisible ? <CheckExpired /> : <CheckExpiryDate />}
+      </View>
+    </View>
+  ); */
+  const [visibleComponent, setVisibleComponent] = useState(null);
+
+  const handleToggleWarningDashboardVisibility = (component) => {
+    setVisibleComponent(component);
+  };
+
+  return (
+    <View>
+      <View style={{ flexDirection: 'row' }}>
+        <View>
+          <Button onPress={() => handleToggleWarningDashboardVisibility('expired')}>
+            Expired
+          </Button>
+        </View>
+        <View>
+          <Button onPress={() => handleToggleWarningDashboardVisibility('expiring3')}>
+            Expiring in 3 days
+          </Button>
+        </View>
+        <View>
+          <Button onPress={() => handleToggleWarningDashboardVisibility('expiring5')}>
+            Expiring in 5 days
+          </Button>
+        </View>
+      </View>
+      <View>
+        {visibleComponent === 'expired' && <CheckExpired />}
+        {visibleComponent === 'expiring3' && <CheckExpiryDate />}
+        {visibleComponent === 'expiring5' && <CheckExpiryDate5 />}
       </View>
     </View>
   );
