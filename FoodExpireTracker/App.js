@@ -231,6 +231,7 @@ function CheckExpiryDate5() {
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   var today = new Date();
   const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
+  const { loginID } = useContext(AuthContext);
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -247,7 +248,8 @@ function CheckExpiryDate5() {
         if (
           food.data.expiryDate.toDate() <= FiveDaysFromNow &&
           food.data.expiryDate.toDate() > today &&
-          food.data.isadded == true
+          food.data.isadded == true &&
+          food.data.userID === loginID
         ) {
           filteringFoodItems.push(food);
         }
@@ -293,6 +295,7 @@ function CheckExpiryDate() {
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   var today = new Date();
   const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const { loginID } = useContext(AuthContext);
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -309,7 +312,8 @@ function CheckExpiryDate() {
         if (
           food.data.expiryDate.toDate() <= threeDaysFromNow &&
           food.data.expiryDate.toDate() > today &&
-          food.data.isadded == true
+          food.data.isadded == true && 
+          food.data.userID === loginID
         ) {
           filteringFoodItems.push(food);
         }
@@ -353,6 +357,8 @@ function CheckExpired() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   var today = new Date();
+  const { loginID } = useContext(AuthContext);
+
   useEffect(() => {
     const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -367,7 +373,8 @@ function CheckExpired() {
       for (const food of foods) {
         if (
           food.data.expiryDate.toDate() < today &&
-          food.data.isadded == true
+          food.data.isadded == true &&
+          food.data.userID === loginID
         ) {
           filteringFoodItems.push(food);
         }
