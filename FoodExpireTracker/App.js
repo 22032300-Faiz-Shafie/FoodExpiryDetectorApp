@@ -45,7 +45,7 @@ import { AuthProvider } from './Screens/AuthContext';
 import AuthContext from './Screens/AuthContext';
 
 const Stack = createNativeStackNavigator();
-const logoImg = require("./assets/favicon.png");
+const logoImg = require("./assets/download.png");
 const addImg = require("./assets/add.png");
 //fetches all food with isadded as true, so that only added foods are displayed -Don
 function FetchFoodData() {
