@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView, FlatList, SafeAreaView, Alert} from 'react-native';
 import DropDown from "react-native-paper-dropdown";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { PaperProvider, Button, TextInput } from 'react-native-paper';
 import { doc, onSnapshot, query, collection, deleteDoc, addDoc, updateDoc} from "firebase/firestore";
 import {db} from "../firebaseConfig"
 import Slider from '@react-native-community/slider';
 import * as Clipboard from 'expo-clipboard';
+import AuthContext from './AuthContext';
 
 export default function App(){
     const foodsCol = collection(db, "foodCollection");
@@ -20,6 +21,7 @@ export default function App(){
     const [aiAccuracyReportRefId, setAiAccuracyReportRefId] = useState("");
     const [isAiAccuracyReportRefIdVisible, setIsAiAccuracyReportRefIdVisible] = useState(false);
     const [newAiAccuracyReportRefId, setNewAiAccuracyReportRefId] = useState("");
+    const { loginID } = useContext(AuthContext);
     
     //Fetch Fruit Data to populate dropdown list -Faiz
     useEffect(() => {
@@ -36,11 +38,14 @@ export default function App(){
                 });
 
                 for(const fruit of fruitList){
-                    fruitListDropDown.push({
-                        id: fruit.id,
-                        label: fruit.data.foodName,
-                        value: fruit.data.foodName,
-                    })
+                    //Added Authentication filter and isAdded filter for drop down fruit list -Faiz
+                    if (fruit.data.isadded === true && fruit.data.userID === loginID) {
+                        fruitListDropDown.push({
+                            id: fruit.id,
+                            label: fruit.data.foodName,
+                            value: fruit.data.foodName,
+                        })
+                    }
                 }
                 
                 setFruit(fruitListDropDown);
