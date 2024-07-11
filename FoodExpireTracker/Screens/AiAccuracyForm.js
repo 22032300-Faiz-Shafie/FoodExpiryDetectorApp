@@ -22,6 +22,14 @@ export default function App(){
     const [isAiAccuracyReportRefIdVisible, setIsAiAccuracyReportRefIdVisible] = useState(false);
     const [newAiAccuracyReportRefId, setNewAiAccuracyReportRefId] = useState("");
     const { loginID } = useContext(AuthContext);
+    const [availableFruitsList] = useState(["Mango", "Pineapple", "Avocado"])
+    const [fruitDropDownList, setFruitDropDownList] = useState([])
+    const [mangoRefIDList, setMangoRefIDList] = useState([])
+    const [pineappleRefIDList, setPineappleRefIDList] = useState([])
+    const [avocadoRefIDList, setAvocadoRefIDList] = useState([])
+    const [selectedFruitRefID, setSelectedFruitRefID] = useState('');
+    const [showDropDown2, setShowDropDown2] = useState(false);
+
     
     //Fetch Fruit Data to populate dropdown list -Faiz
     useEffect(() => {
@@ -30,6 +38,11 @@ export default function App(){
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const fruitList = [];
                 const fruitListDropDown = [];
+                const tempFruitListDropDown = [];
+                const tempMangoRefIDList = [];
+                const tempPineappleRefIDList = [];
+                const tempAvocadoRefIDList = [];
+
                 querySnapshot.forEach((doc) => {
                     fruitList.push({
                     id: doc.id,
@@ -45,10 +58,42 @@ export default function App(){
                             label: fruit.data.foodName,
                             value: fruit.data.foodName,
                         })
+
+                        if(fruit.data.foodName == "Mango"){
+                            tempMangoRefIDList.push({
+                                label: fruit.id,
+                                value: fruit.id,
+                            })
+                        }
+
+                        if(fruit.data.foodName == "Pineapple"){
+                            tempPineappleRefIDList.push({
+                                label: fruit.id,
+                                value: fruit.id
+                            })
+                        }
+
+                        if(fruit.data.foodName == "Avocado"){
+                            tempAvocadoRefIDList.push({
+                                label: fruit.id,
+                                value: fruit.id
+                            })
+                        }
                     }
                 }
                 
+                for(const fruit of availableFruitsList){
+                    tempFruitListDropDown.push({
+                        label: fruit,
+                        value: fruit
+                    })
+                }
+
                 setFruit(fruitListDropDown);
+                setFruitDropDownList(tempFruitListDropDown);
+                setMangoRefIDList(tempMangoRefIDList);
+                setPineappleRefIDList(tempPineappleRefIDList);
+                setAvocadoRefIDList(tempAvocadoRefIDList);
               });
             
             return () => unsubscribe();  
@@ -83,7 +128,7 @@ export default function App(){
         try{
 
             for(const fruitObject of fruit){
-                if(selectedFruit == fruitObject.value){
+                if(selectedFruitRefID == fruitObject.id){
                     for(const AiReport of aiAccuracyReport){
                         if(aiAccuracyReportRefId === AiReport.id){
 
@@ -106,6 +151,8 @@ export default function App(){
             setAiAccuracyRemark("");
             setSliderValue(0);
             setDropdownKey(prevKey => prevKey + 1);
+            setSelectedFruitRefID("");
+            setShowDropDown2(false);
         }
         catch(error){
             console.error('Error updating document: ', error);
@@ -119,7 +166,7 @@ export default function App(){
         try{
 
             for(const fruitObject of fruit){
-                if(selectedFruit == fruitObject.value){{
+                if(selectedFruitRefID == fruitObject.id){{
                     const fruitScoreData = {
                         fruitReferenceId: fruitObject.id,
                         aiAccuracyScore: sliderValue,
@@ -144,6 +191,8 @@ export default function App(){
             setSliderValue(0);
             setDropdownKey(prevKey => prevKey + 1);
             setIsAiAccuracyReportRefIdVisible(true);
+            setSelectedFruitRefID("");
+            setShowDropDown2(false);
         }
         catch(error){
             console.error('Error Adding Document: ', error);
@@ -168,6 +217,8 @@ export default function App(){
             setAiAccuracyRemark("");
             setSliderValue(0);
             setDropdownKey(prevKey => prevKey + 1);
+            setSelectedFruitRefID("");
+            setShowDropDown2(false);
         }
         catch(error){
             console.log("Error Deleting Document: ", error);
@@ -196,8 +247,25 @@ export default function App(){
             </View>
             <View>
                 <SafeAreaView style={styles.input2}>
-                <DropDown key={dropdownKey} dropDownContainerHeight={150} label={'Fruit'} mode='flat' visible={showDropDown} showDropDown={() => setShowDropDown(true)} onDismiss={() => setShowDropDown(false)} value={selectedFruit} setValue={setSelectedFruit} list={fruit} dropDownStyle={styles.dropDownStyle}/>
+                <DropDown key={dropdownKey} dropDownContainerHeight={150} label={'Fruit'} mode='flat' visible={showDropDown} showDropDown={() => setShowDropDown(true)} onDismiss={() => setShowDropDown(false)} value={selectedFruit} setValue={setSelectedFruit} list={fruitDropDownList} dropDownStyle={styles.dropDownStyle}/>
                 </SafeAreaView>
+            </View>
+            <View>
+                {selectedFruit === "Mango" ? (
+                <SafeAreaView style={styles.input2}>
+                <DropDown key={dropdownKey} dropDownContainerHeight={150} label={'Fruit Reference ID'} mode='flat' visible={showDropDown2} showDropDown={() => setShowDropDown2(true)} onDismiss={() => setShowDropDown2(false)} value={selectedFruitRefID} setValue={setSelectedFruitRefID} list={mangoRefIDList} dropDownStyle={styles.dropDownStyle}/>   
+                </SafeAreaView>
+                ): null}
+                {selectedFruit === "Pineapple" ? (
+                <SafeAreaView style={styles.input2}>
+                <DropDown key={dropdownKey} dropDownContainerHeight={150} label={'Fruit Reference ID'} mode='flat' visible={showDropDown2} showDropDown={() => setShowDropDown2(true)} onDismiss={() => setShowDropDown2(false)} value={selectedFruitRefID} setValue={setSelectedFruitRefID} list={pineappleRefIDList} dropDownStyle={styles.dropDownStyle}/>   
+                </SafeAreaView>
+                ): null}
+                {selectedFruit === "Avocado" ? (
+                <SafeAreaView style={styles.input2}>
+                <DropDown key={dropdownKey} dropDownContainerHeight={150} label={'Fruit Reference ID'} mode='flat' visible={showDropDown2} showDropDown={() => setShowDropDown2(true)} onDismiss={() => setShowDropDown2(false)} value={selectedFruitRefID} setValue={setSelectedFruitRefID} list={avocadoRefIDList} dropDownStyle={styles.dropDownStyle}/>   
+                </SafeAreaView>
+                ): null} 
             </View>
             <View>
                 <TextInput 
