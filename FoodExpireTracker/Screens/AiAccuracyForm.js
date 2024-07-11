@@ -197,6 +197,11 @@ export default function App() {
     await incrementpoints(loginID);
     await handleAddAiFruitAccuracyReport();
   };
+  const updateButton = async () => {
+    await incrementpoints(loginID);
+    await handleUpdateAiFruitAccuracyReport();
+    Alert.alert("+1 contribution points added");
+  };
 
   //Creates a Document Object with the fields that were selected and then adds them to the database -Faiz
   const handleAddAiFruitAccuracyReport = async () => {
@@ -223,7 +228,7 @@ export default function App() {
             await Clipboard.setStringAsync(docRef.id);
             Alert.alert(
               "Copied to Clipboard",
-              `Reference Id: "${docRef.id}" has been copied to your clipboard.`
+              `Reference Id: "${docRef.id}" has been copied to your clipboard.\n\n+1 contribution points added`
             );
 
             setNewAiAccuracyReportRefId(docRef.id);
@@ -403,7 +408,7 @@ export default function App() {
             icon="update"
             mode="contained-tonal"
             buttonColor="cyan"
-            onPress={handleUpdateAiFruitAccuracyReport}
+            onPress={updateButton}
           >
             Update
           </Button>

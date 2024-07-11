@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect, useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,6 +18,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AddFoodScreen from "./Screens/AddFoodScreen";
 import AiAccuracyForm from "./Screens/AiAccuracyForm";
 import LoginScreen from "./Screens/LoginScreen";
+import Gamify from "./Screens/Gamify";
 import SignUpScreen from "./Screens/SignUpScreen";
 import { db } from "./firebaseConfig";
 import {
@@ -41,8 +42,8 @@ import {
   RadioButton,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
-import { AuthProvider } from './Screens/AuthContext';
-import AuthContext from './Screens/AuthContext';
+import { AuthProvider } from "./Screens/AuthContext";
+import AuthContext from "./Screens/AuthContext";
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download.png");
@@ -75,13 +76,7 @@ function FetchFoodData() {
 
     return () => unsubscribe();
   }, []);
-  {
-    /*allows user to edit fruit details. for now only name and quantity can be edited plan to add in the future
-1)ability to edit ripeness later
-2)display expiry date
-3)error handling
- -Don*/
-  }
+
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [foodName, setFoodName] = useState("");
@@ -199,9 +194,7 @@ function FetchFoodData() {
                   <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                 </Text>
 
-                <Text> 
-                  expires in: 
-                </Text>
+                <Text>expires in:</Text>
                 <Text>
                   expires on: {item.data.expiryDate.toDate().toLocaleString()}
                 </Text>
@@ -312,7 +305,7 @@ function CheckExpiryDate() {
         if (
           food.data.expiryDate.toDate() <= threeDaysFromNow &&
           food.data.expiryDate.toDate() > today &&
-          food.data.isadded == true && 
+          food.data.isadded == true &&
           food.data.userID === loginID
         ) {
           filteringFoodItems.push(food);
@@ -457,27 +450,33 @@ function WarningDashboardVisibility() {
 
   return (
     <View>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: "row" }}>
         <View>
-          <Button onPress={() => handleToggleWarningDashboardVisibility('expired')}>
+          <Button
+            onPress={() => handleToggleWarningDashboardVisibility("expired")}
+          >
             Expired
           </Button>
         </View>
         <View>
-          <Button onPress={() => handleToggleWarningDashboardVisibility('expiring3')}>
+          <Button
+            onPress={() => handleToggleWarningDashboardVisibility("expiring3")}
+          >
             Expiring in 3 days
           </Button>
         </View>
         <View>
-          <Button onPress={() => handleToggleWarningDashboardVisibility('expiring5')}>
+          <Button
+            onPress={() => handleToggleWarningDashboardVisibility("expiring5")}
+          >
             Expiring in 5 days
           </Button>
         </View>
       </View>
       <View>
-        {visibleComponent === 'expired' && <CheckExpired />}
-        {visibleComponent === 'expiring3' && <CheckExpiryDate />}
-        {visibleComponent === 'expiring5' && <CheckExpiryDate5 />}
+        {visibleComponent === "expired" && <CheckExpired />}
+        {visibleComponent === "expiring3" && <CheckExpiryDate />}
+        {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
       </View>
     </View>
   );
@@ -487,60 +486,67 @@ export default function App() {
   return (
     //add new screens here for navigation -Don
     <AuthProvider>
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="addFoodScreen"
-          component={AddFoodScreen}
-          options={{
-            headerStyle: { backgroundColor: "green" },
-            title: "Add food",
-          }}
-        />
-        <Stack.Screen
-          name="aiAccuracyForm"
-          component={AiAccuracyForm}
-          options={{
-            headerStyle: { backgroundColor: "green" },
-            title: "AI Accuracy Form",
-          }}
-        />
-        <Stack.Screen
-        name="loginScreen"
-        component={LoginScreen}
-        options={{
-          headerStyle: {backgroundColor: "green"},
-          title: "Login Screen",
-        }}
-        />
-        <Stack.Screen
-        name="signUpScreen"
-        component={SignUpScreen}
-        options={{
-          headerStyle: {backgroundColor: "green"},
-          title: "Sign Up Screen",
-        }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="addFoodScreen"
+            component={AddFoodScreen}
+            options={{
+              headerStyle: { backgroundColor: "green" },
+              title: "Add food",
+            }}
+          />
+          <Stack.Screen
+            name="aiAccuracyForm"
+            component={AiAccuracyForm}
+            options={{
+              headerStyle: { backgroundColor: "green" },
+              title: "AI Accuracy Form",
+            }}
+          />
+          <Stack.Screen
+            name="gamify"
+            component={Gamify}
+            options={{
+              headerStyle: { backgroundColor: "green" },
+              title: "Points and achievements",
+            }}
+          />
+          <Stack.Screen
+            name="loginScreen"
+            component={LoginScreen}
+            options={{
+              headerStyle: { backgroundColor: "green" },
+              title: "Login Screen",
+            }}
+          />
+          <Stack.Screen
+            name="signUpScreen"
+            component={SignUpScreen}
+            options={{
+              headerStyle: { backgroundColor: "green" },
+              title: "Sign Up Screen",
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </AuthProvider>
   );
 }
 
 const HomeScreen = ({ navigation }) => {
-
   const { isLoggedIn, logout } = useContext(AuthContext);
 
-  //Handles logout, calls upon logout method which sets isLoggedIn to false. -Faiz 
+  //Handles logout, calls upon logout method which sets isLoggedIn to false. -Faiz
   const handleLogout = () => {
     logout();
-    Alert.alert("","You Have Successfully Logged Out");
-  }
+    Alert.alert("", "You Have Successfully Logged Out");
+  };
 
   return (
     <View style={styles.backGround}>
@@ -554,57 +560,55 @@ const HomeScreen = ({ navigation }) => {
           }}
         >
           <StatusBar backgroundColor="green" barStyle="default" />
-          <Text style={{ textAlign: "center", fontSize: 20, paddingTop: 40 }}>
-            Fruit List
-          </Text>
+          <View style={{ paddingTop: 35, alignItems: "left", height: 55 }}>
+            <IconButton
+              icon="trophy"
+              mode="contained-tonal"
+              buttonColor="yellow"
+              onPress={() => navigation.navigate("gamify")}
+            ></IconButton>
+          </View>
+          <Text style={{ textAlign: "center", fontSize: 20 }}>Fruit List</Text>
           <Image
             source={logoImg}
             style={{ width: 100, height: 100, alignSelf: "center" }}
           />
         </View>
-        <View>
-          {isLoggedIn ? <FetchFoodData /> : null}
-        </View>
-        <View>
-          {isLoggedIn ? <WarningDashboardVisibility /> : null}
-        </View>
+        <View>{isLoggedIn ? <FetchFoodData /> : null}</View>
+        <View>{isLoggedIn ? <WarningDashboardVisibility /> : null}</View>
       </ScrollView>
-      { isLoggedIn ? 
-      (<View style={styles.addFoodButton}>
-        <FAB
-          icon="plus"
-          rippleColor="purple"
-          onPress={() => navigation.navigate("addFoodScreen")}
-        />
-      </View>) : null
-      }
-      { isLoggedIn ? 
-      (<View style={styles.aiAccuracyFormButton}>
-        <FAB
-          icon="ballot"
-          rippleColor="purple"
-          onPress={() => navigation.navigate("aiAccuracyForm")}
-        />
-      </View>) : null
-      }
-      { !isLoggedIn ?
-      (<View style={styles.loginButton}>
-        <FAB
-          icon="login"
-          rippleColor="purple"
-          onPress={() => navigation.navigate("loginScreen")}
-        />
-      </View>) : null
-      }
-      { isLoggedIn ?
-      (<View style={styles.loginButton}>
-        <FAB
-          icon="logout"
-          rippleColor="purple"
-          onPress={handleLogout}
-        />
-      </View>) : null
-      }
+      {isLoggedIn ? (
+        <View style={styles.addFoodButton}>
+          <FAB
+            icon="plus"
+            rippleColor="purple"
+            onPress={() => navigation.navigate("addFoodScreen")}
+          />
+        </View>
+      ) : null}
+      {isLoggedIn ? (
+        <View style={styles.aiAccuracyFormButton}>
+          <FAB
+            icon="ballot"
+            rippleColor="purple"
+            onPress={() => navigation.navigate("aiAccuracyForm")}
+          />
+        </View>
+      ) : null}
+      {!isLoggedIn ? (
+        <View style={styles.loginButton}>
+          <FAB
+            icon="login"
+            rippleColor="purple"
+            onPress={() => navigation.navigate("loginScreen")}
+          />
+        </View>
+      ) : null}
+      {isLoggedIn ? (
+        <View style={styles.loginButton}>
+          <FAB icon="logout" rippleColor="purple" onPress={handleLogout} />
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -629,7 +633,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     position: "absolute",
-    bottom:10,
+    bottom: 10,
     right: 20,
   },
   input: {
