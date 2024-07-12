@@ -614,7 +614,7 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const windowHeight = Dimensions.get("window").height;
-const modalheight = windowHeight - 200;
+const modalheight = windowHeight - 170;
 const styles = StyleSheet.create({
   backGround: {
     flex: 1,
