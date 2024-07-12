@@ -1,5 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
-import { StyleSheet, Text, View, SafeAreaView, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  FlatList,
+  Image,
+  ProgressBarAndroid,
+} from "react-native";
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // Assuming this imports your Firestore instance correctly
 import AuthContext from "../Screens/AuthContext";
@@ -43,29 +51,102 @@ function FetchUserData() {
   const top3User = sortTheUsersPoints[2];
   const [value, setValue] = useState("leaderboard");
 
+  function firstAchievedOrNot() {
+    if (cUser && cUser.data.points >= 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function firstAchievedBarProgress() {
+    if (cUser) {
+      return cUser.data.points / 1; // Calculate progress ratio
+    }
+    return 0;
+  }
+
+  function bigRaterAchievedOrNot() {
+    if (cUser && cUser.data.points >= 10) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function bigRaterProgressBarProgress() {
+    if (cUser) {
+      return cUser.data.points / 10; // Calculate progress ratio
+    }
+    return 0;
+  }
+
+  const Badges = [
+    {
+      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
+      title: "First!",
+      description: "Submit a form through the accuracy form",
+      imgAchieved: require("../assets/First!Achieved.jpg"),
+      imgNotAchieved: require("../assets/First!NotAchieved.jpg"),
+      achieved: firstAchievedOrNot(),
+      currentProgressBarProgress: firstAchievedBarProgress(),
+    },
+    {
+      id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
+      title: "BigRater",
+      description: "Submit 10 forms through the accuracy form",
+      imgAchieved: require("../assets/BigRaterAchieved.jpg"),
+      imgNotAchieved: require("../assets/BigRaterNotAchieved.jpg"),
+      achieved: bigRaterAchievedOrNot(),
+      currentProgressBarProgress: bigRaterProgressBarProgress(),
+    },
+  ];
+
+  function Item({ title, achieved }) {
+    const badge = Badges.find((badge) => badge.title === title);
+
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          padding: 10,
+          margin: 3,
+          elevation: 4,
+        }}
+      ></View>
+    );
+  }
+
   const leaderboardOrBadges = () => {
     if (value === "leaderboard") {
       return (
         <>
           <View style={styles.podiumContainer}>
-            <View style={{ alignItems: "center" }}>
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>2</Text>
-              <View style={styles.podium2} />
-              <Text>{top2User.data.username}</Text>
-              <Text>{top2User.data.points}</Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>1</Text>
-              <View style={styles.podium1} />
-              <Text>{top1User.data.username}</Text>
-              <Text>{top1User.data.points}</Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>3</Text>
-              <View style={styles.podium3} />
-              <Text>{top3User.data.username}</Text>
-              <Text>{top3User.data.points}</Text>
-            </View>
+            {top2User && (
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>2</Text>
+                <View style={styles.podium2} />
+                <Text>{top2User.data.username}</Text>
+                <Text>{top2User.data.points}</Text>
+              </View>
+            )}
+            {top1User && (
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>1</Text>
+                <View style={styles.podium1} />
+                <Text>{top1User.data.username}</Text>
+                <Text>{top1User.data.points}</Text>
+              </View>
+            )}
+            {top3User && (
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>3</Text>
+                <View style={styles.podium3} />
+                <Text>{top3User.data.username}</Text>
+                <Text>{top3User.data.points}</Text>
+              </View>
+            )}
           </View>
           <FlatList
             style={{ flex: 1, width: "100%" }}
@@ -98,7 +179,81 @@ function FetchUserData() {
         </>
       );
     } else if (value === "badges") {
-      return <View style={styles.badgesContainer}></View>;
+      return (
+        <View style={styles.badgesContainer}>
+          <FlatList
+            style={{ flex: 1, width: "100%" }}
+            contentContainerStyle={{ flexGrow: 1 }}
+            numColumns={4}
+            data={Badges}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  backgroundColor: "white",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 10,
+                  margin: 3,
+                  elevation: 4,
+                }}
+              >
+                <View>
+                  <Image
+                    source={
+                      item.achieved ? item.imgAchieved : item.imgNotAchieved
+                    }
+                    style={{ height: 80, width: 80 }}
+                  />
+                </View>
+              </View>
+            )}
+            keyExtractor={(item) => item.id}
+          />
+          <View style={{ position: "absolute", top: "20%" }}>
+            <View>
+              <Text style={{ fontSize: 25, fontWeight: "bold" }}>Progress</Text>
+            </View>
+            <FlatList
+              style={{ flex: 1, width: "100%", marginTop: 10 }}
+              contentContainerStyle={{ flexGrow: 1 }}
+              data={Badges}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 10,
+                    margin: 3,
+                    elevation: 4,
+                  }}
+                >
+                  <View>
+                    <Image
+                      source={
+                        item.achieved ? item.imgAchieved : item.imgNotAchieved
+                      }
+                      style={{ height: 100, width: 100 }}
+                    />
+                  </View>
+                  <View style={{ flexDirection: "column", marginLeft: 10 }}>
+                    <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                      {item.title}
+                    </Text>
+                    <Text style={{ fontSize: 13 }}>{item.description}</Text>
+                    <ProgressBarAndroid
+                      styleAttr="Horizontal"
+                      indeterminate={false}
+                      progress={item.currentProgressBarProgress}
+                    />
+                  </View>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+        </View>
+      );
     }
   };
 
