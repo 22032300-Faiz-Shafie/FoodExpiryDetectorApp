@@ -35,8 +35,15 @@ import { ref, uploadBytesResumable} from "firebase/storage";
 
 const Stack = createNativeStackNavigator();
 
+//Function to help with delay, required so that certain functions run before the other -Faiz
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 //This handles Inference, makes a http request using flask to our app.py python. -Faiz
 const handleInference = async () => {
+  //Added delay so that this runs after image save function -Faiz
+  await delay(5000);
   try {
     //Utilize own ip address and port. -Faiz
     const response = await fetch("http://192.168.18.24:5000/predict", {
@@ -115,7 +122,7 @@ const takePhoto = async (setImageUri) => {
     setImageUri(uri);
     console.log(uri);
     sendToPython(uri);
-    handleInference();
+    await handleInference();
     uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");

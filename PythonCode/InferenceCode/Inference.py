@@ -4,6 +4,9 @@ import cv2
 import pathlib
 import subprocess
 import os
+import shutil
+import json
+import re
 temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
 
@@ -28,10 +31,10 @@ while True:
     CDWorkingDirectoryCommand = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\"
 
     os.chdir(CDWorkingDirectoryCommand)
-    print(f'Current working directory: {os.getcwd()}')
+    print(f'Current working directory: {os.getcwd()}\n')
 
     #Added and drag and drop method which is far easier, just open the customtestimages folder and drag it to the terminal. Also made it so that you type exit, it will end progrram. -Faiz
-    dragAndDropImage = input("Drag and drop image here: ")
+    dragAndDropImage = input("Drag and drop image here: \n")
     if(dragAndDropImage == "exit"):
         break
 
@@ -48,22 +51,126 @@ while True:
     #Save preprocessed image to original image, overwriting it -Faiz
     cv2.imwrite(dragAndDropImage, image_resized)
 
-    #Loading the lastest model using detect 
-    modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best12.pt --img 512 --agnostic --conf 0.10 --source /content/drive/MyDrive/SDAAI/Data/FruitFolder/testimages/download.jpg --project /content/drive/MyDrive/SDAAI/Data/FruitFolder/ --save-crop --save-txt"
+    #Loading the lastest model using detect -Faiz
+    modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best12.pt --img 512 --agnostic --conf 0.10"
     modelCommandSource = modelCommand + " --source " + dragAndDropImage
-    modelCommandProject = modelCommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images --save-crop --save-txt"
+    modelCommandProject = modelCommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages --save-crop --save-txt"
 
     commandResult2 = subprocess.run(modelCommandProject, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if commandResult2.returncode == 0:
-        print("Command executed successfully!")
+        print("\nCommand executed successfully!\n")
     else:
-        print("Error in running command:")
+        print("\nError in running command:\n")
         print(commandResult2.stderr)
 
-    #Extract classes from result
+    #Extract classes from result -Faiz
+    imageResultsFolderPath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages"
+
+    def expiryDayFinder(fruitClass):
+        fruitClassSplitted = fruitClass.split('_')
+        fruit_name = fruitClassSplitted[0]
+        currentRipenessDay = int(fruitClassSplitted[1])
+        expiryInDays = 0
+        currentRipenessStatus = ""
+
+
+        if(fruit_name == "Mango"):
+            if(currentRipenessDay < 8):
+                currentRipenessStatus = "Underripe"
+                expiryInDays = 8 - currentRipenessDay
+
+            elif(currentRipenessDay >= 8 and currentRipenessDay < 16):
+                currentRipenessStatus = "Ripe"
+                expiryInDays = 8 - currentRipenessDay
+
+            else:
+                currentRipenessStatus = "Overripe"
+                expiryInDays = 0
+
+        elif(fruit_name == "Pineapple"):
+            if(currentRipenessDay < 6):
+                currentRipenessStatus = "Underripe"
+                expiryInDays = 6 - currentRipenessDay
+
+            elif(currentRipenessDay >= 6 and currentRipenessDay < 13):
+                currentRipenessStatus = "Ripe"
+                expiryInDays = 13 - currentRipenessDay
+
+            else:
+                currentRipenessStatus = "Overripe"
+                expiryInDays = 0
+
+        return expiryInDays, currentRipenessStatus
+    
+    #List containing all different listing results -Faiz
+    fruit_class_names = []
+ 
+    # Loop through the highest folder which is the exp folder -Faiz
+    for exp_folder in os.listdir(imageResultsFolderPath):
+
+        # Full path of each exp folder -Faiz
+        exp_folder_path = os.path.join(imageResultsFolderPath, exp_folder)
+
+        # Check and ensure if it's a directory to prevent any bugs -Faiz
+        if os.path.isdir(exp_folder_path):
+            # Path to the crops directory inside the experiment folder -Faiz
+            crops_folder_path = os.path.join(exp_folder_path, 'crops')
+            # Check and ensure if the crops folder exists in case the ai fails to detect -Faiz
+            if os.path.exists(crops_folder_path) and os.path.isdir(crops_folder_path):
+                # Loop through each fruit class folder in the crops directory
+                for fruit_class in os.listdir(crops_folder_path):
+
+                    #Variables needed to store various information regarding the results -Faiz
+                    fruit_quantity = 0
+                    fruit_name = ""
+                    expiryInDays = 0
+                    currentRipenessStatus = ""
+
+                    # Full path of the fruit class folder
+                    fruit_class_path = os.path.join(crops_folder_path, fruit_class)
+                    # Check if it's a directory -Faiz
+                    if os.path.isdir(fruit_class_path):
+                        # Add the fruit class name to the list -Faiz
+                        for images in os.listdir(fruit_class_path):
+                            fruit_quantity = fruit_quantity + 1
+
+                        fruit_name = re.sub(r'_\d+', '', fruit_class)
+
+                        expiryInDays, currentRipenessStatus = expiryDayFinder(fruit_class)
+
+                        class_info = {
+                                "name": fruit_name,
+                                "class": fruit_class,
+                                "quantity": fruit_quantity,
+                                "expiryInDays": expiryInDays,
+                                "currentRipenessStatus": currentRipenessStatus
+                                }
+                        fruit_class_names.append(class_info)
+ 
+    print(fruit_class_names)
+
+    # Saving the results to a JSON file -Faiz
+    with open('C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\fruit_class_details.json', 'w') as json_file:
+        json.dump(fruit_class_names, json_file, indent=4)  
+
+    #Delete all results after utilizing AI Model -Faiz
+    for exp_folder in os.listdir(imageResultsFolderPath):
+        exp_folder_path = os.path.join(imageResultsFolderPath, exp_folder)
+        # Check if it's a directory that exists -Faiz
+        if os.path.isdir(exp_folder_path):
+            try:
+                # Remove the folder and sub folder contents -Faiz
+                shutil.rmtree(exp_folder_path)
+                print(f"\nDeleted {exp_folder_path}\n")
+            except Exception as e:
+                print(f"\nFailed to delete {exp_folder_path}: {e}\n")
+
+
+    
     
 
+    #Everything below is obsolete unless switching back to using torch -Faiz
     # Inference
     #results = model(image_rgb)
 
