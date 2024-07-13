@@ -218,7 +218,69 @@ function FetchFoodData() {
     />
   );
 }
+function all() {
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  var today = new Date();
+  const diff = food.data.expiryDate.getTime() - (new Date(today.getTime()));
+  const highestdiff = 0;
+  const { loginID } = useContext(AuthContext);
 
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      for (const food of foods) {
+        if (
+          diff >= highestdiff &&
+          food.data.isadded == true &&
+          food.data.userID === loginID
+        ) {
+          filteringFoodItems.push(food);
+        }
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <View>
+      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
+        <Icon source={"alert-circle"} size={35} />
+        <Text style={{ fontSize: 25 }}>
+          FruitList{" "}
+        </Text>
+      </View>
+      <FlatList
+        data={filteredFoodItems}
+        renderItem={({ item }) => {
+          return (
+            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
+              <Text
+                key={item.id}
+                style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+              >
+                FRUIT NAME: {item.data.foodName}
+              </Text>
+              <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
+                EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+              </Text>
+            </SafeAreaView>
+          );
+        }}
+      />
+    </View>
+  );
+}
 function CheckExpiryDate5() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -455,21 +517,27 @@ function WarningDashboardVisibility() {
           <Button
             onPress={() => handleToggleWarningDashboardVisibility("expired")}
           >
-            Expired
+            <Text style={{ color: 'red' }}>Expired</Text>
           </Button>
         </View>
         <View>
           <Button
             onPress={() => handleToggleWarningDashboardVisibility("expiring3")}
           >
-            Expiring in 3 days
+            <Text style={{ color: 'yellow' }}>Expiring in 3 days</Text>
           </Button>
         </View>
         <View>
           <Button
             onPress={() => handleToggleWarningDashboardVisibility("expiring5")}
           >
-            Expiring in 5 days
+            <Text style={{ color: 'green' }}>Expiring in 5 days</Text>
+          </Button>
+        </View>
+        <View>
+          <Button
+            onPress={() => handleToggleWarningDashboardVisibility("all")}
+          >all
           </Button>
         </View>
       </View>
@@ -477,6 +545,7 @@ function WarningDashboardVisibility() {
         {visibleComponent === "expired" && <CheckExpired />}
         {visibleComponent === "expiring3" && <CheckExpiryDate />}
         {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
+        {visibleComponent === "all" && <all />}
       </View>
     </View>
   );
