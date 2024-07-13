@@ -9,7 +9,7 @@ import {
   ProgressBarAndroid,
 } from "react-native";
 import { collection, query, onSnapshot } from "firebase/firestore";
-import { db } from "../firebaseConfig"; // Assuming this imports your Firestore instance correctly
+import { db } from "../firebaseConfig";
 import AuthContext from "../Screens/AuthContext";
 import { SegmentedButtons, Divider } from "react-native-paper";
 
@@ -61,17 +61,39 @@ function FetchUserData() {
 
   function firstAchievedBarProgress() {
     if (cUser) {
-      return cUser.data.points / 1; // Calculate progress ratio
+      return cUser.data.points / 1;
     }
     return 0;
   }
 
   function firstProgressText() {
-    const firstRaterProgress = cUser ? cUser.data.points : 0;
+    const firstRaterProgress = cUser && cUser ? cUser.data.points / 1 : 0;
     if (firstAchievedOrNot()) {
-      return <Text>1/1</Text>;
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <ProgressBarAndroid
+            style={{ flex: 1 }}
+            styleAttr="Horizontal"
+            indeterminate={false}
+            color="green"
+            progress={firstRaterProgress}
+          />
+          <Text>1/1</Text>
+        </View>
+      );
     } else {
-      return <Text>{`${firstRaterProgress}/1`}</Text>;
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <ProgressBarAndroid
+            style={{ flex: 1 }}
+            styleAttr="Horizontal"
+            indeterminate={false}
+            color="yellow"
+            progress={firstRaterProgress}
+          />
+          <Text>{`${cUser && cUser.data ? cUser.data.points : 0}/1`}</Text>
+        </View>
+      );
     }
   }
 
@@ -85,17 +107,40 @@ function FetchUserData() {
 
   function bigRaterProgressBarProgress() {
     if (cUser) {
-      return cUser.data.points / 10; // Calculate progress ratio
+      return cUser.data.points / 10;
     }
     return 0;
   }
 
   function bigRaterProgressText() {
-    const bigRaterProgress = cUser ? cUser.data.points : 0;
+    const bigRaterProgress = cUser && cUser ? cUser.data.points / 10 : 0;
     if (bigRaterAchievedOrNot()) {
-      return <Text>10/10</Text>;
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <ProgressBarAndroid
+            style={{ flex: 1 }}
+            styleAttr="Horizontal"
+            indeterminate={false}
+            color="green"
+            progress={bigRaterProgress}
+          />
+          <Text>10/10</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <ProgressBarAndroid
+            style={{ flex: 1 }}
+            styleAttr="Horizontal"
+            color="yellow"
+            indeterminate={false}
+            progress={bigRaterProgress}
+          />
+          <Text>{`${cUser && cUser.data ? cUser.data.points : 0}/10`}</Text>
+        </View>
+      );
     }
-    return <Text>{`${bigRaterProgress}/10`}</Text>;
   }
 
   function kingRaterAchievedOrNot() {
@@ -108,19 +153,42 @@ function FetchUserData() {
 
   function kingRaterAchievedBarProgress() {
     if (cUser) {
-      return cUser.data.points / 50; // Calculate progress ratio
+      return cUser.data.points / 50;
     }
     return 0;
   }
 
   function kingRaterProgressText() {
-    const kingRaterProgress = cUser ? cUser.data.points : 0;
+    const kingRaterProgress = cUser && cUser ? cUser.data.points / 50 : 0;
     if (kingRaterAchievedOrNot()) {
-      return <Text>50/50</Text>;
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <ProgressBarAndroid
+            style={{ flex: 1 }}
+            styleAttr="Horizontal"
+            color="green"
+            indeterminate={false}
+            progress={kingRaterProgress}
+          />
+          <Text>50/50</Text>
+        </View>
+      );
     } else {
-      return <Text>{`${kingRaterProgress}/50`}</Text>;
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <ProgressBarAndroid
+            style={{ flex: 1 }}
+            styleAttr="Horizontal"
+            indeterminate={false}
+            color="yellow"
+            progress={kingRaterProgress}
+          />
+          <Text>{`${cUser && cUser.data ? cUser.data.points : 0}/50`}</Text>
+        </View>
+      );
     }
   }
+  function mangoSquire() {}
 
   const Badges = [
     {
@@ -132,6 +200,7 @@ function FetchUserData() {
       achieved: firstAchievedOrNot(),
       currentProgressBarProgress: firstAchievedBarProgress(),
       progressText: firstProgressText(),
+      titleDisplayed: "First!",
     },
     {
       id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
@@ -143,6 +212,7 @@ function FetchUserData() {
       currentProgressBarProgress: bigRaterProgressBarProgress(),
       progressNumber: 4,
       progressText: bigRaterProgressText(),
+      titleDisplayed: "Big Rater",
     },
     {
       id: "3ac68afc-c605-48d3-a4c8-fbx91aa97f63",
@@ -153,6 +223,7 @@ function FetchUserData() {
       achieved: kingRaterAchievedOrNot(),
       currentProgressBarProgress: kingRaterAchievedBarProgress(),
       progressText: kingRaterProgressText(),
+      titleDisplayed: "King Rater",
     },
   ];
 
@@ -292,18 +363,10 @@ function FetchUserData() {
                   </View>
                   <View style={{ flexDirection: "column", marginLeft: 10 }}>
                     <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                      {item.title}
+                      {item.titleDisplayed}
                     </Text>
                     <Text style={{ fontSize: 13 }}>{item.description}</Text>
-                    <View style={{ flexDirection: "row" }}>
-                      <ProgressBarAndroid
-                        style={{ flex: 1 }}
-                        styleAttr="Horizontal"
-                        indeterminate={false}
-                        progress={item.currentProgressBarProgress}
-                      />
-                      <Text>{item.progressText}</Text>
-                    </View>
+                    <View>{item.progressText}</View>
                   </View>
                 </View>
               )}
@@ -336,6 +399,10 @@ function FetchUserData() {
                 value: "badges",
                 label: "Badges",
               },
+              {
+                value: "Avatar",
+                label: "Avatar",
+              },
             ]}
           />
         </SafeAreaView>
@@ -367,6 +434,11 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     alignItems: "center",
     width: "90%",
+  },
+  badgesContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
   badgesContainer: {
     alignItems: "center",
