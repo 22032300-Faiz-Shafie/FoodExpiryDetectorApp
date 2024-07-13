@@ -66,6 +66,15 @@ function FetchUserData() {
     return 0;
   }
 
+  function firstProgressText() {
+    const firstRaterProgress = cUser ? cUser.data.points : 0;
+    if (firstAchievedOrNot()) {
+      return <Text>1/1</Text>;
+    } else {
+      return <Text>{`${firstRaterProgress}/1`}</Text>;
+    }
+  }
+
   function bigRaterAchievedOrNot() {
     if (cUser && cUser.data.points >= 10) {
       return true;
@@ -81,6 +90,38 @@ function FetchUserData() {
     return 0;
   }
 
+  function bigRaterProgressText() {
+    const bigRaterProgress = cUser ? cUser.data.points : 0;
+    if (bigRaterAchievedOrNot()) {
+      return <Text>10/10</Text>;
+    }
+    return <Text>{`${bigRaterProgress}/10`}</Text>;
+  }
+
+  function kingRaterAchievedOrNot() {
+    if (cUser && cUser.data.points >= 50) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function kingRaterAchievedBarProgress() {
+    if (cUser) {
+      return cUser.data.points / 50; // Calculate progress ratio
+    }
+    return 0;
+  }
+
+  function kingRaterProgressText() {
+    const kingRaterProgress = cUser ? cUser.data.points : 0;
+    if (kingRaterAchievedOrNot()) {
+      return <Text>50/50</Text>;
+    } else {
+      return <Text>{`${kingRaterProgress}/50`}</Text>;
+    }
+  }
+
   const Badges = [
     {
       id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -90,6 +131,7 @@ function FetchUserData() {
       imgNotAchieved: require("../assets/First!NotAchieved.jpg"),
       achieved: firstAchievedOrNot(),
       currentProgressBarProgress: firstAchievedBarProgress(),
+      progressText: firstProgressText(),
     },
     {
       id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
@@ -99,6 +141,18 @@ function FetchUserData() {
       imgNotAchieved: require("../assets/BigRaterNotAchieved.jpg"),
       achieved: bigRaterAchievedOrNot(),
       currentProgressBarProgress: bigRaterProgressBarProgress(),
+      progressNumber: 4,
+      progressText: bigRaterProgressText(),
+    },
+    {
+      id: "3ac68afc-c605-48d3-a4c8-fbx91aa97f63",
+      title: "KingRater",
+      description: "Submit 50 forms through the accuracy form",
+      imgAchieved: require("../assets/KingRaterAchieved.jpg"),
+      imgNotAchieved: require("../assets/KingRaterNotAchieved.jpg"),
+      achieved: kingRaterAchievedOrNot(),
+      currentProgressBarProgress: kingRaterAchievedBarProgress(),
+      progressText: kingRaterProgressText(),
     },
   ];
 
@@ -241,11 +295,15 @@ function FetchUserData() {
                       {item.title}
                     </Text>
                     <Text style={{ fontSize: 13 }}>{item.description}</Text>
-                    <ProgressBarAndroid
-                      styleAttr="Horizontal"
-                      indeterminate={false}
-                      progress={item.currentProgressBarProgress}
-                    />
+                    <View style={{ flexDirection: "row" }}>
+                      <ProgressBarAndroid
+                        style={{ flex: 1 }}
+                        styleAttr="Horizontal"
+                        indeterminate={false}
+                        progress={item.currentProgressBarProgress}
+                      />
+                      <Text>{item.progressText}</Text>
+                    </View>
                   </View>
                 </View>
               )}
