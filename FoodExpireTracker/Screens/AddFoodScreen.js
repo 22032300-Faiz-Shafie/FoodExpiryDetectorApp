@@ -22,6 +22,7 @@ import {
   deleteDoc,
   updateDoc,
   writeBatch,
+  addDoc
 } from "firebase/firestore";
 import {
   Icon,
@@ -35,28 +36,59 @@ import { ref, uploadBytesResumable} from "firebase/storage";
 
 const Stack = createNativeStackNavigator();
 
-//Function to help with delay, required so that certain functions run before the other -Faiz
-async function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const fruitInformation = [];
 
 //This handles Inference, makes a http request using flask to our app.py python. -Faiz
 const handleInference = async () => {
-  //Added delay so that this runs after image save function -Faiz
-  await delay(5000);
+
   try {
     //Utilize own ip address and port. -Faiz
-    const response = await fetch("http://192.168.18.24:5000/predict", {
-      //Don
-      //const response = await fetch("http://192.168.31.1:5000/predict", {
-      method: "GET",
+    const response = await fetch("http://192.168.18.24:5000/predict");
+    const jsonData = await response.json(); 
+    
+
+    // Loop through each item in the jsonData array and put them into fruitInformation array -Faiz
+    jsonData.forEach(fruit => {
+      fruitInformation.push(fruit)
     });
 
-    const data = await response.json();
-  } catch (error) {
+    console.log(fruitInformation);
+  }
+
+  catch (error) {
     console.log("Error: ", error);
   }
 };
+
+//This function uploadd fruitinformation collected from inference into firebase databaes -Faiz
+const uploadFruitInformation = async () => {
+  try{
+    for(const fruit of fruitInformation){
+      const futureExpiry = new Date();
+      futureExpiry.setDate(futureExpiry.getDate() + fruit.expiryInDays);
+
+      const fruitData = {
+        fruitClass: fruit.class,
+        currentRipenessStatus: fruit.currentRipenessStatus,
+        expiryDate: futureExpiry,
+        foodName: fruit.name,
+        quantity: fruit.quantity,
+        isadded: false
+      };
+     
+      const docRef = await addDoc(
+        collection(db, "foodCollection"),fruitData
+      );
+      console.log(
+        "The following Fruit Information has been uploaded: ", docRef.id
+      );
+    }
+  }
+  catch(error){
+    console.log("Error: ", error)
+  }
+
+}
 
 //This uploads an image of the fruit to the Firebase storage. It converts the uri of the image into a blob before uploading it. -Faiz
 const uploadFruitImageToFirebase = async(uri) => {
@@ -121,9 +153,10 @@ const takePhoto = async (setImageUri) => {
     const uri = cameraResp.assets[0].uri;
     setImageUri(uri);
     console.log(uri);
-    sendToPython(uri);
+    await sendToPython(uri);
     await handleInference();
-    uploadFruitImageToFirebase(uri);
+    await uploadFruitInformation();
+    //uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");
   }

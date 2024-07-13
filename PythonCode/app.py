@@ -1,8 +1,8 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import PIL.Image
 from io import BytesIO
 import base64
-#import uuid
+import uuid
 app = Flask(__name__)
 #import torch
 import cv2
@@ -22,7 +22,8 @@ hubconfLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodEx
 imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images"
 
 #Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
-#storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
+storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
+#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media.jpg"
 storedImageFilePath = imageFilePath + "\\newImage" + ".jpg"     
 
 #adds image from camera to image folder, which is then used for computer vision -Don
@@ -164,8 +165,8 @@ def predict():
         print(fruit_class_names)
 
         # Saving the results to a JSON file -Faiz
-        with open('C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\fruit_class_details.json', 'w') as json_file:
-            json.dump(fruit_class_names, json_file, indent=4)  
+        # with open('C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\fruit_class_details.json', 'w') as json_file:
+        #     json.dump(fruit_class_names, json_file, indent=4)  
 
         #Delete all results after utilizing AI Model -Faiz
         for exp_folder in os.listdir(imageResultsFolderPath):
@@ -208,7 +209,7 @@ def predict():
         #     else:
         #         print (x+" has less than zero occurences\n")
 
-        return "success"
+        return jsonify(fruit_class_names)
 
     except Exception as e:
         print(e)
