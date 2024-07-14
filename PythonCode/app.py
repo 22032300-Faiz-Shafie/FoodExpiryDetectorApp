@@ -22,8 +22,8 @@ hubconfLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodEx
 imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images"
 
 #Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
-storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
-#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media.jpg"
+#storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
+testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media.jpg"
 storedImageFilePath = imageFilePath + "\\newImage" + ".jpg"     
 
 #adds image from camera to image folder, which is then used for computer vision -Don
@@ -56,7 +56,7 @@ def predict():
         os.chdir(CDWorkingDirectoryCommand)
         print(f'Current working directory: {os.getcwd()}\n')
 
-        image = cv2.imread(storedImageFilePath)
+        image = cv2.imread(testImageFilePath)
         image_rotate = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
         image_resized = cv2.resize(image_rotate, (384, 512))
         newProcessedImageLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
@@ -140,14 +140,29 @@ def predict():
                         fruit_name = ""
                         expiryInDays = 0
                         currentRipenessStatus = ""
+                        data_uri = ""
 
                         # Full path of the fruit class folder
                         fruit_class_path = os.path.join(crops_folder_path, fruit_class)
                         # Check if it's a directory -Faiz
                         if os.path.isdir(fruit_class_path):
                             # Add the fruit class name to the list -Faiz
-                            for images in os.listdir(fruit_class_path):
+                            for Images in os.listdir(fruit_class_path):
+                                #Counting the quantity of fruits there are by counting the amount of images of a single fruit class -Faiz
                                 fruit_quantity = fruit_quantity + 1
+
+                                #Converting image into uri -Faiz
+                                fruitImagePath = fruit_class_path + "\\" + Images
+                                fruitImage = PIL.Image.open(fruitImagePath)
+
+                                buffered = BytesIO()
+                                fruitImage.save(buffered, format="JPEG")
+                                fruitImage_data = buffered.getvalue()
+
+                                base64_encoded = base64.b64encode(fruitImage_data).decode('utf-8')
+
+                                data_uri = f'data:image/jpeg;base64,{base64_encoded}'
+
 
                             fruit_name = re.sub(r'_\d+', '', fruit_class)
 
@@ -158,7 +173,8 @@ def predict():
                                     "class": fruit_class,
                                     "quantity": fruit_quantity,
                                     "expiryInDays": expiryInDays,
-                                    "currentRipenessStatus": currentRipenessStatus
+                                    "currentRipenessStatus": currentRipenessStatus,
+                                    "fruitDateURI": data_uri
                                     }
                             fruit_class_names.append(class_info)
     

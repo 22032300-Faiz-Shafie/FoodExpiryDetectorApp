@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -33,10 +33,12 @@ import {
   PaperProvider,
 } from "react-native-paper";
 import { ref, uploadBytesResumable} from "firebase/storage";
+import AuthContext from "./AuthContext";
 
 const Stack = createNativeStackNavigator();
 
-const fruitInformation = [];
+//A temporary Array that holds all fruit information -Faiz
+var fruitInformation = [];
 
 //This handles Inference, makes a http request using flask to our app.py python. -Faiz
 const handleInference = async () => {
@@ -60,8 +62,8 @@ const handleInference = async () => {
   }
 };
 
-//This function uploadd fruitinformation collected from inference into firebase databaes -Faiz
-const uploadFruitInformation = async () => {
+//This function upload fruitinformation collected from inference into firebase databaes -Faiz
+const uploadFruitInformation = async (loginID) => {
   try{
     for(const fruit of fruitInformation){
       const futureExpiry = new Date();
@@ -73,7 +75,9 @@ const uploadFruitInformation = async () => {
         expiryDate: futureExpiry,
         foodName: fruit.name,
         quantity: fruit.quantity,
-        isadded: false
+        isadded: false, 
+        fruitImageURI: fruit.fruitDateURI,
+        userID: loginID
       };
      
       const docRef = await addDoc(
@@ -82,7 +86,11 @@ const uploadFruitInformation = async () => {
       console.log(
         "The following Fruit Information has been uploaded: ", docRef.id
       );
+
     }
+
+    //Empty Array as fruit information has already been transferred to firebase -Faiz
+    fruitInformation = []
   }
   catch(error){
     console.log("Error: ", error)
@@ -91,14 +99,14 @@ const uploadFruitInformation = async () => {
 }
 
 //This uploads an image of the fruit to the Firebase storage. It converts the uri of the image into a blob before uploading it. -Faiz
-const uploadFruitImageToFirebase = async(uri) => {
+const uploadFruitImageToFirebase = async(uri, docRefID) => {
   try{
     //Convert uri into a blob which is one of the suitable format type to upload files to firebase storage -Faiz
     const response = await fetch(uri);
     const blob = await response.blob();
     
     // Create a reference to the file in Firebase Storage -Faiz
-    const storageRef = ref(storage, `images/test.jpg`);
+    const storageRef = ref(storage, "images/" + docRefID + ".jpg");
 
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
@@ -141,8 +149,8 @@ const sendToPython = async (uri) => {
     console.log("food added");
   });
 };
-//code to take photo -Don
-const takePhoto = async (setImageUri) => {
+//code to take photo -Don Added LoginID so that other functions can take use of that -Faiz
+const takePhoto = async (setImageUri, loginID) => {
   const cameraResp = await ImagePicker.launchCameraAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.All,
     quality: 1,
@@ -155,7 +163,7 @@ const takePhoto = async (setImageUri) => {
     console.log(uri);
     await sendToPython(uri);
     await handleInference();
-    await uploadFruitInformation();
+    await uploadFruitInformation(loginID);
     //uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");
@@ -293,6 +301,7 @@ function FetchFoodData() {
 
 export default function App() {
   const [imageUri, setImageUri] = useState(null);
+  const { loginID } = useContext(AuthContext);
 
   return (
     <PaperProvider>
@@ -322,7 +331,7 @@ export default function App() {
               icon="camera"
               mode="contained-tonal"
               buttonColor="green"
-              onPress={() => takePhoto(setImageUri)}
+              onPress={() => takePhoto(setImageUri, loginID)}
             >
               Take Photo
             </Button>

@@ -188,6 +188,9 @@ function FetchFoodData() {
               }}
             >
               <View style={{ flex: 1 }}>
+                <Image style={styles.image} source={{uri: item.data.fruitImageURI}}></Image>
+              </View>
+              <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>
                   {item.data.foodName}
 
@@ -753,5 +756,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "95%",
     marginVertical: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
   },
 });
