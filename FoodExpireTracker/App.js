@@ -133,7 +133,6 @@ function FetchFoodData() {
               >
                 <RadioButton.Item label="Pineapple" value="Pineapple" />
                 <RadioButton.Item label="Mango" value="Mango" />
-                <RadioButton.Item label="Apple" value="Apple" />
               </RadioButton.Group>
               <TextInput
                 style={styles.input2}
@@ -188,7 +187,10 @@ function FetchFoodData() {
               }}
             >
               <View style={{ flex: 1 }}>
-                <Image style={styles.image} source={{uri: item.data.fruitImageURI}}></Image>
+                <Image
+                  style={styles.image}
+                  source={{ uri: item.data.fruitImageURI }}
+                ></Image>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>
@@ -225,7 +227,7 @@ function all() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   var today = new Date();
-  const diff = food.data.expiryDate.getTime() - (new Date(today.getTime()));
+  const diff = food.data.expiryDate.getTime() - new Date(today.getTime());
   const highestdiff = 0;
   const { loginID } = useContext(AuthContext);
 
@@ -259,9 +261,7 @@ function all() {
     <View>
       <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
         <Icon source={"alert-circle"} size={35} />
-        <Text style={{ fontSize: 25 }}>
-          FruitList{" "}
-        </Text>
+        <Text style={{ fontSize: 25 }}>FruitList </Text>
       </View>
       <FlatList
         data={filteredFoodItems}
@@ -520,27 +520,26 @@ function WarningDashboardVisibility() {
           <Button
             onPress={() => handleToggleWarningDashboardVisibility("expired")}
           >
-            <Text style={{ color: 'red' }}>Expired</Text>
+            <Text style={{ color: "red" }}>Expired</Text>
           </Button>
         </View>
         <View>
           <Button
             onPress={() => handleToggleWarningDashboardVisibility("expiring3")}
           >
-            <Text style={{ color: 'yellow' }}>Expiring in 3 days</Text>
+            <Text style={{ color: "yellow" }}>Expiring in 3 days</Text>
           </Button>
         </View>
         <View>
           <Button
             onPress={() => handleToggleWarningDashboardVisibility("expiring5")}
           >
-            <Text style={{ color: 'green' }}>Expiring in 5 days</Text>
+            <Text style={{ color: "green" }}>Expiring in 5 days</Text>
           </Button>
         </View>
         <View>
-          <Button
-            onPress={() => handleToggleWarningDashboardVisibility("all")}
-          >all
+          <Button onPress={() => handleToggleWarningDashboardVisibility("all")}>
+            all
           </Button>
         </View>
       </View>

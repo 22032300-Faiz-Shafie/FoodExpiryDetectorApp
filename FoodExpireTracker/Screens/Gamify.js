@@ -277,7 +277,7 @@ function FetchUserData() {
             style={{ flex: 1, width: "100%" }}
             contentContainerStyle={{ flexGrow: 1 }}
             data={sortUsersWithoutTop3}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View
                 style={{
                   backgroundColor: "white",
@@ -288,6 +288,9 @@ function FetchUserData() {
                   elevation: 4,
                 }}
               >
+                <Text style={{ fontSize: 25, marginRight: 10 }}>
+                  {index + 4}
+                </Text>
                 <Text style={{ fontSize: 25, flex: 1 }}>
                   {item.data.username}
                 </Text>
