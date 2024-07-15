@@ -2,14 +2,14 @@ from flask import Flask, request, jsonify
 import PIL.Image
 from io import BytesIO
 import base64
-import uuid
+#import uuid
 app = Flask(__name__)
 #import torch
 import cv2
 import subprocess
 import os
 import shutil
-import json
+#import json
 import re
 import pathlib
 temp = pathlib.PosixPath
@@ -23,7 +23,7 @@ imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpi
 
 #Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
 #storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
-testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media.jpg"
+#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media2.jpg"
 storedImageFilePath = imageFilePath + "\\newImage" + ".jpg"     
 
 #adds image from camera to image folder, which is then used for computer vision -Don
@@ -56,7 +56,7 @@ def predict():
         os.chdir(CDWorkingDirectoryCommand)
         print(f'Current working directory: {os.getcwd()}\n')
 
-        image = cv2.imread(testImageFilePath)
+        image = cv2.imread(storedImageFilePath)
         image_rotate = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
         image_resized = cv2.resize(image_rotate, (384, 512))
         newProcessedImageLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
