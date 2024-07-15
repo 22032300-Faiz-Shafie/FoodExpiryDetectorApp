@@ -93,24 +93,19 @@ def predict():
                 if(currentRipenessDay < 8):
                     currentRipenessStatus = "Underripe"
                     expiryInDays = 8 - currentRipenessDay
-
                 elif(currentRipenessDay >= 8 and currentRipenessDay < 16):
                     currentRipenessStatus = "Ripe"
                     expiryInDays = 8 - currentRipenessDay
-
                 else:
                     currentRipenessStatus = "Overripe"
                     expiryInDays = 0
-
             elif(fruit_name == "Pineapple"):
                 if(currentRipenessDay < 6):
                     currentRipenessStatus = "Underripe"
                     expiryInDays = 6 - currentRipenessDay
-
                 elif(currentRipenessDay >= 6 and currentRipenessDay < 13):
                     currentRipenessStatus = "Ripe"
                     expiryInDays = 13 - currentRipenessDay
-
                 else:
                     currentRipenessStatus = "Overripe"
                     expiryInDays = 0

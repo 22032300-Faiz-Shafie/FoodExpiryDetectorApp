@@ -40,8 +40,12 @@ const Stack = createNativeStackNavigator();
 //A temporary Array that holds all fruit information -Faiz
 var fruitInformation = [];
 
+// Delay function that returns a Promise
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+
 //This handles Inference, makes a http request using flask to our app.py python. -Faiz
-const handleInference = async () => {
+const handleInference = async (loginID) => {
 
   try {
     //Utilize own ip address and port. -Faiz
@@ -55,6 +59,7 @@ const handleInference = async () => {
     });
 
     console.log(fruitInformation);
+    uploadFruitInformation(loginID);
   }
 
   catch (error) {
@@ -99,35 +104,35 @@ const uploadFruitInformation = async (loginID) => {
 }
 
 //This uploads an image of the fruit to the Firebase storage. It converts the uri of the image into a blob before uploading it. -Faiz
-const uploadFruitImageToFirebase = async(uri, docRefID) => {
-  try{
-    //Convert uri into a blob which is one of the suitable format type to upload files to firebase storage -Faiz
-    const response = await fetch(uri);
-    const blob = await response.blob();
+// const uploadFruitImageToFirebase = async(uri, docRefID) => {
+//   try{
+//     //Convert uri into a blob which is one of the suitable format type to upload files to firebase storage -Faiz
+//     const response = await fetch(uri);
+//     const blob = await response.blob();
     
-    // Create a reference to the file in Firebase Storage -Faiz
-    const storageRef = ref(storage, "images/" + docRefID + ".jpg");
+//     // Create a reference to the file in Firebase Storage -Faiz
+//     const storageRef = ref(storage, "images/" + docRefID + ".jpg");
 
-    const uploadTask = uploadBytesResumable(storageRef, blob);
+//     const uploadTask = uploadBytesResumable(storageRef, blob);
 
-    uploadTask.on(
-      'state_changed',
-      snapshot => {
-        // Observe the progess of uploading the image -Faiz
-        console.log(`Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%`);
-      },
-      error => {
-        console.error('Error Uploading Fruit Image: ', error);
-      },
-      () => {
-        console.log('Image uploaded successfully!');
-      }
-    );
-  }
-  catch(error){
-    console.error("Error Uploading Fruit Image: ", error);
-  }
-}
+//     uploadTask.on(
+//       'state_changed',
+//       snapshot => {
+//         // Observe the progess of uploading the image -Faiz
+//         console.log(`Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%`);
+//       },
+//       error => {
+//         console.error('Error Uploading Fruit Image: ', error);
+//       },
+//       () => {
+//         console.log('Image uploaded successfully!');
+//       }
+//     );
+//   }
+//   catch(error){
+//     console.error("Error Uploading Fruit Image: ", error);
+//   }
+// }
 
 //inserts image and sends it to python, the image will then be used for computer vision -Don
 const sendToPython = async (uri) => {
@@ -161,9 +166,9 @@ const takePhoto = async (setImageUri, loginID) => {
     const uri = cameraResp.assets[0].uri;
     setImageUri(uri);
     console.log(uri);
-    await sendToPython(uri);
-    await handleInference();
-    await uploadFruitInformation(loginID);
+    sendToPython(uri);
+    await delay(2000);
+    handleInference(loginID);
     //uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");
@@ -272,6 +277,10 @@ function FetchFoodData() {
                     <Text>
                       expires on:{" "}
                       {item.data.expiryDate.toDate().toLocaleString()}
+                    </Text>
+                    <Text>
+                      Current Ripeness Status:{" "}
+                      {item.data.currentRipenessStatus}
                     </Text>
                   </View>
                   <IconButton
