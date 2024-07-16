@@ -40,10 +40,14 @@ import {
   PaperProvider,
   TextInput,
   RadioButton,
+  Menu,
+  Provider,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { AuthProvider } from "./Screens/AuthContext";
 import AuthContext from "./Screens/AuthContext";
+import { TouchableOpacity } from 'react-native';
+
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download.png");
@@ -53,6 +57,77 @@ function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
   const { loginID } = useContext(AuthContext);
+  //const filteringFoodItems = [];
+
+  /*const filterFunction = async (filteringFoodItems, days) => {
+    function CheckExpiry() {
+      const foodsCol = collection(db, "foodCollection");
+      const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+      var today = new Date();
+      //const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
+      //const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+      const daysDate = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+      const { loginID } = useContext(AuthContext);
+    
+      useEffect(() => {
+        const q = query(foodsCol);
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const foods = [];
+          const filteringFoodItems = [];
+          querySnapshot.forEach((doc) => {
+            foods.push({
+              id: doc.id,
+              data: doc.data(),
+            });
+          });
+          for (const food of foods) {
+            if (
+              food.data.expiryDate.toDate() <= daysDate &&
+              food.data.expiryDate.toDate() > today &&
+              food.data.isadded == true &&
+              food.data.userID === loginID
+            ) {
+              filteringFoodItems.push(food);
+          }
+          setFilteredFoodItems(filteringFoodItems);
+        }
+        });
+      
+        
+        return () => unsubscribe();
+      }, []);
+    
+      return (
+        <View>
+          <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
+            <Icon source={"alert-circle"} size={35} />
+            <Text style={{ fontSize: 25 }}>
+              Fruits that are expiring in 5 days:{" "}
+            </Text>
+          </View>
+          <FlatList
+            data={filteredFoodItems}
+            renderItem={({ item }) => {
+              return (
+                <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
+                  <Text
+                    key={item.id}
+                    style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                  >
+                    FRUIT NAME: {item.data.foodName}
+                  </Text>
+                  <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
+                    EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                  </Text>
+                </SafeAreaView>
+              );
+            }}
+          />
+        </View>
+      );
+    }
+        return filteringFoodItems;
+   }*/
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -69,6 +144,7 @@ function FetchFoodData() {
       for (const food of foods) {
         if (food.data.isadded === true && food.data.userID === loginID) {
           filteringFoodItems.push(food);
+          //filteringFoodItems = filterfunction(filteringFoodItems)
         }
       }
       setFoodsfetch(filteringFoodItems);
@@ -162,133 +238,145 @@ function FetchFoodData() {
       </PaperProvider>
     );
   }
+  /*const Appp = () => {
+    const [selectedValue, setSelectedValue] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    const options = [
+      { label: 'Option 1', value: 'option1' },
+      { label: 'Option 2', value: 'option2' },
+      { label: 'Option 3', value: 'option3' },
+    ];
+
+    const handlePress = () => {
+      setShowDropdown(true);
+    };
+
+    const handleSelect = (itemValue) => {
+      setSelectedValue(itemValue);
+      setShowDropdown(false);
+    };
+    <Button title="Show Dropdown" onPress={handlePress} />
+      {showDropdown && (
+        <Picker
+          selectedValue={selectedValue}
+          onValueChange={handleSelect}
+        >
+          {options.map((option, index) => (
+            <Picker.Item key={index} label={option.label} value={option.value} />
+          ))}
+        </Picker>
+      )}*/
+
+
+  const [visible, setVisible] = useState(false);
+
+  const openMenu = () => {
+  console.log('Opening menu');
+  setVisible(true);
+  };
+
+  const closeMenu = () => {
+  console.log('Closing menu');
+  setVisible(false);
+  };
   return (
-    <FlatList
-      data={foodsfetch}
-      renderItem={({ item }) => {
-        return (
-          <SafeAreaView>
-            <View
-              key={item.id}
-              style={{
-                backgroundColor: "white",
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 10,
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.4,
-                shadowRadius: 4,
 
-                elevation: 4,
-              }}
-            >
-              <View style={{ flex: 1 }}>
-                <Image
-                  style={styles.image}
-                  source={{ uri: item.data.fruitImageURI }}
-                ></Image>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                  {item.data.foodName}
-
-                  <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
-                </Text>
-
-                <Text>expires in:</Text>
-                <Text>
-                  expires on: {item.data.expiryDate.toDate().toLocaleString()}
-                </Text>
-              </View>
-
-              <IconButton
-                icon="delete"
-                iconColor={MD3Colors.error50}
-                size={30}
-                onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
-              />
-
-              <Divider />
-              <View style={{ marginLeft: -15 }}>
-                <EditFood itemID={item.id} />
-              </View>
-            </View>
-          </SafeAreaView>
-        );
-      }}
-    />
-  );
-}
-function all() {
-  const foodsCol = collection(db, "foodCollection");
-  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
-  var today = new Date();
-  const diff = food.data.expiryDate.getTime() - new Date(today.getTime());
-  const highestdiff = 0;
-  const { loginID } = useContext(AuthContext);
-
-  useEffect(() => {
-    const q = query(foodsCol);
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const foods = [];
-      const filteringFoodItems = [];
-      querySnapshot.forEach((doc) => {
-        foods.push({
-          id: doc.id,
-          data: doc.data(),
-        });
-      });
-      for (const food of foods) {
-        if (
-          diff >= highestdiff &&
-          food.data.isadded == true &&
-          food.data.userID === loginID
-        ) {
-          filteringFoodItems.push(food);
-        }
-      }
-      setFilteredFoodItems(filteringFoodItems);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  return (
     <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
-        <Icon source={"alert-circle"} size={35} />
-        <Text style={{ fontSize: 25 }}>FruitList </Text>
+      <Provider>
+      <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, justifyContent: 'right', alignItems: 'right' }}>
+        <IconButton
+          icon="sort-variant"
+          iconColor={MD3Colors.neutral10}
+          size={30}
+          onPress={openMenu}
+        />
+        <Menu
+          visible={visible}
+          onDismiss={closeMenu}
+          anchor={
+            <Text style={{ marginTop: 20 }}>Anchor</Text>
+          }
+          style={{ marginTop: 20 }} // Ensure correct positioning
+        >
+          <Menu.Item onPress={() => { console.log('Item 1 clicked'); }} title="Item 1" />
+          <Menu.Item onPress={() => { console.log('Item 2 clicked'); }} title="Item 2" />
+          <Menu.Item onPress={() => { console.log('Item 3 clicked'); }} title="Item 3" />
+        </Menu>
       </View>
+      </SafeAreaView>
+    </Provider>
+
       <FlatList
-        data={filteredFoodItems}
+        data={foodsfetch}
         renderItem={({ item }) => {
           return (
-            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
-              <Text
+            <SafeAreaView>
+              <View
                 key={item.id}
-                style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                style={{
+                  backgroundColor: "white",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 10,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 4,
+
+                  elevation: 4,
+                }}
               >
-                FRUIT NAME: {item.data.foodName}
-              </Text>
-              <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
-              </Text>
+                <View style={{ flex: 1 }}>
+                  <Image
+                    style={styles.image}
+                    source={{ uri: item.data.fruitImageURI }}
+                  ></Image>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                    {item.data.foodName}
+
+                    <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+                  </Text>
+
+                  <Text>expires in:</Text>
+                  <Text>
+                    expires on: {item.data.expiryDate.toDate().toLocaleString()}
+                  </Text>
+                </View>
+
+                <IconButton
+                  icon="delete"
+                  iconColor={MD3Colors.error50}
+                  size={30}
+                  onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
+                />
+
+                <Divider />
+                <View style={{ marginLeft: -15 }}>
+                  <EditFood itemID={item.id} />
+                </View>
+              </View>
             </SafeAreaView>
           );
         }}
-      />
-    </View>
+      /></View>
   );
-}
+};
+
+
+
 function CheckExpiryDate5() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   var today = new Date();
   const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
+  const three = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
   const { loginID } = useContext(AuthContext);
 
   useEffect(() => {
@@ -304,7 +392,8 @@ function CheckExpiryDate5() {
       });
       for (const food of foods) {
         if (
-          food.data.expiryDate.toDate() <= FiveDaysFromNow &&
+          food.data.expiryDate.toDate() < FiveDaysFromNow &&
+          food.data.expiryDate.toDate() > three &&
           food.data.expiryDate.toDate() > today &&
           food.data.isadded == true &&
           food.data.userID === loginID
@@ -506,7 +595,8 @@ function WarningDashboardVisibility() {
         {isWarningDashboardVisible ? <CheckExpired /> : <CheckExpiryDate />}
       </View>
     </View>
-  ); */
+  ); 
+  */
   const [visibleComponent, setVisibleComponent] = useState(null);
 
   const handleToggleWarningDashboardVisibility = (component) => {
@@ -537,17 +627,11 @@ function WarningDashboardVisibility() {
             <Text style={{ color: "green" }}>Expiring in 5 days</Text>
           </Button>
         </View>
-        <View>
-          <Button onPress={() => handleToggleWarningDashboardVisibility("all")}>
-            all
-          </Button>
-        </View>
       </View>
       <View>
         {visibleComponent === "expired" && <CheckExpired />}
         {visibleComponent === "expiring3" && <CheckExpiryDate />}
         {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
-        {visibleComponent === "all" && <all />}
       </View>
     </View>
   );
@@ -761,3 +845,4 @@ const styles = StyleSheet.create({
     height: 100,
   },
 });
+
