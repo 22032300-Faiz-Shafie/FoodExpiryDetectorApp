@@ -7,16 +7,38 @@ import {
   FlatList,
   Image,
   ProgressBarAndroid,
+  TouchableOpacity,
+  Modal,
 } from "react-native";
-import { collection, query, onSnapshot } from "firebase/firestore";
+
+import {
+  collection,
+  query,
+  onSnapshot,
+  doc,
+  updateDoc,
+  increment,
+} from "firebase/firestore";
+import "firebase/database";
 import { db } from "../firebaseConfig";
-import AuthContext from "../Screens/AuthContext";
-import { SegmentedButtons, Divider } from "react-native-paper";
+import AuthContext from "./AuthContext";
+import {
+  SegmentedButtons,
+  Divider,
+  Button,
+  Dialog,
+  Portal,
+  PaperProvider,
+} from "react-native-paper";
 
 function FetchUserData() {
   const usercol = collection(db, "loginInformation");
   const [usersfetch, setUsersfetch] = useState([]);
   const { loginID } = useContext(AuthContext);
+  const [visible, setVisible] = React.useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedGemValue, setSelectedGemValue] = useState(null);
 
   useEffect(() => {
     const q = query(usercol);
@@ -189,7 +211,23 @@ function FetchUserData() {
     }
   }
   function mangoSquire() {}
-
+  const fairpriceCards = [
+    {
+      id: "bd7adfdf-c1b1-46cx-aed5-3vd53abb28ba",
+      value: -100,
+      fairpriceLogo: require("../assets/1.png"),
+    },
+    {
+      id: "bd7adfdf-c1b1-46cx-aed5-3ad53abb28ba",
+      value: -450,
+      fairpriceLogo: require("../assets/5.png"),
+    },
+    {
+      id: "bd7adfdf-c1b1-46ml-aed5-3vd53abb28ba",
+      value: -850,
+      fairpriceLogo: require("../assets/10.png"),
+    },
+  ];
   const Badges = [
     {
       id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -242,6 +280,15 @@ function FetchUserData() {
       ></View>
     );
   }
+  const yesOptionForCard = async () => {
+    setModalVisible(!modalVisible);
+    console.log("Selected gem value:", selectedGemValue);
+    const docRef = doc(db, "loginInformation", loginID);
+
+    await updateDoc(docRef, {
+      gems: increment(selectedGemValue),
+    });
+  };
 
   const leaderboardOrBadges = () => {
     if (value === "leaderboard") {
@@ -253,7 +300,7 @@ function FetchUserData() {
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>2</Text>
                 <View style={styles.podium2} />
                 <Text>{top2User.data.username}</Text>
-                <Text>{top2User.data.points}</Text>
+                <Text>{top2User.data.points} Exp</Text>
               </View>
             )}
             {top1User && (
@@ -261,7 +308,7 @@ function FetchUserData() {
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>1</Text>
                 <View style={styles.podium1} />
                 <Text>{top1User.data.username}</Text>
-                <Text>{top1User.data.points}</Text>
+                <Text>{top1User.data.points} Exp</Text>
               </View>
             )}
             {top3User && (
@@ -269,7 +316,7 @@ function FetchUserData() {
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>3</Text>
                 <View style={styles.podium3} />
                 <Text>{top3User.data.username}</Text>
-                <Text>{top3User.data.points}</Text>
+                <Text>{top3User.data.points} Exp</Text>
               </View>
             )}
           </View>
@@ -297,7 +344,7 @@ function FetchUserData() {
                 <Text
                   style={{ fontSize: 15, minWidth: 80, textAlign: "right" }}
                 >
-                  Points: {item.data.points}
+                  Exp: {item.data.points}
                 </Text>
                 <Divider />
               </View>
@@ -379,13 +426,77 @@ function FetchUserData() {
         </View>
       );
     }
+    if (value == "store") {
+      return (
+        <View style={styles.storeContainerGift}>
+          <View style={{ flex: 1, width: "100%" }}>
+            <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+              Buy giftcards
+            </Text>
+            <FlatList
+              style={{ maxHeight: 180, width: "100%" }}
+              contentContainerStyle={{ flexGrow: 1 }}
+              data={fairpriceCards}
+              horizontal={true}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    paddingTop: 30,
+                    margin: -12,
+                    elevation: 4,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedImage(item.fairpriceLogo);
+                      setSelectedGemValue(item.value);
+                      setModalVisible(true);
+                    }}
+                  >
+                    <Image
+                      source={item.fairpriceLogo}
+                      style={{ height: 150, width: 200, resizeMode: "contain" }} // Adjust image size here
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(!modalVisible);
+              }}
+            >
+              {selectedImage && (
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Image
+                      source={selectedImage}
+                      style={{ height: 200, width: 300, resizeMode: "contain" }}
+                    />
+                  </View>
+                  <Text>{selectedGemValue} gems</Text>
+                  <Button onPress={yesOptionForCard}>confirm</Button>
+                </View>
+              )}
+            </Modal>
+          </View>
+        </View>
+      );
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <Text style={{ fontSize: 40 }}>
-          Points: {cUser ? cUser.data.points : "loading..."}
+          Exp: {cUser ? cUser.data.points : "loading..."}
+        </Text>
+        <Text style={{ fontSize: 40 }}>
+          Gems: {cUser ? cUser.data.gems : "loading..."}
         </Text>
       </View>
       <View style={styles.bottomContainer}>
@@ -403,8 +514,8 @@ function FetchUserData() {
                 label: "Badges",
               },
               {
-                value: "Avatar",
-                label: "Avatar",
+                value: "store",
+                label: "Store",
               },
             ]}
           />
@@ -443,10 +554,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
   },
-  badgesContainer: {
+  storeContainer: {
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
+  },
+  storeContainerGift: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    width: "80%",
+    height: 120,
   },
   podium1: {
     backgroundColor: "#FFD700",
@@ -472,6 +590,47 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 10,
     marginTop: 25,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
 

@@ -185,6 +185,7 @@ export default function App() {
       const PointDocRef = doc(db, "loginInformation", loginID);
       await updateDoc(PointDocRef, {
         points: increment(1),
+        gems: increment(10),
       });
       console.log(`Points incremented successfully for document ${loginID}`);
     } catch (error) {
@@ -200,7 +201,7 @@ export default function App() {
   const updateButton = async () => {
     await incrementpoints(loginID);
     await handleUpdateAiFruitAccuracyReport();
-    Alert.alert("+1 contribution points added");
+    Alert.alert("+10 gems added+1 Exp");
   };
 
   //Creates a Document Object with the fields that were selected and then adds them to the database -Faiz
@@ -228,7 +229,7 @@ export default function App() {
             await Clipboard.setStringAsync(docRef.id);
             Alert.alert(
               "Copied to Clipboard",
-              `Reference Id: "${docRef.id}" has been copied to your clipboard.\n\n+1 contribution points added`
+              `Reference Id: "${docRef.id}" has been copied to your clipboard.\n\n+10 gems added\n+1 Exp`
             );
 
             setNewAiAccuracyReportRefId(docRef.id);

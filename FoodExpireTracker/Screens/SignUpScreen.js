@@ -34,6 +34,7 @@ function SignUpScreen({ navigation }) {
         username: username,
         password: password,
         points: 0,
+        gems: 0,
       };
 
       const docRef = await addDoc(
