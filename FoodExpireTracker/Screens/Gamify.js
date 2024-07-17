@@ -9,6 +9,7 @@ import {
   ProgressBarAndroid,
   TouchableOpacity,
   Modal,
+  Alert,
 } from "react-native";
 
 import {
@@ -39,6 +40,7 @@ function FetchUserData() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedGemValue, setSelectedGemValue] = useState(null);
+  const [selectedGiftCardDollarValue, setGiftCardDollarValue] = useState(null);
 
   useEffect(() => {
     const q = query(usercol);
@@ -215,16 +217,19 @@ function FetchUserData() {
     {
       id: "bd7adfdf-c1b1-46cx-aed5-3vd53abb28ba",
       value: -100,
+      dollarValue: 1,
       fairpriceLogo: require("../assets/1.png"),
     },
     {
       id: "bd7adfdf-c1b1-46cx-aed5-3ad53abb28ba",
       value: -450,
+      dollarValue: 5,
       fairpriceLogo: require("../assets/5.png"),
     },
     {
       id: "bd7adfdf-c1b1-46ml-aed5-3vd53abb28ba",
       value: -850,
+      dollarValue: 10,
       fairpriceLogo: require("../assets/10.png"),
     },
   ];
@@ -281,13 +286,21 @@ function FetchUserData() {
     );
   }
   const yesOptionForCard = async () => {
-    setModalVisible(!modalVisible);
-    console.log("Selected gem value:", selectedGemValue);
-    const docRef = doc(db, "loginInformation", loginID);
+    const gemsLeftAfterBuying = cUser.data.gems + selectedGemValue;
+    if (gemsLeftAfterBuying >= 0) {
+      setModalVisible(!modalVisible);
+      console.log("Selected gem value:", selectedGemValue);
+      const docRef = doc(db, "loginInformation", loginID);
+      Alert.alert("giftcard successfully added");
 
-    await updateDoc(docRef, {
-      gems: increment(selectedGemValue),
-    });
+      await updateDoc(docRef, {
+        gems: increment(selectedGemValue),
+        [`fairprice${selectedGiftCardDollarValue}`]: increment(1),
+      });
+    } else {
+      setModalVisible(!modalVisible);
+      Alert.alert("Not enough gems");
+    }
   };
 
   const leaderboardOrBadges = () => {
@@ -426,7 +439,7 @@ function FetchUserData() {
         </View>
       );
     }
-    if (value == "store") {
+    if (value == "giftcards") {
       return (
         <View style={styles.storeContainerGift}>
           <View style={{ flex: 1, width: "100%" }}>
@@ -450,6 +463,7 @@ function FetchUserData() {
                     onPress={() => {
                       setSelectedImage(item.fairpriceLogo);
                       setSelectedGemValue(item.value);
+                      setGiftCardDollarValue(item.dollarValue);
                       setModalVisible(true);
                     }}
                   >
@@ -462,6 +476,9 @@ function FetchUserData() {
               )}
               keyExtractor={(item) => item.id}
             />
+            <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+              Your giftcards
+            </Text>
             <Modal
               animationType="slide"
               transparent={true}
@@ -477,9 +494,15 @@ function FetchUserData() {
                       source={selectedImage}
                       style={{ height: 200, width: 300, resizeMode: "contain" }}
                     />
+                    <Text style={{ fontSize: 20 }}>
+                      {selectedGemValue} gems
+                    </Text>
+                    <TouchableOpacity onPress={yesOptionForCard}>
+                      <Text style={{ fontSize: 20, color: "purple" }}>
+                        Confirm
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  <Text>{selectedGemValue} gems</Text>
-                  <Button onPress={yesOptionForCard}>confirm</Button>
                 </View>
               )}
             </Modal>
@@ -514,8 +537,8 @@ function FetchUserData() {
                 label: "Badges",
               },
               {
-                value: "store",
-                label: "Store",
+                value: "giftcards",
+                label: "Giftcards",
               },
             ]}
           />
