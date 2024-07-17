@@ -67,22 +67,28 @@ const handleInference = async (loginID) => {
   }
 };
 
-//This function upload fruitinformation collected from inference into firebase databaes -Faiz
+//This function upload fruitinformation collected from inference into firebase database, officially adding them -Faiz
 const uploadFruitInformation = async (loginID) => {
   try{
     for(const fruit of fruitInformation){
-      const futureExpiry = new Date();
-      futureExpiry.setDate(futureExpiry.getDate() + fruit.expiryInDays);
+      const futureExpiryDate = new Date();
+      futureExpiryDate.setDate(futureExpiryDate.getDate() + fruit.expiryInDays);
+      const futureRipeningDate = new Date();
+      futureRipeningDate.setDate(futureRipeningDate.getDate() + fruit.ripenessInDays);
+
 
       const fruitData = {
         fruitClass: fruit.class,
         currentRipenessStatus: fruit.currentRipenessStatus,
-        expiryDate: futureExpiry,
+        expiryDate: futureExpiryDate,
+        expiryInDays: fruit.expiryInDays,
         foodName: fruit.name,
         quantity: fruit.quantity,
         isadded: false, 
         fruitImageURI: fruit.fruitDateURI,
-        userID: loginID
+        userID: loginID,
+        futureRipeningDate: futureRipeningDate,
+        ripenessInDays: fruit.ripenessInDays
       };
      
       const docRef = await addDoc(
@@ -103,7 +109,7 @@ const uploadFruitInformation = async (loginID) => {
 
 }
 
-//This uploads an image of the fruit to the Firebase storage. It converts the uri of the image into a blob before uploading it. -Faiz
+//This uploads an image of the fruit to the Firebase storage. It converts the uri of the image into a blob before uploading it. Right now it's obsolete but in the future this could be a better storage option rather than firestore -Faiz
 // const uploadFruitImageToFirebase = async(uri, docRefID) => {
 //   try{
 //     //Convert uri into a blob which is one of the suitable format type to upload files to firebase storage -Faiz
@@ -262,9 +268,18 @@ function FetchFoodData() {
                     flexDirection: "row",
                     alignItems: "center",
                     padding: 10,
+                    marginHorizontal: 5,
+                    borderRadius: 5,
+                    borderWidth: 0.5
                   }}
                 >
                   <View style={{ flex: 1 }}>
+                      <View style={{ flex: 1 }}>
+                        <Image
+                          style={styles.image}
+                          source={{ uri: item.data.fruitImageURI }}
+                        ></Image>
+                      </View>
                     <Text style={{ fontSize: 20, fontWeight: "bold" }}>
                       {item.data.foodName}
 
@@ -273,11 +288,23 @@ function FetchFoodData() {
                         x{item.data.quantity}
                       </Text>
                     </Text>
-                    <Text>expires in: </Text>
+                    {item.data.currentRipenessStatus === "Underripe" ? (<View> 
+                      <Text>Ripens in: {item.data.ripenessInDays} Days</Text> 
+                      <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                      <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
+                      <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                      </View>) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (<View> 
+                      <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
+                      <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                      </View>) : null}
+                    {/* <Text>expires in:{" "}
+                          {item.data.expiryInDays}
+                    </Text>
                     <Text>
                       expires on:{" "}
                       {item.data.expiryDate.toDate().toLocaleString()}
-                    </Text>
+                    </Text> */}
                     <Text>
                       Current Ripeness Status:{" "}
                       {item.data.currentRipenessStatus}
@@ -385,5 +412,10 @@ const styles = StyleSheet.create({
   displayImage: {
     height: 180,
     resizeMode: "contain",
+  },
+  image: {
+    width: 140,
+    height: 140,
+    resizeMode:"cover"
   },
 });

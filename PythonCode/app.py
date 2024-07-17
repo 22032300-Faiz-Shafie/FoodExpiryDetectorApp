@@ -23,7 +23,7 @@ imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpi
 
 #Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
 #storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
-#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media2.jpg"
+testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media.jpg"
 storedImageFilePath = imageFilePath + "\\newImage" + ".jpg"     
 
 #adds image from camera to image folder, which is then used for computer vision -Don
@@ -56,7 +56,7 @@ def predict():
         os.chdir(CDWorkingDirectoryCommand)
         print(f'Current working directory: {os.getcwd()}\n')
 
-        image = cv2.imread(storedImageFilePath)
+        image = cv2.imread(testImageFilePath)
         image_rotate = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
         image_resized = cv2.resize(image_rotate, (384, 512))
         newProcessedImageLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
@@ -81,41 +81,49 @@ def predict():
         #Extract classes from result -Faiz
         imageResultsFolderPath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages"
 
+        #This is a function to find expiry days and ripeness day by taking the result folder's name and using the class day to calculate further the expiry days and ripeness day -Faiz
         def expiryDayFinder(fruitClass):
             fruitClassSplitted = fruitClass.split('_')
             fruit_name = fruitClassSplitted[0]
             currentRipenessDay = int(fruitClassSplitted[1])
             expiryInDays = 0
+            ripenessInDays = 0
             currentRipenessStatus = ""
 
 
             if(fruit_name == "Mango"):
                 if(currentRipenessDay < 8):
                     currentRipenessStatus = "Underripe"
-                    expiryInDays = 8 - currentRipenessDay
+                    ripenessInDays = 8 - currentRipenessDay
+                    expiryInDays = 16 - currentRipenessDay
                 elif(currentRipenessDay >= 8 and currentRipenessDay < 16):
                     currentRipenessStatus = "Ripe"
-                    expiryInDays = 8 - currentRipenessDay
+                    ripenessInDays = 0 
+                    expiryInDays = 16 - currentRipenessDay
                 else:
                     currentRipenessStatus = "Overripe"
+                    ripenessInDays = 0
                     expiryInDays = 0
             elif(fruit_name == "Pineapple"):
                 if(currentRipenessDay < 6):
                     currentRipenessStatus = "Underripe"
-                    expiryInDays = 6 - currentRipenessDay
+                    ripenessInDays = 6 - currentRipenessDay
+                    expiryInDays = 13 - currentRipenessDay
                 elif(currentRipenessDay >= 6 and currentRipenessDay < 13):
                     currentRipenessStatus = "Ripe"
+                    ripenessInDays = 0
                     expiryInDays = 13 - currentRipenessDay
                 else:
                     currentRipenessStatus = "Overripe"
+                    ripenessInDays = 0
                     expiryInDays = 0
 
-            return expiryInDays, currentRipenessStatus
+            return expiryInDays, currentRipenessStatus, ripenessInDays
 
         #List containing all different listing results -Faiz
-        fruit_class_names = []
+        fruitInformation = []
     
-        # Loop through the highest folder which is the exp folder -Faiz
+        # Loop through the highest folder in the folder structure which is the exp folder -Faiz
         for exp_folder in os.listdir(imageResultsFolderPath):
 
             # Full path of each exp folder -Faiz
@@ -123,18 +131,30 @@ def predict():
 
             # Check and ensure if it's a directory to prevent any bugs -Faiz
             if os.path.isdir(exp_folder_path):
-                # Path to the crops directory inside the experiment folder -Faiz
+                # Path to the crops directory inside the exp folder -Faiz
                 crops_folder_path = os.path.join(exp_folder_path, 'crops')
-                # Check and ensure if the crops folder exists in case the ai fails to detect -Faiz
+                # Check and ensure if the crops folder exists in case the ai fails to detect because the crops folder won't exist if the AI fails to detect -Faiz
                 if os.path.exists(crops_folder_path) and os.path.isdir(crops_folder_path):
                     # Loop through each fruit class folder in the crops directory -Faiz
                     for fruit_class in os.listdir(crops_folder_path):
 
                         #Variables needed to store various information regarding the results -Faiz
+                        #Number of fruits -Faiz
                         fruit_quantity = 0
+
+                        #Name of the fruit -Faiz
                         fruit_name = ""
+
+                        #How many days till it overripes -Faiz
                         expiryInDays = 0
+
+                        #How many days till it ripens -Faiz
+                        ripenessInDays = 0
+
+                        #Current status of the ripeness -Faiz
                         currentRipenessStatus = ""
+
+                        #Image URI -Faiz
                         data_uri = ""
 
                         # Full path of the fruit class folder
@@ -161,7 +181,7 @@ def predict():
 
                             fruit_name = re.sub(r'_\d+', '', fruit_class)
 
-                            expiryInDays, currentRipenessStatus = expiryDayFinder(fruit_class)
+                            expiryInDays, currentRipenessStatus, ripenessInDays = expiryDayFinder(fruit_class)
 
                             class_info = {
                                     "name": fruit_name,
@@ -169,15 +189,16 @@ def predict():
                                     "quantity": fruit_quantity,
                                     "expiryInDays": expiryInDays,
                                     "currentRipenessStatus": currentRipenessStatus,
-                                    "fruitDateURI": data_uri
+                                    "fruitDateURI": data_uri,
+                                    "ripenessInDays": ripenessInDays
                                     }
-                            fruit_class_names.append(class_info)
+                            fruitInformation.append(class_info)
     
-        print(fruit_class_names)
+        print(fruitInformation)
 
         # Saving the results to a JSON file -Faiz
         # with open('C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\fruit_class_details.json', 'w') as json_file:
-        #     json.dump(fruit_class_names, json_file, indent=4)  
+        #     json.dump(fruitInformation, json_file, indent=4)  
 
         #Delete all results after utilizing AI Model -Faiz
         for exp_folder in os.listdir(imageResultsFolderPath):
@@ -220,7 +241,7 @@ def predict():
         #     else:
         #         print (x+" has less than zero occurences\n")
 
-        return jsonify(fruit_class_names)
+        return jsonify(fruitInformation)
 
     except Exception as e:
         print(e)

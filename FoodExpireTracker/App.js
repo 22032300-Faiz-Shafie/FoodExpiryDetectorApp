@@ -343,11 +343,20 @@ function FetchFoodData() {
 
                     <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                   </Text>
-
-                  <Text>expires in:</Text>
+                  {item.data.currentRipenessStatus === "Underripe" ? (<View> 
+                      <Text>Ripens in: {item.data.ripenessInDays} Days</Text> 
+                      <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                      <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
+                      <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                      </View>) : null}
+                  {item.data.currentRipenessStatus === "Ripe" ? (<View> 
+                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
+                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                    </View>) : null}
+                  {/* <Text>expires in:</Text>
                   <Text>
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
-                  </Text>
+                  </Text> */}
                 </View>
 
                 <IconButton
@@ -841,8 +850,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
+    resizeMode:"cover"
   },
 });
 
