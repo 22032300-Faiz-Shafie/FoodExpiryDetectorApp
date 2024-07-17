@@ -5,11 +5,13 @@ import {
   View,
   SafeAreaView,
   FlatList,
+  Linking,
   Image,
   ProgressBarAndroid,
   TouchableOpacity,
   Modal,
   Alert,
+  ScrollView,
 } from "react-native";
 
 import {
@@ -213,6 +215,27 @@ function FetchUserData() {
     }
   }
   function mangoSquire() {}
+  const currentFairpriceCards = [
+    {
+      id: "bd7adfdf-c1b1-46cx-aed5-3vd53abb28ba",
+      quantity: cUser ? cUser.data.fairprice1 : 0,
+      fairpriceLogo: require("../assets/1.png"),
+      value: 1,
+    },
+    {
+      id: "bd7adfdf-c1b1-46cx-aed5-3ad53abb28ba",
+      quantity: cUser ? cUser.data.fairprice5 : 0,
+      fairpriceLogo: require("../assets/5.png"),
+      value: 5,
+    },
+    {
+      id: "bbd7adfdf-c1b1-46cx-aed5-3ad53abb28ba",
+      quantity: cUser ? cUser.data.fairprice10 : 0,
+      fairpriceLogo: require("../assets/10.png"),
+      value: 10,
+    },
+  ];
+
   const fairpriceCards = [
     {
       id: "bd7adfdf-c1b1-46cx-aed5-3vd53abb28ba",
@@ -285,6 +308,14 @@ function FetchUserData() {
       ></View>
     );
   }
+  const buyGiftcard = async (value) => {
+    const docRef = doc(db, "loginInformation", loginID);
+    await updateDoc(docRef, {
+      [`fairprice${value}`]: increment(-1),
+    });
+
+    Linking.openURL("https://www.fairprice.com.sg/accounts?tab=vouchers");
+  };
   const yesOptionForCard = async () => {
     const gemsLeftAfterBuying = cUser.data.gems + selectedGemValue;
     if (gemsLeftAfterBuying >= 0) {
@@ -439,9 +470,12 @@ function FetchUserData() {
         </View>
       );
     }
-    if (value == "giftcards") {
+    if (value == "rewards") {
       return (
-        <View style={styles.storeContainerGift}>
+        <ScrollView
+          style={styles.storeContainerGift}
+          contentContainerStyle={styles.storeContainerGiftContent}
+        >
           <View style={{ flex: 1, width: "100%" }}>
             <Text style={{ fontSize: 25, fontWeight: "bold" }}>
               Buy giftcards
@@ -476,38 +510,87 @@ function FetchUserData() {
               )}
               keyExtractor={(item) => item.id}
             />
-            <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+
+            <Text style={{ fontSize: 25, fontWeight: "bold", marginTop: 30 }}>
               Your giftcards
             </Text>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                setModalVisible(!modalVisible);
-              }}
-            >
-              {selectedImage && (
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
+            <FlatList
+              style={{ flex: 1, width: "100%", marginTop: 10 }}
+              contentContainerStyle={{ flexGrow: 1 }}
+              data={currentFairpriceCards}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    margin: 3,
+                    elevation: 4,
+                    height: 80,
+                  }}
+                >
+                  <View style={{ marginLeft: -20 }}>
                     <Image
-                      source={selectedImage}
-                      style={{ height: 200, width: 300, resizeMode: "contain" }}
+                      source={item.fairpriceLogo}
+                      style={{
+                        height: 80,
+                        width: 120,
+                        resizeMode: "contain",
+                      }} // Adjust image size here
                     />
-                    <Text style={{ fontSize: 20 }}>
-                      {selectedGemValue} gems
-                    </Text>
-                    <TouchableOpacity onPress={yesOptionForCard}>
-                      <Text style={{ fontSize: 20, color: "purple" }}>
-                        Confirm
-                      </Text>
-                    </TouchableOpacity>
                   </View>
+                  <View
+                    style={{
+                      flexDirection: "column",
+
+                      paddingBottom: 20,
+                    }}
+                  >
+                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                      Fairprice X{item.quantity}
+                    </Text>
+                    <Text>Value: ${item.value}</Text>
+                    <Text style={{ fontSize: 13 }}>{item.description}</Text>
+                    <View>{item.progressText}</View>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => buyGiftcard(item.value)}
+                    style={{ paddingLeft: 70 }}
+                  >
+                    <Text style={{ fontSize: 25, color: "purple" }}>use</Text>
+                  </TouchableOpacity>
                 </View>
               )}
-            </Modal>
+              keyExtractor={(item) => item.id}
+            />
           </View>
-        </View>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}
+          >
+            {selectedImage && (
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Image
+                    source={selectedImage}
+                    style={{ height: 200, width: 300, resizeMode: "contain" }}
+                  />
+                  <Text style={{ fontSize: 20 }}>{selectedGemValue} gems</Text>
+                  <TouchableOpacity onPress={yesOptionForCard}>
+                    <Text style={{ fontSize: 20, color: "purple" }}>
+                      Confirm
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </Modal>
+        </ScrollView>
       );
     }
   };
@@ -537,8 +620,8 @@ function FetchUserData() {
                 label: "Badges",
               },
               {
-                value: "giftcards",
-                label: "Giftcards",
+                value: "rewards",
+                label: "Rewards",
               },
             ]}
           />
@@ -577,17 +660,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
   },
-  storeContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-  },
+
   storeContainerGift: {
+    flex: 1,
+    width: "90%",
+    height: 120,
+  },
+  storeContainerGiftContent: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
-    width: "80%",
-    height: 120,
   },
   podium1: {
     backgroundColor: "#FFD700",
