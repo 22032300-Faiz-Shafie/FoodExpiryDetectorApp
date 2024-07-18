@@ -9,6 +9,7 @@ import {
   ScrollView,
   FlatList,
   SafeAreaView,
+  Alert
 } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
@@ -185,22 +186,61 @@ const takePhoto = async (setImageUri, loginID) => {
 //should add edit button in the future -Don
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
+  const [allFruitsFetch, setAllFruitsFetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
 
-  const makeAllAdded = async () => {
-    const updateBatch = writeBatch(db);
-    for (const item of foodsfetch) {
-      updateBatch.update(doc(db, "foodCollection", item.id), {
+  //This function checks the fruit that is being added if it's considered a waste or not, warns the user if they would like to proceed -Faiz
+  const trackWastage = async (item) => {
+    const minDaysToConsiderWaste = 3;
+    var waste = false; 
+
+    allFruitsFetch.forEach(fruit => {
+
+      if(fruit.data.foodName === item.data.foodName && fruit.data.expiryInDays > minDaysToConsiderWaste && fruit.data.isadded === true){
+        waste = true; 
+      }
+    });
+    
+    return new Promise((resolve) => {
+      if(waste === true){
+        Alert.alert(
+          "Confirm Action",
+          `${item.data.foodName} already exists within your list and has a bestbefore date of ${minDaysToConsiderWaste} days or more. Do you still want to add?`,
+          [
+            { text: 'Yes', onPress: () => {addFruit(item); resolve();} },
+            {
+              text: 'No',
+              onPress: () => {resolve();},
+              style: 'cancel',
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+      else{
+        addFruit(item);
+      }
+    })
+    
+  }
+
+  //Extension of Don's code to ensure correct execution of wastage tracking adding fruit -Faiz
+  const addFruit = async (item) => {
+      updateDoc(doc(db, "foodCollection", item.id), {
         isadded: true,
       });
+  };
+
+  const makeAllAdded = async () => {
+    //const updateBatch = writeBatch(db);
+    for (const item of foodsfetch) {
+      await trackWastage(item);
     }
 
-    await updateBatch.commit();
+    //await updateBatch.commit();
   };
-  const makeAdded = (id) => {
-    updateDoc(doc(db, "foodCollection", id), {
-      isadded: true,
-    });
+  const makeAdded = (item) => {
+    trackWastage(item);
   };
 
   const makeAllDeleted = async () => {
@@ -216,6 +256,7 @@ function FetchFoodData() {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const foods = [];
       const filteringFoodItems = [];
+      const allFruitItems = [];
       querySnapshot.forEach((doc) => {
         foods.push({
           id: doc.id,
@@ -224,11 +265,13 @@ function FetchFoodData() {
       });
       setFoodsfetch(foods);
       for (const food of foods) {
+        allFruitItems.push(food);
         if (food.data.isadded == false) {
           filteringFoodItems.push(food);
         }
       }
       setFoodsfetch(filteringFoodItems);
+      setAllFruitsFetch(allFruitItems);
     });
 
     return () => unsubscribe();
@@ -313,7 +356,7 @@ function FetchFoodData() {
                   <IconButton
                     size={30}
                     icon="check"
-                    onPress={() => makeAdded(item.id)}
+                    onPress={() => makeAdded(item)}
                   />
                   <IconButton
                     icon="delete"
