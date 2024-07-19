@@ -50,8 +50,11 @@ import { TouchableOpacity } from 'react-native';
 
 
 const Stack = createNativeStackNavigator();
-const logoImg = require("./assets/download.png");
+const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
+
+
+
 //fetches all food with isadded as true, so that only added foods are displayed -Don
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
@@ -238,76 +241,71 @@ function FetchFoodData() {
       </PaperProvider>
     );
   }
-  /*const Appp = () => {
-    const [selectedValue, setSelectedValue] = useState('');
-    const [showDropdown, setShowDropdown] = useState(false);
 
-    const options = [
-      { label: 'Option 1', value: 'option1' },
-      { label: 'Option 2', value: 'option2' },
-      { label: 'Option 3', value: 'option3' },
-    ];
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
-    const handlePress = () => {
-      setShowDropdown(true);
-    };
-
-    const handleSelect = (itemValue) => {
-      setSelectedValue(itemValue);
-      setShowDropdown(false);
-    };
-    <Button title="Show Dropdown" onPress={handlePress} />
-      {showDropdown && (
-        <Picker
-          selectedValue={selectedValue}
-          onValueChange={handleSelect}
-        >
-          {options.map((option, index) => (
-            <Picker.Item key={index} label={option.label} value={option.value} />
-          ))}
-        </Picker>
-      )}*/
-
-
-  const [visible, setVisible] = useState(false);
-
-  const openMenu = () => {
-  console.log('Opening menu');
-  setVisible(true);
+  const handleIconClick = () => {
+    setIsDropdownVisible(!isDropdownVisible);
   };
 
-  const closeMenu = () => {
-  console.log('Closing menu');
-  setVisible(false);
+  const handleButtonClick = (item) => {1
+    console.log(`Button ${item} clicked`);
+    setIsDropdownVisible(false); // Close the dropdown after a button is clicked
   };
+
+
   return (
 
     <View>
       <Provider>
-      <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1, justifyContent: 'right', alignItems: 'right' }}>
-        <IconButton
-          icon="sort-variant"
-          iconColor={MD3Colors.neutral10}
-          size={30}
-          onPress={openMenu}
-        />
-        <Menu
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={
-            <Text style={{ marginTop: 20 }}>Anchor</Text>
-          }
-          style={{ marginTop: 20 }} // Ensure correct positioning
-        >
-          <Menu.Item onPress={() => { console.log('Item 1 clicked'); }} title="Item 1" />
-          <Menu.Item onPress={() => { console.log('Item 2 clicked'); }} title="Item 2" />
-          <Menu.Item onPress={() => { console.log('Item 3 clicked'); }} title="Item 3" />
-        </Menu>
-      </View>
-      </SafeAreaView>
-    </Provider>
-
+        <View style={styles.container}>
+          <IconButton
+            icon="sort-variant"
+            iconColor={MD3Colors.neutral10}
+            size={30}
+            onPress={handleIconClick}
+          />
+          <Modal
+            transparent={true}
+            visible={isDropdownVisible}
+            animationType="fade"
+            onRequestClose={() => setIsDropdownVisible(false)}
+          >
+            <TouchableOpacity
+              style={styles.modalBackground}
+              activeOpacity={1}
+              onPressOut={() => setIsDropdownVisible(false)}
+            >
+              <View style={styles.dropdownContainer}>
+                <Button
+                  mode="contained"
+                  buttonColor="#FF0000"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() => handleButtonClick(1)}
+                >
+                  Expired
+                </Button>
+                <Button
+                  mode="contained"
+                  buttonColor="#FFD700"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() => handleButtonClick(2)}
+                >
+                  Expired in 3 days
+                </Button>
+                <Button
+                  mode="contained"
+                  buttonColor="#00FF00"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() => handleButtonClick(3)}
+                >
+                  Expired in 5 days
+                </Button>
+              </View>
+            </TouchableOpacity>
+          </Modal>
+        </View>
+      </Provider>
       <FlatList
         data={foodsfetch}
         renderItem={({ item }) => {
@@ -343,16 +341,16 @@ function FetchFoodData() {
 
                     <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                   </Text>
-                  {item.data.currentRipenessStatus === "Underripe" ? (<View> 
-                      <Text>Ripens in: {item.data.ripenessInDays} Days</Text> 
-                      <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                      <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
-                      <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                      </View>) : null}
-                  {item.data.currentRipenessStatus === "Ripe" ? (<View> 
-                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
-                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                    </View>) : null}
+                  {item.data.currentRipenessStatus === "Underripe" ? (<View>
+                    <Text>Ripens in: {item.data.ripenessInDays} Days</Text>
+                    <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
+                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text>
+                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
+                  </View>) : null}
+                  {item.data.currentRipenessStatus === "Ripe" ? (<View>
+                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text>
+                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
+                  </View>) : null}
                   {/* <Text>expires in:</Text>
                   <Text>
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
@@ -401,7 +399,6 @@ function CheckExpiryDate5() {
       });
       for (const food of foods) {
         if (
-          food.data.expiryDate.toDate() < FiveDaysFromNow &&
           food.data.expiryDate.toDate() > three &&
           food.data.expiryDate.toDate() > today &&
           food.data.isadded == true &&
@@ -852,7 +849,7 @@ const styles = StyleSheet.create({
   image: {
     width: 150,
     height: 150,
-    resizeMode:"cover"
+    resizeMode: "cover"
   },
 });
 
