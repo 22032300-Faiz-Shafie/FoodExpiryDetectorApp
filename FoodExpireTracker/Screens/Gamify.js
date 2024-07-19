@@ -235,7 +235,9 @@ function FetchUserData() {
       value: 10,
     },
   ];
-
+  const currentFairpriceCardsDisplay = currentFairpriceCards.filter(
+    (item) => item.quantity > 0
+  );
   const fairpriceCards = [
     {
       id: "bd7adfdf-c1b1-46cx-aed5-3vd53abb28ba",
@@ -292,7 +294,7 @@ function FetchUserData() {
       titleDisplayed: "King Rater",
     },
   ];
-
+  const achievedBadges = Badges.filter((badge) => badge.achieved);
   function Item({ title, achieved }) {
     const badge = Badges.find((badge) => badge.title === title);
 
@@ -344,7 +346,13 @@ function FetchUserData() {
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>2</Text>
                 <View style={styles.podium2} />
                 <Text>{top2User.data.username}</Text>
-                <Text>{top2User.data.points} Exp</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text>{top2User.data.points}</Text>
+                  <Image
+                    source={require("../assets/EXP.png")}
+                    style={{ height: 25, width: 25 }}
+                  ></Image>
+                </View>
               </View>
             )}
             {top1User && (
@@ -352,7 +360,13 @@ function FetchUserData() {
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>1</Text>
                 <View style={styles.podium1} />
                 <Text>{top1User.data.username}</Text>
-                <Text>{top1User.data.points} Exp</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text>{top1User.data.points}</Text>
+                  <Image
+                    source={require("../assets/EXP.png")}
+                    style={{ height: 25, width: 25 }}
+                  ></Image>
+                </View>
               </View>
             )}
             {top3User && (
@@ -360,7 +374,13 @@ function FetchUserData() {
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>3</Text>
                 <View style={styles.podium3} />
                 <Text>{top3User.data.username}</Text>
-                <Text>{top3User.data.points} Exp</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text>{top3User.data.points}</Text>
+                  <Image
+                    source={require("../assets/EXP.png")}
+                    style={{ height: 25, width: 25 }}
+                  ></Image>
+                </View>
               </View>
             )}
           </View>
@@ -385,11 +405,17 @@ function FetchUserData() {
                 <Text style={{ fontSize: 25, flex: 1 }}>
                   {item.data.username}
                 </Text>
-                <Text
-                  style={{ fontSize: 15, minWidth: 80, textAlign: "right" }}
-                >
-                  Exp: {item.data.points}
-                </Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text
+                    style={{ fontSize: 15, minWidth: 80, textAlign: "right" }}
+                  >
+                    Exp: {item.data.points}
+                  </Text>
+                  <Image
+                    source={require("../assets/EXP.png")}
+                    style={{ height: 25, width: 25 }}
+                  ></Image>
+                </View>
                 <Divider />
               </View>
             )}
@@ -400,11 +426,12 @@ function FetchUserData() {
     } else if (value === "badges") {
       return (
         <View style={styles.badgesContainer}>
+          <Text style={{ fontSize: 25, fontWeight: "bold" }}>Badges</Text>
           <FlatList
             style={{ flex: 1, width: "100%" }}
             contentContainerStyle={{ flexGrow: 1 }}
             numColumns={4}
-            data={Badges}
+            data={achievedBadges}
             renderItem={({ item }) => (
               <View
                 style={{
@@ -428,7 +455,9 @@ function FetchUserData() {
             )}
             keyExtractor={(item) => item.id}
           />
-          <View style={{ position: "absolute", top: "20%" }}>
+          <View
+            style={{ position: "absolute", top: "30%", alignItems: "center" }}
+          >
             <View>
               <Text style={{ fontSize: 25, fontWeight: "bold" }}>Progress</Text>
             </View>
@@ -472,11 +501,8 @@ function FetchUserData() {
     }
     if (value == "rewards") {
       return (
-        <ScrollView
-          style={styles.storeContainerGift}
-          contentContainerStyle={styles.storeContainerGiftContent}
-        >
-          <View style={{ flex: 1, width: "100%" }}>
+        <ScrollView style={styles.storeContainerGift}>
+          <View style={{ flex: 1, width: "100%", alignItems: "center" }}>
             <Text style={{ fontSize: 25, fontWeight: "bold" }}>
               Buy giftcards
             </Text>
@@ -517,7 +543,7 @@ function FetchUserData() {
             <FlatList
               style={{ flex: 1, width: "100%", marginTop: 10 }}
               contentContainerStyle={{ flexGrow: 1 }}
-              data={currentFairpriceCards}
+              data={currentFairpriceCardsDisplay}
               renderItem={({ item }) => (
                 <View
                   style={{
@@ -525,6 +551,7 @@ function FetchUserData() {
                     flexDirection: "row",
                     alignItems: "center",
                     margin: 3,
+                    marginVertical: 10,
                     elevation: 4,
                     height: 80,
                   }}
@@ -580,7 +607,13 @@ function FetchUserData() {
                     source={selectedImage}
                     style={{ height: 200, width: 300, resizeMode: "contain" }}
                   />
-                  <Text style={{ fontSize: 20 }}>{selectedGemValue} gems</Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text style={{ fontSize: 20 }}>{selectedGemValue}</Text>
+                    <Image
+                      source={require("../assets/gems.png")}
+                      style={{ height: 35, width: 35 }}
+                    ></Image>
+                  </View>
                   <TouchableOpacity onPress={yesOptionForCard}>
                     <Text style={{ fontSize: 20, color: "purple" }}>
                       Confirm
@@ -598,12 +631,24 @@ function FetchUserData() {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <Text style={{ fontSize: 40 }}>
-          Exp: {cUser ? cUser.data.points : "loading..."}
-        </Text>
-        <Text style={{ fontSize: 40 }}>
-          Gems: {cUser ? cUser.data.gems : "loading..."}
-        </Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={{ fontSize: 40 }}>
+            Exp: {cUser ? cUser.data.points : "loading..."}
+          </Text>
+          <Image
+            source={require("../assets/EXP.png")}
+            style={{ height: 50, width: 50 }}
+          ></Image>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={{ fontSize: 40 }}>
+            Gems: {cUser ? cUser.data.gems : "loading..."}
+          </Text>
+          <Image
+            source={require("../assets/gems.png")}
+            style={{ height: 50, width: 50 }}
+          ></Image>
+        </View>
       </View>
       <View style={styles.bottomContainer}>
         <SafeAreaView style={styles.segmentButtonContainer}>
