@@ -50,8 +50,11 @@ import { TouchableOpacity } from 'react-native';
 
 
 const Stack = createNativeStackNavigator();
-const logoImg = require("./assets/download.png");
+const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
+
+
+
 //fetches all food with isadded as true, so that only added foods are displayed -Don
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
@@ -152,7 +155,7 @@ function FetchFoodData() {
 
     return () => unsubscribe();
   }, []);
-
+  
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [foodName, setFoodName] = useState("");
@@ -268,46 +271,37 @@ function FetchFoodData() {
         </Picker>
       )}*/
 
-
+  
   const [visible, setVisible] = useState(false);
+          
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
 
-  const openMenu = () => {
-  console.log('Opening menu');
-  setVisible(true);
-  };
-
-  const closeMenu = () => {
-  console.log('Closing menu');
-  setVisible(false);
-  };
+  
+        
   return (
-
+    
     <View>
       <Provider>
-      <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1, justifyContent: 'right', alignItems: 'right' }}>
-        <IconButton
-          icon="sort-variant"
-          iconColor={MD3Colors.neutral10}
-          size={30}
-          onPress={openMenu}
-        />
-        <Menu
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={
-            <Text style={{ marginTop: 20 }}>Anchor</Text>
-          }
-          style={{ marginTop: 20 }} // Ensure correct positioning
-        >
-          <Menu.Item onPress={() => { console.log('Item 1 clicked'); }} title="Item 1" />
-          <Menu.Item onPress={() => { console.log('Item 2 clicked'); }} title="Item 2" />
-          <Menu.Item onPress={() => { console.log('Item 3 clicked'); }} title="Item 3" />
-        </Menu>
-      </View>
-      </SafeAreaView>
-    </Provider>
-
+       <View style={{ flexDirection: 'row', justifyContent: 'left' }}>
+            <Menu
+              visible={visible}
+              onDismiss={closeMenu}
+              anchor={
+                <IconButton
+                  icon="sort-variant"
+                  iconColor={MD3Colors.neutral10}
+                  size={30}
+                  onPress={openMenu}
+                />
+              }>
+              <Menu.Item onPress={() => {}} title="Option 1" />
+              <Menu.Item onPress={() => {}} title="Option 2" />
+              <Menu.Item onPress={() => {}} title="Option 3" />
+            </Menu>
+            
+          </View>
+          </Provider>
       <FlatList
         data={foodsfetch}
         renderItem={({ item }) => {
