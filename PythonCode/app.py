@@ -58,14 +58,14 @@ def predict():
 
         image = cv2.imread(storedImageFilePath)
         image_rotate = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
-        image_resized = cv2.resize(image_rotate, (384, 512))
+        #image_resized = cv2.resize(image_rotate, (768, 1024))
         newProcessedImageLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
 
         #Save preprocessed image to original image, overwriting it -Faiz
-        cv2.imwrite(newProcessedImageLocation, image_resized)
+        cv2.imwrite(newProcessedImageLocation, image_rotate)
         
         #Loading the lastest model using detect -Faiz
-        modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best12.pt --img 512 --agnostic --conf 0.10"
+        modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best13.pt --agnostic --conf 0.10"
         modelCommandSource = modelCommand + " --source " + newProcessedImageLocation
         modelCommandProject = modelCommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages --save-crop --save-txt"
 

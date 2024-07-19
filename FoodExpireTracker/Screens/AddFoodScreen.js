@@ -174,7 +174,7 @@ const takePhoto = async (setImageUri, loginID) => {
     setImageUri(uri);
     console.log(uri);
     sendToPython(uri);
-    await delay(2000);
+    await delay(14000);
     handleInference(loginID);
     //uploadFruitImageToFirebase(uri);
   } else {
