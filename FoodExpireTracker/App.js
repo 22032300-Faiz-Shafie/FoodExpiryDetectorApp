@@ -60,9 +60,9 @@ function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
   const { loginID } = useContext(AuthContext);
-  //const filteringFoodItems = [];
+  const filteringFoodItems = [];
 
-  /*const filterFunction = async (filteringFoodItems, days) => {
+  const filterFunction = async (filteringFoodItems, days) => {
     function CheckExpiry() {
       const foodsCol = collection(db, "foodCollection");
       const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -130,7 +130,7 @@ function FetchFoodData() {
       );
     }
         return filteringFoodItems;
-   }*/
+   }
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -147,7 +147,7 @@ function FetchFoodData() {
       for (const food of foods) {
         if (food.data.isadded === true && food.data.userID === loginID) {
           filteringFoodItems.push(food);
-          //filteringFoodItems = filterfunction(filteringFoodItems)
+          filteringFoodItems = filterFunction(filteringFoodItems)
         }
       }
       setFoodsfetch(filteringFoodItems);
@@ -281,25 +281,25 @@ function FetchFoodData() {
                   mode="contained"
                   buttonColor="#FF0000"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => handleButtonClick(1)}
+                  onPress={() => filterFunction(filteringFoodItems, 0)}
                 >
-                  Expired
+                  Inedible
                 </Button>
                 <Button
                   mode="contained"
                   buttonColor="#FFD700"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => handleButtonClick(2)}
+                  onPress={() => filterFunction(filteringFoodItems, 3)}
                 >
-                  Expired in 3 days
+                  Best before 3 days
                 </Button>
                 <Button
                   mode="contained"
                   buttonColor="#00FF00"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => handleButtonClick(3)}
+                  onPress={() => filterFunction(filteringFoodItems, 5)}
                 >
-                  Expired in 5 days
+                  Best before 5 days and more
                 </Button>
               </View>
             </TouchableOpacity>
