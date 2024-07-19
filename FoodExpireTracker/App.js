@@ -272,35 +272,69 @@ function FetchFoodData() {
       )}*/
 
   
-  const [visible, setVisible] = useState(false);
-          
-  const openMenu = () => setVisible(true);
-  const closeMenu = () => setVisible(false);
+      const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
+  const handleIconClick = () => {
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
+  const handleButtonClick = (item) => {
+    console.log(`Button ${item} clicked`);
+    setIsDropdownVisible(false); // Close the dropdown after a button is clicked
+  };
   
         
   return (
     
     <View>
       <Provider>
-       <View style={{ flexDirection: 'row', justifyContent: 'left' }}>
-            <Menu
-              visible={visible}
-              onDismiss={closeMenu}
-              anchor={
-                <IconButton
-                  icon="sort-variant"
-                  iconColor={MD3Colors.neutral10}
-                  size={30}
-                  onPress={openMenu}
-                />
-              }>
-              <Menu.Item onPress={() => {}} title="Option 1" />
-              <Menu.Item onPress={() => {}} title="Option 2" />
-              <Menu.Item onPress={() => {}} title="Option 3" />
-            </Menu>
-            
+      <View style={styles.container}>
+      <IconButton
+        icon="sort-variant"
+        iconColor={MD3Colors.neutral10}
+        size={30}
+        onPress={handleIconClick}
+      />
+      <Modal
+        transparent={true}
+        visible={isDropdownVisible}
+        animationType="fade"
+        onRequestClose={() => setIsDropdownVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalBackground}
+          activeOpacity={1}
+          onPressOut={() => setIsDropdownVisible(false)}
+        >
+          <View style={styles.dropdownContainer}>
+            <Button
+              mode="contained"
+              buttonColor="#FF0000"
+              textColor={MD3Colors.neutral10}
+              onPress={() => handleButtonClick(1)}
+            >
+              Expired
+            </Button>
+            <Button
+              mode="contained"
+              buttonColor="#FFD700"
+              textColor={MD3Colors.neutral10}
+              onPress={() => handleButtonClick(2)}
+            >
+              Expired in 3 days
+            </Button>
+            <Button
+              mode="contained"
+              buttonColor="#00FF00"
+              textColor={MD3Colors.neutral10}
+              onPress={() => handleButtonClick(3)}
+            >
+              Expired in 5 days
+            </Button>
           </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
           </Provider>
       <FlatList
         data={foodsfetch}
