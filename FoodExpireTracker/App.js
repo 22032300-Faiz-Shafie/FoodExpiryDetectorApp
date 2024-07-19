@@ -155,7 +155,7 @@ function FetchFoodData() {
 
     return () => unsubscribe();
   }, []);
-  
+
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [foodName, setFoodName] = useState("");
@@ -241,101 +241,71 @@ function FetchFoodData() {
       </PaperProvider>
     );
   }
-  /*const Appp = () => {
-    const [selectedValue, setSelectedValue] = useState('');
-    const [showDropdown, setShowDropdown] = useState(false);
 
-    const options = [
-      { label: 'Option 1', value: 'option1' },
-      { label: 'Option 2', value: 'option2' },
-      { label: 'Option 3', value: 'option3' },
-    ];
-
-    const handlePress = () => {
-      setShowDropdown(true);
-    };
-
-    const handleSelect = (itemValue) => {
-      setSelectedValue(itemValue);
-      setShowDropdown(false);
-    };
-    <Button title="Show Dropdown" onPress={handlePress} />
-      {showDropdown && (
-        <Picker
-          selectedValue={selectedValue}
-          onValueChange={handleSelect}
-        >
-          {options.map((option, index) => (
-            <Picker.Item key={index} label={option.label} value={option.value} />
-          ))}
-        </Picker>
-      )}*/
-
-  
-      const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const handleIconClick = () => {
     setIsDropdownVisible(!isDropdownVisible);
   };
 
-  const handleButtonClick = (item) => {
+  const handleButtonClick = (item) => {1
     console.log(`Button ${item} clicked`);
     setIsDropdownVisible(false); // Close the dropdown after a button is clicked
   };
-  
-        
+
+
   return (
-    
+
     <View>
       <Provider>
-      <View style={styles.container}>
-      <IconButton
-        icon="sort-variant"
-        iconColor={MD3Colors.neutral10}
-        size={30}
-        onPress={handleIconClick}
-      />
-      <Modal
-        transparent={true}
-        visible={isDropdownVisible}
-        animationType="fade"
-        onRequestClose={() => setIsDropdownVisible(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalBackground}
-          activeOpacity={1}
-          onPressOut={() => setIsDropdownVisible(false)}
-        >
-          <View style={styles.dropdownContainer}>
-            <Button
-              mode="contained"
-              buttonColor="#FF0000"
-              textColor={MD3Colors.neutral10}
-              onPress={() => handleButtonClick(1)}
+        <View style={styles.container}>
+          <IconButton
+            icon="sort-variant"
+            iconColor={MD3Colors.neutral10}
+            size={30}
+            onPress={handleIconClick}
+          />
+          <Modal
+            transparent={true}
+            visible={isDropdownVisible}
+            animationType="fade"
+            onRequestClose={() => setIsDropdownVisible(false)}
+          >
+            <TouchableOpacity
+              style={styles.modalBackground}
+              activeOpacity={1}
+              onPressOut={() => setIsDropdownVisible(false)}
             >
-              Expired
-            </Button>
-            <Button
-              mode="contained"
-              buttonColor="#FFD700"
-              textColor={MD3Colors.neutral10}
-              onPress={() => handleButtonClick(2)}
-            >
-              Expired in 3 days
-            </Button>
-            <Button
-              mode="contained"
-              buttonColor="#00FF00"
-              textColor={MD3Colors.neutral10}
-              onPress={() => handleButtonClick(3)}
-            >
-              Expired in 5 days
-            </Button>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-    </View>
-          </Provider>
+              <View style={styles.dropdownContainer}>
+                <Button
+                  mode="contained"
+                  buttonColor="#FF0000"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() => handleButtonClick(1)}
+                >
+                  Expired
+                </Button>
+                <Button
+                  mode="contained"
+                  buttonColor="#FFD700"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() => handleButtonClick(2)}
+                >
+                  Expired in 3 days
+                </Button>
+                <Button
+                  mode="contained"
+                  buttonColor="#00FF00"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() => handleButtonClick(3)}
+                >
+                  Expired in 5 days
+                </Button>
+              </View>
+            </TouchableOpacity>
+          </Modal>
+        </View>
+      </Provider>
       <FlatList
         data={foodsfetch}
         renderItem={({ item }) => {
@@ -371,16 +341,16 @@ function FetchFoodData() {
 
                     <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                   </Text>
-                  {item.data.currentRipenessStatus === "Underripe" ? (<View> 
-                      <Text>Ripens in: {item.data.ripenessInDays} Days</Text> 
-                      <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                      <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
-                      <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                      </View>) : null}
-                  {item.data.currentRipenessStatus === "Ripe" ? (<View> 
-                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
-                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                    </View>) : null}
+                  {item.data.currentRipenessStatus === "Underripe" ? (<View>
+                    <Text>Ripens in: {item.data.ripenessInDays} Days</Text>
+                    <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
+                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text>
+                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
+                  </View>) : null}
+                  {item.data.currentRipenessStatus === "Ripe" ? (<View>
+                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text>
+                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
+                  </View>) : null}
                   {/* <Text>expires in:</Text>
                   <Text>
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
@@ -429,7 +399,6 @@ function CheckExpiryDate5() {
       });
       for (const food of foods) {
         if (
-          food.data.expiryDate.toDate() < FiveDaysFromNow &&
           food.data.expiryDate.toDate() > three &&
           food.data.expiryDate.toDate() > today &&
           food.data.isadded == true &&
@@ -880,7 +849,7 @@ const styles = StyleSheet.create({
   image: {
     width: 150,
     height: 150,
-    resizeMode:"cover"
+    resizeMode: "cover"
   },
 });
 
