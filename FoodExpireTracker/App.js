@@ -189,10 +189,13 @@ function FetchFoodData() {
       setExpiryInDays(data.expiryInDays);
 
       let maxLength;
+      let ripeLength;
       if (data.foodName === "Mango") {
         maxLength = 16;
+        ripeLength = 8;
       } else if ((data.foodName = "Pineapple")) {
         maxLength = 13;
+        ripeLength = 6;
       }
       setSliderMaxLength(maxLength);
       const currentLength = maxLength - data.expiryInDays;
@@ -249,37 +252,56 @@ function FetchFoodData() {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <Text style={styles.modalText}>Edit Fruit</Text>
-                <View>
-                  <Image style={styles.image} source={{ uri: imageUri }} />
-                </View>
-                <View style={{ marginTop: 20 }}>
-                  <Button
-                    icon="camera"
-                    mode="contained-tonal"
-                    buttonColor="green"
-                    onPress={() => takePhoto(setImageUri, loginID)}
-                  >
-                    Edit Photo
-                  </Button>
-                  <Text style={{ fontSize: 23 }}>Choose Fruit</Text>
-                </View>
-                <RadioButton.Group
-                  onValueChange={(newFoodName) => {
-                    setFoodName(newFoodName);
-                    let newMaxLength;
-                    if (newFoodName === "Mango") {
-                      newMaxLength = 16;
-                    } else if ((newFoodName = "Pineapple")) {
-                      newMaxLength = 13;
-                    }
-                    setSliderMaxLength(newMaxLength);
-                    setSliderCurrentLength(newMaxLength - expiryInDays);
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    width: "100%",
+                    marginTop: 20,
                   }}
-                  value={foodName}
                 >
-                  <RadioButton.Item label="Pineapple" value="Pineapple" />
-                  <RadioButton.Item label="Mango" value="Mango" />
-                </RadioButton.Group>
+                  <View style={{ flex: 1, alignItems: "center" }}>
+                    <Image
+                      style={{
+                        width: 120,
+                        height: 120,
+                        resizeMode: "cover",
+                        marginBottom: 10,
+                      }}
+                      source={{ uri: imageUri }}
+                    />
+                    <Button
+                      icon="camera"
+                      mode="contained-tonal"
+                      buttonColor="green"
+                      onPress={() => takePhoto(setImageUri, loginID)}
+                    >
+                      Edit Photo
+                    </Button>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 23 }}>Choose Fruit</Text>
+                    <RadioButton.Group
+                      onValueChange={(newFoodName) => {
+                        setFoodName(newFoodName);
+                        let newMaxLength;
+                        if (newFoodName === "Mango") {
+                          newMaxLength = 16;
+                        } else if (newFoodName === "Pineapple") {
+                          newMaxLength = 13;
+                        }
+                        setSliderMaxLength(newMaxLength);
+                        setSliderCurrentLength(newMaxLength - expiryInDays);
+                      }}
+                      value={foodName}
+                    >
+                      <RadioButton.Item label="Pineapple" value="Pineapple" />
+                      <RadioButton.Item label="Mango" value="Mango" />
+                      <RadioButton.Item label="Avocado" value="Avocado" />
+                    </RadioButton.Group>
+                  </View>
+                </View>
                 <TextInput
                   style={styles.input2}
                   value={quantity}
@@ -287,6 +309,9 @@ function FetchFoodData() {
                   label="Enter Quantity"
                   keyboardType="number-pad"
                 />
+                <Text style={{ fontSize: 23, paddingBottom: 10 }}>
+                  Enter ripeness
+                </Text>
                 <View style={{ flexDirection: "row" }}>
                   <Text>Unripe</Text>
                   <Slider
@@ -301,24 +326,37 @@ function FetchFoodData() {
                   />
                   <Text>Overripe</Text>
                 </View>
-                <Text>{Math.round(sliderCurrentLength)} days</Text>
-
-                <Button
-                  icon="upload"
-                  mode="contained-tonal"
-                  buttonColor="green"
-                  onPress={handleEditFood}
-                >
-                  Edit
-                </Button>
-                <Button
-                  icon="cancel"
-                  mode="contained-tonal"
-                  buttonColor="red"
-                  onPress={handleCancelEdit}
-                >
-                  Cancel
-                </Button>
+                <Text style={{ fontSize: 15 }}>
+                  {(() => {
+                    if (foodName === "Mango") {
+                      if (sliderCurrentLength < 8) {
+                        return `Ripens in ${8 - sliderCurrentLength} days`;
+                      } else {
+                        return `Best before in ${
+                          sliderMaxLength - sliderCurrentLength
+                        } days`;
+                      }
+                    } else if (foodName === "Pineapple") {
+                      if (sliderCurrentLength < 6) {
+                        return `Ripens in ${6 - sliderCurrentLength} days`;
+                      } else {
+                        return `Best before in ${
+                          sliderMaxLength - sliderCurrentLength
+                        } days`;
+                      }
+                    }
+                  })()}
+                </Text>
+                <View style={{ marginTop: 10 }}>
+                  <Button
+                    icon="upload"
+                    mode="contained-tonal"
+                    buttonColor="green"
+                    onPress={handleEditFood}
+                  >
+                    Save
+                  </Button>
+                </View>
               </View>
             </View>
           </Modal>
@@ -487,7 +525,7 @@ function FetchFoodData() {
                 />
 
                 <Divider />
-                <View style={{ marginLeft: -15 }}>
+                <View style={{ marginLeft: -25 }}>
                   <EditFood itemID={item.id} />
                 </View>
               </View>
