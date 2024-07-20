@@ -1,5 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect, useContext, useCallback } from "react";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import {
   StyleSheet,
   Text,
@@ -168,6 +170,7 @@ function FetchFoodData() {
     const [sliderCurrentLength, setSliderCurrentLength] = useState(0);
     const [sliderCurrentLengthBefore, setSliderCurrentLengthBefore] =
       useState(0);
+    const [editImage, setEditImage] = useState(null);
 
     useEffect(() => {
       if (modalVisible && itemID) {
@@ -205,6 +208,7 @@ function FetchFoodData() {
           foodName: foodName,
           quantity: parseInt(quantity),
           expiryInDays: expiresIn,
+          fruitImageURI: imageUri,
         });
         setModalVisible(false);
         Alert.alert("Food details updated successfully!");
@@ -216,6 +220,19 @@ function FetchFoodData() {
     const handleCancelEdit = () => {
       setSliderCurrentLength(sliderCurrentLengthBefore);
       setModalVisible(false);
+    };
+    const takePhoto = async (setImageUri, loginID) => {
+      const cameraResp = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        quality: 1,
+        allowsEditing: false,
+      });
+
+      if (!cameraResp.canceled) {
+        setImageUri(cameraResp.assets[0].uri);
+      } else {
+        console.log("Camera was canceled");
+      }
     };
 
     return (
@@ -235,14 +252,26 @@ function FetchFoodData() {
                 <View>
                   <Image style={styles.image} source={{ uri: imageUri }} />
                 </View>
-
                 <View style={{ marginTop: 20 }}>
+                  <Button
+                    icon="camera"
+                    mode="contained-tonal"
+                    buttonColor="green"
+                    onPress={() => takePhoto(setImageUri, loginID)}
+                  >
+                    Edit Photo
+                  </Button>
                   <Text style={{ fontSize: 23 }}>Choose Fruit</Text>
                 </View>
                 <RadioButton.Group
                   onValueChange={(newFoodName) => {
                     setFoodName(newFoodName);
-                    let newMaxLength = newFoodName === "Mango" ? 16 : 13;
+                    let newMaxLength;
+                    if (newFoodName === "Mango") {
+                      newMaxLength = 16;
+                    } else if ((newFoodName = "Pineapple")) {
+                      newMaxLength = 13;
+                    }
                     setSliderMaxLength(newMaxLength);
                     setSliderCurrentLength(newMaxLength - expiryInDays);
                   }}
@@ -258,17 +287,20 @@ function FetchFoodData() {
                   label="Enter Quantity"
                   keyboardType="number-pad"
                 />
-
-                <Slider
-                  style={{ width: 200, height: 40 }}
-                  minimumValue={0}
-                  maximumValue={sliderMaxLength}
-                  value={sliderCurrentLength}
-                  step={1}
-                  minimumTrackTintColor="black"
-                  maximumTrackTintColor="#000000"
-                  onValueChange={(value) => setSliderCurrentLength(value)}
-                />
+                <View style={{ flexDirection: "row" }}>
+                  <Text>Unripe</Text>
+                  <Slider
+                    style={{ width: 200, height: 40 }}
+                    minimumValue={0}
+                    maximumValue={sliderMaxLength}
+                    value={sliderCurrentLength}
+                    step={1}
+                    minimumTrackTintColor="black"
+                    maximumTrackTintColor="#000000"
+                    onValueChange={(value) => setSliderCurrentLength(value)}
+                  />
+                  <Text>Overripe</Text>
+                </View>
                 <Text>{Math.round(sliderCurrentLength)} days</Text>
 
                 <Button
@@ -936,8 +968,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   image: {
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
     resizeMode: "cover",
   },
 });
