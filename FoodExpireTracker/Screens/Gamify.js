@@ -427,23 +427,25 @@ function FetchUserData() {
       return (
         <View style={styles.badgesContainer}>
           <Text style={{ fontSize: 25, fontWeight: "bold" }}>Badges</Text>
-          <FlatList
-            style={{ flex: 1, width: "100%" }}
-            contentContainerStyle={{ flexGrow: 1 }}
-            numColumns={4}
-            data={achievedBadges}
-            renderItem={({ item }) => (
-              <View
-                style={{
-                  backgroundColor: "white",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: 10,
-                  margin: 3,
-                  elevation: 4,
-                }}
-              >
-                <View>
+
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <FlatList
+              style={{ width: "100%" }}
+              contentContainerStyle={{ alignItems: "center" }}
+              numColumns={4}
+              data={achievedBadges}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    alignItems: "center",
+                    padding: 10,
+                    margin: 3,
+                    elevation: 4,
+                  }}
+                >
                   <Image
                     source={
                       item.achieved ? item.imgAchieved : item.imgNotAchieved
@@ -451,54 +453,61 @@ function FetchUserData() {
                     style={{ height: 80, width: 80 }}
                   />
                 </View>
-              </View>
-            )}
-            keyExtractor={(item) => item.id}
-          />
-          <View
-            style={{ position: "absolute", top: "30%", alignItems: "center" }}
-          >
-            <View>
-              <Text style={{ fontSize: 25, fontWeight: "bold" }}>Progress</Text>
-            </View>
-            <FlatList
-              style={{ flex: 1, width: "100%", marginTop: 10 }}
-              contentContainerStyle={{ flexGrow: 1 }}
-              data={Badges}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    backgroundColor: "white",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    padding: 10,
-                    margin: 3,
-                    elevation: 4,
-                  }}
-                >
-                  <View>
-                    <Image
-                      source={
-                        item.achieved ? item.imgAchieved : item.imgNotAchieved
-                      }
-                      style={{ height: 100, width: 100 }}
-                    />
-                  </View>
-                  <View style={{ flexDirection: "column", marginLeft: 10 }}>
-                    <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                      {item.titleDisplayed}
-                    </Text>
-                    <Text style={{ fontSize: 13 }}>{item.description}</Text>
-                    <View>{item.progressText}</View>
-                  </View>
-                </View>
               )}
               keyExtractor={(item) => item.id}
             />
           </View>
+
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <Text style={{ fontSize: 25, fontWeight: "bold" }}>Progress</Text>
+            <ScrollView
+              contentContainerStyle={{ alignItems: "center" }}
+              style={{ maxHeight: 300 }}
+            >
+              <FlatList
+                style={{
+                  flex: 1,
+                  width: "100%",
+                  marginTop: 10,
+                }}
+                contentContainerStyle={{ flexGrow: 1 }}
+                data={Badges}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      backgroundColor: "white",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      padding: 10,
+                      margin: 3,
+                      elevation: 4,
+                    }}
+                  >
+                    <View>
+                      <Image
+                        source={
+                          item.achieved ? item.imgAchieved : item.imgNotAchieved
+                        }
+                        style={{ height: 70, width: 70 }}
+                      />
+                    </View>
+                    <View style={{ flexDirection: "column", marginLeft: 10 }}>
+                      <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                        {item.titleDisplayed}
+                      </Text>
+                      <Text style={{ fontSize: 13 }}>{item.description}</Text>
+                      <View>{item.progressText}</View>
+                    </View>
+                  </View>
+                )}
+                keyExtractor={(item) => item.id}
+              />
+            </ScrollView>
+          </View>
         </View>
       );
     }
+
     if (value == "rewards") {
       return (
         <ScrollView style={styles.storeContainerGift}>
@@ -584,7 +593,15 @@ function FetchUserData() {
                     onPress={() => buyGiftcard(item.value)}
                     style={{ paddingLeft: 70 }}
                   >
-                    <Text style={{ fontSize: 25, color: "purple" }}>use</Text>
+                    <Text
+                      style={{
+                        fontSize: 25,
+                        color: "purple",
+                        marginLeft: -40,
+                      }}
+                    >
+                      use
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -701,9 +718,8 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   badgesContainer: {
-    alignItems: "center",
-    justifyContent: "center",
     flex: 1,
+    width: "100%",
   },
 
   storeContainerGift: {

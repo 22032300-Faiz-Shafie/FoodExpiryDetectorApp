@@ -232,7 +232,19 @@ function FetchFoodData() {
       });
 
       if (!cameraResp.canceled) {
-        setImageUri(cameraResp.assets[0].uri);
+        try {
+          const base64 = await FileSystem.readAsStringAsync(
+            cameraResp.assets[0].uri,
+            {
+              encoding: "base64",
+            }
+          );
+
+          const base64Image = `data:image/jpg;base64,${base64}`;
+          setImageUri(base64Image);
+        } catch (error) {
+          console.error("Error reading file:", error);
+        }
       } else {
         console.log("Camera was canceled");
       }
@@ -934,7 +946,7 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const windowHeight = Dimensions.get("window").height;
-const modalheight = windowHeight - 170;
+const modalheight = windowHeight - 200;
 const styles = StyleSheet.create({
   backGround: {
     flex: 1,
@@ -1006,8 +1018,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   image: {
-    width: 120,
-    height: 120,
+    width: 110,
+    height: 110,
     resizeMode: "cover",
   },
 });
