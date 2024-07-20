@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -20,6 +20,7 @@ import AiAccuracyForm from "./Screens/AiAccuracyForm";
 import LoginScreen from "./Screens/LoginScreen";
 import Gamify from "./Screens/Gamify";
 import SignUpScreen from "./Screens/SignUpScreen";
+import Slider from "@react-native-community/slider";
 import { db } from "./firebaseConfig";
 import {
   doc,
@@ -46,14 +47,11 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { AuthProvider } from "./Screens/AuthContext";
 import AuthContext from "./Screens/AuthContext";
-import { TouchableOpacity } from 'react-native';
-
+import { TouchableOpacity } from "react-native";
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
-
-
 
 //fetches all food with isadded as true, so that only added foods are displayed -Don
 function FetchFoodData() {
@@ -71,7 +69,7 @@ function FetchFoodData() {
       //const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
       const daysDate = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
       const { loginID } = useContext(AuthContext);
-    
+
       useEffect(() => {
         const q = query(foodsCol);
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -91,18 +89,19 @@ function FetchFoodData() {
               food.data.userID === loginID
             ) {
               filteringFoodItems.push(food);
+            }
+            setFilteredFoodItems(filteringFoodItems);
           }
-          setFilteredFoodItems(filteringFoodItems);
-        }
         });
-      
-        
+
         return () => unsubscribe();
       }, []);
-    
+
       return (
         <View>
-          <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
+          <View
+            style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}
+          >
             <Icon source={"alert-circle"} size={35} />
             <Text style={{ fontSize: 25 }}>
               Fruits that are expiring in 5 days:{" "}
@@ -119,8 +118,11 @@ function FetchFoodData() {
                   >
                     FRUIT NAME: {item.data.foodName}
                   </Text>
-                  <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                    EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                  <Text
+                    style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                  >
+                    EXPIRATION DAY:{" "}
+                    {item.data.expiryDate.toDate().toLocaleString()}
                   </Text>
                 </SafeAreaView>
               );
@@ -129,8 +131,8 @@ function FetchFoodData() {
         </View>
       );
     }
-        return filteringFoodItems;
-   }
+    return filteringFoodItems;
+  };
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -147,7 +149,7 @@ function FetchFoodData() {
       for (const food of foods) {
         if (food.data.isadded === true && food.data.userID === loginID) {
           filteringFoodItems.push(food);
-          filteringFoodItems = filterFunction(filteringFoodItems)
+          filteringFoodItems = filterFunction(filteringFoodItems);
         }
       }
       setFoodsfetch(filteringFoodItems);
@@ -160,32 +162,60 @@ function FetchFoodData() {
     const [modalVisible, setModalVisible] = useState(false);
     const [foodName, setFoodName] = useState("");
     const [quantity, setQuantity] = useState("");
+    const [imageUri, setImageUri] = useState("");
+    const [expiryInDays, setExpiryInDays] = useState(0);
+    const [sliderMaxLength, setSliderMaxLength] = useState(0);
+    const [sliderCurrentLength, setSliderCurrentLength] = useState(0);
+    const [sliderCurrentLengthBefore, setSliderCurrentLengthBefore] =
+      useState(0);
 
     useEffect(() => {
-      fetchEditingFoodData(itemID);
-    }, [itemID]);
+      if (modalVisible && itemID) {
+        fetchEditingFoodData(itemID);
+      }
+    }, [modalVisible, itemID]);
 
     const fetchEditingFoodData = async (itemID) => {
       const docRef = doc(db, "foodCollection", itemID);
       const docSnap = await getDoc(docRef);
-      setFoodName(docSnap.data().foodName);
-      setQuantity(docSnap.data().quantity.toString());
+      const data = docSnap.data();
+
+      setFoodName(data.foodName);
+      setQuantity(data.quantity.toString());
+      setImageUri(data.fruitImageURI.toString());
+      setExpiryInDays(data.expiryInDays);
+
+      let maxLength;
+      if (data.foodName === "Mango") {
+        maxLength = 16;
+      } else if ((data.foodName = "Pineapple")) {
+        maxLength = 13;
+      }
+      setSliderMaxLength(maxLength);
+      const currentLength = maxLength - data.expiryInDays;
+      setSliderCurrentLength(currentLength);
+      setSliderCurrentLengthBefore(currentLength);
     };
+
     const handleEditFood = async () => {
+      const expiresIn = sliderMaxLength - sliderCurrentLength;
+
       try {
         await updateDoc(doc(db, "foodCollection", itemID), {
           foodName: foodName,
           quantity: parseInt(quantity),
+          expiryInDays: expiresIn,
         });
-        console.log(foodName);
-        console.log(quantity);
-        setFoodName("");
-        setQuantity("");
         setModalVisible(false);
         Alert.alert("Food details updated successfully!");
       } catch (error) {
         console.error("Error updating document: ", error);
       }
+    };
+
+    const handleCancelEdit = () => {
+      setSliderCurrentLength(sliderCurrentLengthBefore);
+      setModalVisible(false);
     };
 
     return (
@@ -202,32 +232,62 @@ function FetchFoodData() {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <Text style={styles.modalText}>Edit Fruit</Text>
+                <View>
+                  <Image style={styles.image} source={{ uri: imageUri }} />
+                </View>
+
+                <View style={{ marginTop: 20 }}>
+                  <Text style={{ fontSize: 23 }}>Choose Fruit</Text>
+                </View>
+                <RadioButton.Group
+                  onValueChange={(newFoodName) => {
+                    setFoodName(newFoodName);
+                    let newMaxLength = newFoodName === "Mango" ? 16 : 13;
+                    setSliderMaxLength(newMaxLength);
+                    setSliderCurrentLength(newMaxLength - expiryInDays);
+                  }}
+                  value={foodName}
+                >
+                  <RadioButton.Item label="Pineapple" value="Pineapple" />
+                  <RadioButton.Item label="Mango" value="Mango" />
+                </RadioButton.Group>
+                <TextInput
+                  style={styles.input2}
+                  value={quantity}
+                  onChangeText={setQuantity}
+                  label="Enter Quantity"
+                  keyboardType="number-pad"
+                />
+
+                <Slider
+                  style={{ width: 200, height: 40 }}
+                  minimumValue={0}
+                  maximumValue={sliderMaxLength}
+                  value={sliderCurrentLength}
+                  step={1}
+                  minimumTrackTintColor="black"
+                  maximumTrackTintColor="#000000"
+                  onValueChange={(value) => setSliderCurrentLength(value)}
+                />
+                <Text>{Math.round(sliderCurrentLength)} days</Text>
+
+                <Button
+                  icon="upload"
+                  mode="contained-tonal"
+                  buttonColor="green"
+                  onPress={handleEditFood}
+                >
+                  Edit
+                </Button>
+                <Button
+                  icon="cancel"
+                  mode="contained-tonal"
+                  buttonColor="red"
+                  onPress={handleCancelEdit}
+                >
+                  Cancel
+                </Button>
               </View>
-              <View style={{ marginTop: 50 }}>
-                <Text style={{ fontSize: 23 }}>choose fruit</Text>
-              </View>
-              <RadioButton.Group
-                onValueChange={(newFoodName) => setFoodName(newFoodName)}
-                value={foodName}
-              >
-                <RadioButton.Item label="Pineapple" value="Pineapple" />
-                <RadioButton.Item label="Mango" value="Mango" />
-              </RadioButton.Group>
-              <TextInput
-                style={styles.input2}
-                value={quantity}
-                onChangeText={setQuantity}
-                label="Enter Quantity"
-                keyboardType="number-pad"
-              />
-              <Button
-                icon="upload"
-                mode="contained-tonal"
-                buttonColor="green"
-                onPress={handleEditFood}
-              >
-                Edit
-              </Button>
             </View>
           </Modal>
 
@@ -248,14 +308,13 @@ function FetchFoodData() {
     setIsDropdownVisible(!isDropdownVisible);
   };
 
-  const handleButtonClick = (item) => {1
+  const handleButtonClick = (item) => {
+    1;
     console.log(`Button ${item} clicked`);
     setIsDropdownVisible(false); // Close the dropdown after a button is clicked
   };
 
-
   return (
-
     <View>
       <Provider>
         <View style={styles.container}>
@@ -341,16 +400,47 @@ function FetchFoodData() {
 
                     <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                   </Text>
-                  {item.data.currentRipenessStatus === "Underripe" ? (<View>
-                    <Text>Ripens in: {item.data.ripenessInDays} Days</Text>
-                    <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
-                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text>
-                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
-                  </View>) : null}
-                  {item.data.currentRipenessStatus === "Ripe" ? (<View>
-                    <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text>
-                    <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text>
-                  </View>) : null}
+                  {item.data.currentRipenessStatus === "Underripe" ? (
+                    <View>
+                      <Text>Ripens in: {item.data.ripenessInDays} Days</Text>
+                      <Text>
+                        Ripens on:{" "}
+                        {item.data.futureRipeningDate
+                          .toDate()
+                          .toLocaleString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })}
+                      </Text>
+                      <Text>
+                        Best Before{" (days)"}: {item.data.expiryInDays} Days
+                      </Text>
+                      <Text>
+                        Best Before:{" "}
+                        {item.data.expiryDate.toDate().toLocaleString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </Text>
+                    </View>
+                  ) : null}
+                  {item.data.currentRipenessStatus === "Ripe" ? (
+                    <View>
+                      <Text>
+                        Best Before{" (days)"}: {item.data.expiryInDays} Days
+                      </Text>
+                      <Text>
+                        Best Before:{" "}
+                        {item.data.expiryDate.toDate().toLocaleString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </Text>
+                    </View>
+                  ) : null}
                   {/* <Text>expires in:</Text>
                   <Text>
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
@@ -372,11 +462,10 @@ function FetchFoodData() {
             </SafeAreaView>
           );
         }}
-      /></View>
+      />
+    </View>
   );
-};
-
-
+}
 
 function CheckExpiryDate5() {
   const foodsCol = collection(db, "foodCollection");
@@ -849,7 +938,6 @@ const styles = StyleSheet.create({
   image: {
     width: 150,
     height: 150,
-    resizeMode: "cover"
+    resizeMode: "cover",
   },
 });
-
