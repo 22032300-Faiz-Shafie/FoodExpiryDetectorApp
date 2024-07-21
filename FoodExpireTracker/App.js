@@ -64,24 +64,24 @@ function FetchFoodData() {
 
   //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
   const dateToDayConversion = (givenDate) => {
-    currentDate = new Date(); 
+    currentDate = new Date();
     expiryDate = givenDate.toDate();
     const timeDifference = expiryDate - currentDate;
     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
-    return daysDifference; 
+    return daysDifference;
   };
 
   //An alert function that notifies user when fruits in the fruit list have been expired -Faiz
   const alertFunction = async (fruits) => {
-    for(const fruit of fruits){
-      if(dateToDayConversion(fruit.data.expiryDate) === 0){
+    for (const fruit of fruits) {
+      if (dateToDayConversion(fruit.data.expiryDate) === 0) {
         Alert.alert(
           "Confirm Action",
           `${fruit.data.foodName} is already past Best Before Date.`,
           [
             {
-              text: 'Dismiss'
+              text: "Dismiss",
             },
           ],
           { cancelable: false }
@@ -188,7 +188,6 @@ function FetchFoodData() {
 
     return () => unsubscribe();
   }, []);
-
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [foodName, setFoodName] = useState("");
@@ -215,35 +214,78 @@ function FetchFoodData() {
       setFoodName(data.foodName);
       setQuantity(data.quantity.toString());
       setImageUri(data.fruitImageURI.toString());
-      setExpiryInDays(data.expiryInDays);
+      const daysUntilExpiry = dateToDayConversion(data.expiryDate);
+      setExpiryInDays(daysUntilExpiry);
 
       let maxLength;
       let ripeLength;
       if (data.foodName === "Mango") {
         maxLength = 16;
         ripeLength = 8;
-      } else if ((data.foodName = "Pineapple")) {
+      } else if (data.foodName === "Pineapple") {
         maxLength = 13;
         ripeLength = 6;
+      } else if (data.foodName === "Avocado") {
+        maxLength = 8;
+        ripeLength = 5;
       }
       setSliderMaxLength(maxLength);
-      const currentLength = maxLength - data.expiryInDays;
+      const currentLength = maxLength - daysUntilExpiry;
       setSliderCurrentLength(currentLength);
       setSliderCurrentLengthBefore(currentLength);
     };
 
     const handleEditFood = async () => {
-      const expiresIn = sliderMaxLength - sliderCurrentLength;
-
+      const newExpiryInDays = sliderMaxLength - sliderCurrentLength;
+      const newExpiryDate = new Date(
+        Date.now() + newExpiryInDays * 24 * 60 * 60 * 1000
+      );
+      let newRipeness = "";
+      let daysUntilRipe = 0;
+      if (foodName === "Mango") {
+        if (newExpiryInDays > 8) {
+          newRipeness = "Underripe";
+          daysUntilRipe = newExpiryInDays - 8;
+        } else if (newExpiryInDays > 0 && newExpiryInDays <= 8) {
+          newRipeness = "Ripe";
+        } else {
+          newRipeness = "Overripe";
+        }
+      } else if (foodName === "Pineapple") {
+        if (newExpiryInDays > 7) {
+          newRipeness = "Underripe";
+          daysUntilRipe = newExpiryInDays - 7;
+        } else if (newExpiryInDays > 0 && newExpiryInDays <= 7) {
+          newRipeness = "Ripe";
+        } else {
+          newRipeness = "Overripe";
+        }
+      } else if (foodName === "Avocado") {
+        if (newExpiryInDays > 3) {
+          newRipeness = "Underripe";
+          daysUntilRipe = newExpiryInDays - 3;
+        } else if (newExpiryInDays > 0 && newExpiryInDays <= 3) {
+          newRipeness = "Ripe";
+        } else {
+          newRipeness = "Overripe";
+        }
+      }
+      const newRipeningDate = new Date(
+        Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
+      );
       try {
         await updateDoc(doc(db, "foodCollection", itemID), {
           foodName: foodName,
           quantity: parseInt(quantity),
-          expiryInDays: expiresIn,
+          expiryDate: newExpiryDate,
           fruitImageURI: imageUri,
+          currentRipenessStatus: newRipeness,
+          futureRipeningDate: newRipeningDate,
         });
         setModalVisible(false);
-        Alert.alert("Food details updated successfully!");
+        if (newRipeness != "Overripe") {
+          Alert.alert("Food details updated successfully!");
+        }
       } catch (error) {
         console.error("Error updating document: ", error);
       }
@@ -253,6 +295,7 @@ function FetchFoodData() {
       setSliderCurrentLength(sliderCurrentLengthBefore);
       setModalVisible(false);
     };
+
     const takePhoto = async (setImageUri, loginID) => {
       const cameraResp = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -331,6 +374,8 @@ function FetchFoodData() {
                           newMaxLength = 16;
                         } else if (newFoodName === "Pineapple") {
                           newMaxLength = 13;
+                        } else if (newFoodName === "Avocado") {
+                          newMaxLength = 8;
                         }
                         setSliderMaxLength(newMaxLength);
                         setSliderCurrentLength(newMaxLength - expiryInDays);
@@ -380,6 +425,14 @@ function FetchFoodData() {
                     } else if (foodName === "Pineapple") {
                       if (sliderCurrentLength < 6) {
                         return `Ripens in ${6 - sliderCurrentLength} days`;
+                      } else {
+                        return `Best before in ${
+                          sliderMaxLength - sliderCurrentLength
+                        } days`;
+                      }
+                    } else if (foodName === "Avocado") {
+                      if (sliderCurrentLength < 5) {
+                        return `Ripens in ${5 - sliderCurrentLength} days`;
                       } else {
                         return `Best before in ${
                           sliderMaxLength - sliderCurrentLength
@@ -513,7 +566,10 @@ function FetchFoodData() {
                   </Text>
                   {item.data.currentRipenessStatus === "Underripe" ? (
                     <View>
-                      <Text>Ripens in: {dateToDayConversion(item.data.futureRipeningDate)} Days</Text>
+                      <Text>
+                        Ripens in:{" "}
+                        {dateToDayConversion(item.data.futureRipeningDate)} Days
+                      </Text>
                       <Text>
                         Ripens on:{" "}
                         {item.data.futureRipeningDate
@@ -525,7 +581,8 @@ function FetchFoodData() {
                           })}
                       </Text>
                       <Text>
-                        Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days
+                        Best Before{" (days)"}:{" "}
+                        {dateToDayConversion(item.data.expiryDate)} Days
                       </Text>
                       <Text>
                         Best Before:{" "}
@@ -540,7 +597,8 @@ function FetchFoodData() {
                   {item.data.currentRipenessStatus === "Ripe" ? (
                     <View>
                       <Text>
-                        Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days
+                        Best Before{" (days)"}:{" "}
+                        {dateToDayConversion(item.data.expiryDate)} Days
                       </Text>
                       <Text>
                         Best Before:{" "}
@@ -557,7 +615,12 @@ function FetchFoodData() {
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
                   </Text> */}
                 </View>
-                <IconButton icon="information" iconColor={"lightblue"} size={30} style={{marginRight: -20}}/>
+                <IconButton
+                  icon="information"
+                  iconColor={"lightblue"}
+                  size={30}
+                  style={{ marginRight: -20 }}
+                />
                 <IconButton
                   icon="delete"
                   iconColor={MD3Colors.error50}
