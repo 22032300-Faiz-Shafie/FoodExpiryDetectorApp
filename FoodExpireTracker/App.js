@@ -62,10 +62,20 @@ function FetchFoodData() {
   const { loginID } = useContext(AuthContext);
   const filteringFoodItems = [];
 
+  //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
+  const dateToDayConversion = (givenDate) => {
+    currentDate = new Date(); 
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference; 
+  };
+
   //An alert function that notifies user when fruits in the fruit list have been expired -Faiz
   const alertFunction = async (fruits) => {
     for(const fruit of fruits){
-      if(fruit.data.expiryInDays === 0){
+      if(dateToDayConversion(fruit.data.expiryDate) === 0){
         Alert.alert(
           "Confirm Action",
           `${fruit.data.foodName} is already past Best Before Date.`,
@@ -503,7 +513,7 @@ function FetchFoodData() {
                   </Text>
                   {item.data.currentRipenessStatus === "Underripe" ? (
                     <View>
-                      <Text>Ripens in: {item.data.ripenessInDays} Days</Text>
+                      <Text>Ripens in: {dateToDayConversion(item.data.futureRipeningDate)} Days</Text>
                       <Text>
                         Ripens on:{" "}
                         {item.data.futureRipeningDate
@@ -515,7 +525,7 @@ function FetchFoodData() {
                           })}
                       </Text>
                       <Text>
-                        Best Before{" (days)"}: {item.data.expiryInDays} Days
+                        Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days
                       </Text>
                       <Text>
                         Best Before:{" "}
@@ -530,7 +540,7 @@ function FetchFoodData() {
                   {item.data.currentRipenessStatus === "Ripe" ? (
                     <View>
                       <Text>
-                        Best Before{" (days)"}: {item.data.expiryInDays} Days
+                        Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days
                       </Text>
                       <Text>
                         Best Before:{" "}
@@ -547,7 +557,7 @@ function FetchFoodData() {
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
                   </Text> */}
                 </View>
-
+                <IconButton icon="information" iconColor={"lightblue"} size={30} style={{marginRight: -20}}/>
                 <IconButton
                   icon="delete"
                   iconColor={MD3Colors.error50}

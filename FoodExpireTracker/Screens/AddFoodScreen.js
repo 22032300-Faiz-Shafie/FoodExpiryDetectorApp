@@ -77,19 +77,16 @@ const uploadFruitInformation = async (loginID) => {
       const futureRipeningDate = new Date();
       futureRipeningDate.setDate(futureRipeningDate.getDate() + fruit.ripenessInDays);
 
-
       const fruitData = {
         fruitClass: fruit.class,
         currentRipenessStatus: fruit.currentRipenessStatus,
         expiryDate: futureExpiryDate,
-        expiryInDays: fruit.expiryInDays,
         foodName: fruit.name,
         quantity: fruit.quantity,
         isadded: false, 
         fruitImageURI: fruit.fruitDateURI,
         userID: loginID,
         futureRipeningDate: futureRipeningDate,
-        ripenessInDays: fruit.ripenessInDays
       };
      
       const docRef = await addDoc(
@@ -189,14 +186,23 @@ function FetchFoodData() {
   const [allFruitsFetch, setAllFruitsFetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
 
+  //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
+  const dateToDayConversion = (givenDate) => {
+    currentDate = new Date(); 
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference; 
+  };
+
   //This function checks the fruit that is being added if it's considered a waste or not, warns the user if they would like to proceed -Faiz
   const trackWastage = async (item) => {
     const minDaysToConsiderWaste = 3;
     var waste = false; 
 
     allFruitsFetch.forEach(fruit => {
-
-      if(fruit.data.foodName === item.data.foodName && fruit.data.expiryInDays > minDaysToConsiderWaste && fruit.data.isadded === true){
+      if(fruit.data.foodName === item.data.foodName && dateToDayConversion(fruit.data.expiryDate) > minDaysToConsiderWaste && fruit.data.isadded === true){
         waste = true; 
       }
     });
@@ -332,14 +338,14 @@ function FetchFoodData() {
                       </Text>
                     </Text>
                     {item.data.currentRipenessStatus === "Underripe" ? (<View> 
-                      <Text>Ripens in: {item.data.ripenessInDays} Days</Text> 
+                      <Text>Ripens in: {dateToDayConversion(item.data.futureRipeningDate)} Days</Text> 
                       <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                      <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
-                      <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                      <Text>Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days</Text> 
+                      <Text>Best Before:{" "} {item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })}</Text> 
                       </View>) : null}
                     {item.data.currentRipenessStatus === "Ripe" ? (<View> 
-                      <Text>Best Before{" (days)"}: {item.data.expiryInDays} Days</Text> 
-                      <Text>Best Before: {item.data.expiryDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
+                      <Text>Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days</Text> 
+                      <Text>Best Before:{" "} {item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })}</Text> 
                       </View>) : null}
                     {/* <Text>expires in:{" "}
                           {item.data.expiryInDays}
