@@ -117,6 +117,20 @@ def predict():
                     currentRipenessStatus = "Overripe"
                     ripenessInDays = 0
                     expiryInDays = 0
+            elif(fruit_name == "Avocado"):
+                if(currentRipenessDay < 5):
+                    currentRipenessStatus = "Underripe"
+                    ripenessInDays = 5 - currentRipenessDay
+                    expiryInDays = 8 - currentRipenessDay
+                elif(currentRipenessDay >= 5 and currentRipenessDay < 8):
+                    currentRipenessStatus = "Ripe"
+                    ripenessInDays = 0
+                    expiryInDays = 8 - currentRipenessDay
+                else:
+                    currentRipenessStatus = "Overripe"
+                    ripenessInDays = 0
+                    expiryInDays = 0
+
 
             return expiryInDays, currentRipenessStatus, ripenessInDays
 
