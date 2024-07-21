@@ -62,79 +62,97 @@ function FetchFoodData() {
   const { loginID } = useContext(AuthContext);
   const filteringFoodItems = [];
 
-  const filterFunction = async (filteringFoodItems, days) => {
-    function CheckExpiry() {
-      const foodsCol = collection(db, "foodCollection");
-      const [filteredFoodItems, setFilteredFoodItems] = useState([]);
-      var today = new Date();
-      //const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
-      //const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-      const daysDate = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
-      const { loginID } = useContext(AuthContext);
-
-      useEffect(() => {
-        const q = query(foodsCol);
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const foods = [];
-          const filteringFoodItems = [];
-          querySnapshot.forEach((doc) => {
-            foods.push({
-              id: doc.id,
-              data: doc.data(),
-            });
-          });
-          for (const food of foods) {
-            if (
-              food.data.expiryDate.toDate() <= daysDate &&
-              food.data.expiryDate.toDate() > today &&
-              food.data.isadded == true &&
-              food.data.userID === loginID
-            ) {
-              filteringFoodItems.push(food);
-            }
-            setFilteredFoodItems(filteringFoodItems);
-          }
-        });
-
-        return () => unsubscribe();
-      }, []);
-
-      return (
-        <View>
-          <View
-            style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}
-          >
-            <Icon source={"alert-circle"} size={35} />
-            <Text style={{ fontSize: 25 }}>
-              Fruits that are expiring in 5 days:{" "}
-            </Text>
-          </View>
-          <FlatList
-            data={filteredFoodItems}
-            renderItem={({ item }) => {
-              return (
-                <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
-                  <Text
-                    key={item.id}
-                    style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
-                  >
-                    FRUIT NAME: {item.data.foodName}
-                  </Text>
-                  <Text
-                    style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
-                  >
-                    EXPIRATION DAY:{" "}
-                    {item.data.expiryDate.toDate().toLocaleString()}
-                  </Text>
-                </SafeAreaView>
-              );
-            }}
-          />
-        </View>
-      );
+  //An alert function that notifies user when fruits in the fruit list have been expired -Faiz
+  const alertFunction = async (fruits) => {
+    for(const fruit of fruits){
+      if(fruit.data.expiryInDays === 0){
+        Alert.alert(
+          "Confirm Action",
+          `${fruit.data.foodName} is already past Best Before Date.`,
+          [
+            {
+              text: 'Dismiss'
+            },
+          ],
+          { cancelable: false }
+        );
+      }
     }
-    return filteringFoodItems;
   };
+
+  // const filterFunction = async (filteringFoodItems, days) => {
+  //   function CheckExpiry() {
+  //     const foodsCol = collection(db, "foodCollection");
+  //     const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  //     var today = new Date();
+  //     //const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
+  //     //const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+  //     const daysDate = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+  //     const { loginID } = useContext(AuthContext);
+
+  //     useEffect(() => {
+  //       const q = query(foodsCol);
+  //       const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  //         const foods = [];
+  //         const filteringFoodItems = [];
+  //         querySnapshot.forEach((doc) => {
+  //           foods.push({
+  //             id: doc.id,
+  //             data: doc.data(),
+  //           });
+  //         });
+  //         for (const food of foods) {
+  //           if (
+  //             food.data.expiryDate.toDate() <= daysDate &&
+  //             food.data.expiryDate.toDate() > today &&
+  //             food.data.isadded == true &&
+  //             food.data.userID === loginID
+  //           ) {
+  //             filteringFoodItems.push(food);
+  //           }
+  //           setFilteredFoodItems(filteringFoodItems);
+  //         }
+  //       });
+
+  //       return () => unsubscribe();
+  //     }, []);
+
+  //     return (
+  //       <View>
+  //         <View
+  //           style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}
+  //         >
+  //           <Icon source={"alert-circle"} size={35} />
+  //           <Text style={{ fontSize: 25 }}>
+  //             Fruits that are expiring in 5 days:{" "}
+  //           </Text>
+  //         </View>
+  //         <FlatList
+  //           data={filteredFoodItems}
+  //           renderItem={({ item }) => {
+  //             return (
+  //               <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
+  //                 <Text
+  //                   key={item.id}
+  //                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+  //                 >
+  //                   FRUIT NAME: {item.data.foodName}
+  //                 </Text>
+  //                 <Text
+  //                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+  //                 >
+  //                   EXPIRATION DAY:{" "}
+  //                   {item.data.expiryDate.toDate().toLocaleString()}
+  //                 </Text>
+  //               </SafeAreaView>
+  //             );
+  //           }}
+  //         />
+  //       </View>
+  //     );
+  //   }
+  //   return filteringFoodItems;
+  // };
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -151,10 +169,11 @@ function FetchFoodData() {
       for (const food of foods) {
         if (food.data.isadded === true && food.data.userID === loginID) {
           filteringFoodItems.push(food);
-          filteringFoodItems = filterFunction(filteringFoodItems);
+          //filteringFoodItems = filterFunction(filteringFoodItems);
         }
       }
       setFoodsfetch(filteringFoodItems);
+      alertFunction(filteringFoodItems);
     });
 
     return () => unsubscribe();
