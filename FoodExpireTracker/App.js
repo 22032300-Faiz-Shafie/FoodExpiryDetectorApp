@@ -50,7 +50,6 @@ import { Picker } from "@react-native-picker/picker";
 import { AuthProvider } from "./Screens/AuthContext";
 import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
-import * as WebBrowser from 'expo-web-browser';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
@@ -90,23 +89,6 @@ function FetchFoodData() {
       }
     }
   };
-
-  const browserFunction = async (fruit) => {
-    const url = 'https://expo.dev';
-
-    if(fruit.data.foodName === "Pineapple"){
-      let result = await WebBrowser.openBrowserAsync(url);
-      console.log(result);
-    }
-    else if(fruit.data.foodName === "Mango"){
-      result = await WebBrowser.openBrowserAsync(url);
-      console.log(result);
-    }
-    else if(fruit.data.foodName === "Avocado"){
-      result = await WebBrowser.openBrowserAsync(url);
-      console.log(result);
-    }
-  }
 
   // const filterFunction = async (filteringFoodItems, days) => {
   //   function CheckExpiry() {
@@ -443,10 +425,6 @@ function FetchFoodData() {
     setIsDropdownVisible(false); // Close the dropdown after a button is clicked
   };
 
-  const handleInformationButtonClick = (fruit) => {
-    browserFunction(fruit)
-  }
-
   return (
     <View>
       <Provider>
@@ -579,7 +557,7 @@ function FetchFoodData() {
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
                   </Text> */}
                 </View>
-                <IconButton icon="information" iconColor={"lightblue"} size={30} style={{marginRight: -20}} onPress={() => handleInformationButtonClick(item)}/>
+                <IconButton icon="information" iconColor={"lightblue"} size={30} style={{marginRight: -20}}/>
                 <IconButton
                   icon="delete"
                   iconColor={MD3Colors.error50}
