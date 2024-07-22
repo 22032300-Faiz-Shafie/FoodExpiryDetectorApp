@@ -50,6 +50,7 @@ import { Picker } from "@react-native-picker/picker";
 import { AuthProvider } from "./Screens/AuthContext";
 import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
+import * as WebBrowser from 'expo-web-browser';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
@@ -89,6 +90,22 @@ function FetchFoodData() {
       }
     }
   };
+
+   const browserFunction = async (fruit) => {
+
+    if(fruit.data.foodName === "Pineapple"){
+      let result = await WebBrowser.openBrowserAsync("https://www.nutritionvalue.org/Pineapple%2C_raw_63141010_nutritional_value.html?utm_source=share-by-url");
+      console.log(result);
+    }
+    else if(fruit.data.foodName === "Mango"){
+      result = await WebBrowser.openBrowserAsync("https://www.nutritionvalue.org/Mango%2C_raw_63129010_nutritional_value.html?utm_source=share-by-url");
+      console.log(result);
+    }
+    else if(fruit.data.foodName === "Avocado"){
+      result = await WebBrowser.openBrowserAsync("https://www.nutritionvalue.org/Avocado%2C_raw_63105010_nutritional_value.html?utm_source=share-by-url");
+      console.log(result);
+    }
+  }
 
   // const filterFunction = async (filteringFoodItems, days) => {
   //   function CheckExpiry() {
@@ -540,7 +557,7 @@ function FetchFoodData() {
                   backgroundColor: "white",
                   flexDirection: "row",
                   alignItems: "center",
-                  padding: 10,
+                  //padding: 10,
                   shadowColor: "#000",
                   shadowOffset: {
                     width: 0,
@@ -615,12 +632,7 @@ function FetchFoodData() {
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
                   </Text> */}
                 </View>
-                <IconButton
-                  icon="information"
-                  iconColor={"lightblue"}
-                  size={30}
-                  style={{ marginRight: -20 }}
-                />
+                <IconButton icon="information" iconColor={"blue"} size={30} style={{marginRight: -20}} onPress={() => browserFunction(item)}/>
                 <IconButton
                   icon="delete"
                   iconColor={MD3Colors.error50}
@@ -1111,7 +1123,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 110,
-    height: 110,
-    resizeMode: "cover",
+    height: 150,
+    resizeMode: "contain",
   },
 });
