@@ -2,6 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
+
 import {
   StyleSheet,
   Text,
@@ -50,7 +52,7 @@ import { Picker } from "@react-native-picker/picker";
 import { AuthProvider } from "./Screens/AuthContext";
 import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
-import * as WebBrowser from 'expo-web-browser';
+import * as WebBrowser from "expo-web-browser";
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
@@ -91,21 +93,24 @@ function FetchFoodData() {
     }
   };
 
-   const browserFunction = async (fruit) => {
-
-    if(fruit.data.foodName === "Pineapple"){
-      let result = await WebBrowser.openBrowserAsync("https://www.nutritionvalue.org/Pineapple%2C_raw_63141010_nutritional_value.html?utm_source=share-by-url");
+  const browserFunction = async (fruit) => {
+    if (fruit.data.foodName === "Pineapple") {
+      let result = await WebBrowser.openBrowserAsync(
+        "https://www.nutritionvalue.org/Pineapple%2C_raw_63141010_nutritional_value.html?utm_source=share-by-url"
+      );
+      console.log(result);
+    } else if (fruit.data.foodName === "Mango") {
+      result = await WebBrowser.openBrowserAsync(
+        "https://www.nutritionvalue.org/Mango%2C_raw_63129010_nutritional_value.html?utm_source=share-by-url"
+      );
+      console.log(result);
+    } else if (fruit.data.foodName === "Avocado") {
+      result = await WebBrowser.openBrowserAsync(
+        "https://www.nutritionvalue.org/Avocado%2C_raw_63105010_nutritional_value.html?utm_source=share-by-url"
+      );
       console.log(result);
     }
-    else if(fruit.data.foodName === "Mango"){
-      result = await WebBrowser.openBrowserAsync("https://www.nutritionvalue.org/Mango%2C_raw_63129010_nutritional_value.html?utm_source=share-by-url");
-      console.log(result);
-    }
-    else if(fruit.data.foodName === "Avocado"){
-      result = await WebBrowser.openBrowserAsync("https://www.nutritionvalue.org/Avocado%2C_raw_63105010_nutritional_value.html?utm_source=share-by-url");
-      console.log(result);
-    }
-  }
+  };
 
   // const filterFunction = async (filteringFoodItems, days) => {
   //   function CheckExpiry() {
@@ -316,14 +321,19 @@ function FetchFoodData() {
     const takePhoto = async (setImageUri, loginID) => {
       const cameraResp = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
-        quality: 1,
+        quality: 0.2,
         allowsEditing: false,
       });
 
       if (!cameraResp.canceled) {
         try {
-          const base64 = await FileSystem.readAsStringAsync(
+          const compressedImage = await ImageManipulator.manipulateAsync(
             cameraResp.assets[0].uri,
+            [],
+            { compress: 0.3, format: ImageManipulator.SaveFormat.JPEG }
+          );
+          const base64 = await FileSystem.readAsStringAsync(
+            compressedImage.uri,
             {
               encoding: "base64",
             }
@@ -632,7 +642,13 @@ function FetchFoodData() {
                     expires on: {item.data.expiryDate.toDate().toLocaleString()}
                   </Text> */}
                 </View>
-                <IconButton icon="information" iconColor={"blue"} size={30} style={{marginRight: -20}} onPress={() => browserFunction(item)}/>
+                <IconButton
+                  icon="information"
+                  iconColor={"blue"}
+                  size={30}
+                  style={{ marginRight: -20 }}
+                  onPress={() => browserFunction(item)}
+                />
                 <IconButton
                   icon="delete"
                   iconColor={MD3Colors.error50}
