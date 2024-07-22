@@ -71,7 +71,7 @@ def predict():
         cv2.imwrite(newProcessedImageLocation, image_rotate)
         
         #Loading the lastest model using detect -Faiz
-        modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best13.pt --agnostic --conf 0.10"
+        modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best22.pt --agnostic --conf 0.10"
         modelCommandSource = modelCommand + " --source " + newProcessedImageLocation
         modelCommandProject = modelCommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages --save-crop --save-txt"
 
