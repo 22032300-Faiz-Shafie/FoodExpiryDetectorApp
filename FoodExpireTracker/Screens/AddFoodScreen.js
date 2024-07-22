@@ -41,26 +41,47 @@ const Stack = createNativeStackNavigator();
 //A temporary Array that holds all fruit information -Faiz
 var fruitInformation = [];
 
-// Delay function that returns a Promise
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+//Obsolete due to combined function -Faiz
+// Delay function that returns a Promise -Faiz
+//const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 
 //This handles Inference, makes a http request using flask to our app.py python. -Faiz
-const handleInference = async (loginID) => {
-
+//inserts image and sends it to python, the image will then be used for computer vision -Don
+const handleInference = async (uri, loginID) => {
+  
   try {
-    //Utilize own ip address and port. -Faiz
-    const response = await fetch("http://192.168.18.24:5000/predict");
-    const jsonData = await response.json(); 
-    
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: "base64",
+    });
+    const data = {
+      base64: base64,
+    };
+    console.log(JSON.stringify(base64));
 
-    // Loop through each item in the jsonData array and put them into fruitInformation array -Faiz
-    jsonData.forEach(fruit => {
-      fruitInformation.push(fruit)
+    const response = await fetch("http://192.168.18.24:5000/predict", {
+      //Don
+      //fetch("http://192.168.31.1:5000/image", {
+      //use FLASK IP in app.py -Don
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+      const jsonData = data
+
+      jsonData.forEach(fruit => {
+        fruitInformation.push(fruit)
+      });
+
+      console.log(fruitInformation);
+      uploadFruitInformation(loginID);
+    })
+    .catch(error => {
+      console.error('Error:', error);
     });
 
-    console.log(fruitInformation);
-    uploadFruitInformation(loginID);
   }
 
   catch (error) {
@@ -139,25 +160,25 @@ const uploadFruitInformation = async (loginID) => {
 // }
 
 //inserts image and sends it to python, the image will then be used for computer vision -Don
-const sendToPython = async (uri) => {
-  const base64 = await FileSystem.readAsStringAsync(uri, {
-    encoding: "base64",
-  });
-  const data = {
-    base64: base64,
-  };
-  console.log(JSON.stringify(base64));
-  fetch("http://192.168.18.24:5000/image", {
-    //Don
-    //fetch("http://192.168.31.1:5000/image", {
-    //use FLASK IP in app.py -Don
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(data),
-  }).then(() => {
-    console.log("food added");
-  });
-};
+// const sendToPython = async (uri) => {
+//   const base64 = await FileSystem.readAsStringAsync(uri, {
+//     encoding: "base64",
+//   });
+//   const data = {
+//     base64: base64,
+//   };
+//   console.log(JSON.stringify(base64));
+//   fetch("http://192.168.18.24:5000/image", {
+//     //Don
+//     //fetch("http://192.168.31.1:5000/image", {
+//     //use FLASK IP in app.py -Don
+//     method: "POST",
+//     headers: { "content-type": "application/json" },
+//     body: JSON.stringify(data),
+//   }).then(() => {
+//     console.log("food added");
+//   });
+// };
 //code to take photo -Don Added LoginID so that other functions can take use of that -Faiz
 const takePhoto = async (setImageUri, loginID) => {
   const cameraResp = await ImagePicker.launchCameraAsync({
@@ -170,9 +191,9 @@ const takePhoto = async (setImageUri, loginID) => {
     const uri = cameraResp.assets[0].uri;
     setImageUri(uri);
     console.log(uri);
-    sendToPython(uri);
-    await delay(14000);
-    handleInference(loginID);
+    //sendToPython(uri);
+    //await delay(14000);
+    handleInference(uri, loginID);
     //uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");

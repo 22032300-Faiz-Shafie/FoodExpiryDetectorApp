@@ -26,29 +26,35 @@ imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpi
 #testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media.jpg"
 storedImageFilePath = imageFilePath + "\\newImage" + ".jpg"     
 
+#Obsolete, combined with handleInference function for better performance -Faiz
 #adds image from camera to image folder, which is then used for computer vision -Don
-@app.route('/image', methods=['POST'])
-
-def add_Image():
-    try:
-        data = request.json 
-        base64_image = data.get('base64') 
-        decodedData = base64.b64decode((base64_image)) 
-        image = PIL.Image.open(BytesIO(decodedData)) 
-        image.save(storedImageFilePath, "JPEG") #the image here might not need to be stored, and instead just goes into computer vision directly -Don
-        return "success"   
-    except Exception as e:
-        print(e)
-        return "failed"
+# @app.route('/image', methods=['POST'])
+# def add_Image():
+#     try:
+#         data = request.json 
+#         base64_image = data.get('base64') 
+#         decodedData = base64.b64decode((base64_image)) 
+#         image = PIL.Image.open(BytesIO(decodedData)) 
+#         image.save(storedImageFilePath, "JPEG") #the image here might not need to be stored, and instead just goes into computer vision directly -Don
+#         return "success"   
+#     except Exception as e:
+#         print(e)
+#         return "failed"
 
 #Runs Inference -Faiz
-@app.route('/predict', methods=['GET'])
+@app.route('/predict', methods=['POST'])
 def predict():
     try:
         #Don
         #model = torch.hub.load('.', 'custom', path="C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best.pt", source='local')
         #imagePath = "C:\\2024_SEM1\\FoodExpiryDetectorApp\\PythonCode\\images\\SinglePineapple1.jpg"     
         #model = torch.hub.load(hubconfLocation, 'custom', path="C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best2.pt", source='local')
+
+        data = request.json 
+        base64_image = data.get('base64') 
+        decodedData = base64.b64decode((base64_image)) 
+        image = PIL.Image.open(BytesIO(decodedData)) 
+        image.save(storedImageFilePath, "JPEG") #the image here might not need to be stored, and instead just goes into computer vision directly -Don
 
         #Change directory to the working directory -Faiz
         CDWorkingDirectoryCommand = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\"
