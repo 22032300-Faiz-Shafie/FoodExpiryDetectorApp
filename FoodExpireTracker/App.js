@@ -755,7 +755,7 @@ function CheckExpiryDate5() {
 
   return (
     <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
+      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
         <Icon source={"alert-circle"} size={35} />
         <Text style={{ fontSize: 25 }}>
           Fruits that are spoiling in 5 days or more:{" "}
@@ -819,7 +819,7 @@ function CheckExpiryDate() {
 
   return (
     <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
+      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
         <Icon source={"alert-circle"} size={35} />
         <Text style={{ fontSize: 25 }}>
           Fruits that are spoiling in 3 days:{" "}
@@ -880,7 +880,7 @@ function CheckExpired() {
 
   return (
     <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
+      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
         <Icon source={"alert-circle"} size={35} />
         <Text style={{ fontSize: 25 }}>Fruits that are spoilt: </Text>
       </View>
