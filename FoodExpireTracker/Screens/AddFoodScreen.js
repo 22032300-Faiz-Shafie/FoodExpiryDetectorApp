@@ -108,6 +108,7 @@ const uploadFruitInformation = async (loginID) => {
         fruitImageURI: fruit.fruitDateURI,
         userID: loginID,
         futureRipeningDate: futureRipeningDate,
+        fruitFamily: fruit.fruitFamily
       };
      
       const docRef = await addDoc(
@@ -379,6 +380,10 @@ function FetchFoodData() {
                       Current Ripeness Status:{" "}
                       {item.data.currentRipenessStatus}
                     </Text>
+                    {item.data.fruitFamily != "" ? 
+                    (<View> 
+                      <Text>Fruit Family: {item.data.fruitFamily}</Text> 
+                    </View>) : null}
                   </View>
                   <IconButton
                     size={30}
