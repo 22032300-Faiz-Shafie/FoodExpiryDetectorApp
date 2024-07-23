@@ -54,6 +54,7 @@ import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 
+
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
@@ -112,79 +113,80 @@ function FetchFoodData() {
     }
   };
 
-  // const filterFunction = async (filteringFoodItems, days) => {
-  //   function CheckExpiry() {
-  //     const foodsCol = collection(db, "foodCollection");
-  //     const [filteredFoodItems, setFilteredFoodItems] = useState([]);
-  //     var today = new Date();
-  //     //const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
-  //     //const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-  //     const daysDate = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
-  //     const { loginID } = useContext(AuthContext);
 
-  //     useEffect(() => {
-  //       const q = query(foodsCol);
-  //       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  //         const foods = [];
-  //         const filteringFoodItems = [];
-  //         querySnapshot.forEach((doc) => {
-  //           foods.push({
-  //             id: doc.id,
-  //             data: doc.data(),
-  //           });
-  //         });
-  //         for (const food of foods) {
-  //           if (
-  //             food.data.expiryDate.toDate() <= daysDate &&
-  //             food.data.expiryDate.toDate() > today &&
-  //             food.data.isadded == true &&
-  //             food.data.userID === loginID
-  //           ) {
-  //             filteringFoodItems.push(food);
-  //           }
-  //           setFilteredFoodItems(filteringFoodItems);
-  //         }
-  //       });
+  /*const filterFunction = async (filteringFoodItems, days) => {
+     function CheckExpiry() {
+       const foodsCol = collection(db, "foodCollection");
+       const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+       var today = new Date();
+       const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
+       const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+       const daysDate = new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+       const { loginID } = useContext(AuthContext);
 
-  //       return () => unsubscribe();
-  //     }, []);
+       useEffect(() => {
+         const q = query(foodsCol);
+         const unsubscribe = onSnapshot(q, (querySnapshot) => {
+           const foods = [];
+           const filteringFoodItems = [];
+           querySnapshot.forEach((doc) => {
+             foods.push({
+               id: doc.id,
+               data: doc.data(),
+             });
+           });
+           for (const food of foods) {
+             if (
+               food.data.expiryDate.toDate() <= daysDate &&
+               food.data.expiryDate.toDate() > today &&
+               food.data.isadded == true &&
+               food.data.userID === loginID
+             ) {
+               filteringFoodItems.push(food);
+             }
+             setFilteredFoodItems(filteringFoodItems);
+           }
+         });
 
-  //     return (
-  //       <View>
-  //         <View
-  //           style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}
-  //         >
-  //           <Icon source={"alert-circle"} size={35} />
-  //           <Text style={{ fontSize: 25 }}>
-  //             Fruits that are expiring in 5 days:{" "}
-  //           </Text>
-  //         </View>
-  //         <FlatList
-  //           data={filteredFoodItems}
-  //           renderItem={({ item }) => {
-  //             return (
-  //               <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
-  //                 <Text
-  //                   key={item.id}
-  //                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
-  //                 >
-  //                   FRUIT NAME: {item.data.foodName}
-  //                 </Text>
-  //                 <Text
-  //                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
-  //                 >
-  //                   EXPIRATION DAY:{" "}
-  //                   {item.data.expiryDate.toDate().toLocaleString()}
-  //                 </Text>
-  //               </SafeAreaView>
-  //             );
-  //           }}
-  //         />
-  //       </View>
-  //     );
-  //   }
-  //   return filteringFoodItems;
-  // };
+         return () => unsubscribe();
+       }, []);
+
+       return (
+         <View>
+           <View
+             style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}
+           >
+             <Icon source={"alert-circle"} size={35} />
+             <Text style={{ fontSize: 25 }}>
+               Fruits that are expiring in 5 days:{" "}
+             </Text>
+           </View>
+           <FlatList
+             data={filteredFoodItems}
+             renderItem={({ item }) => {
+               return (
+                 <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
+                   <Text
+                     key={item.id}
+                    style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                  >
+                     FRUIT NAME: {item.data.foodName}
+                   </Text>
+                   <Text
+                     style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                   >
+                     EXPIRATION DAY:{" "}
+                     {item.data.expiryDate.toDate().toLocaleString()}
+                   </Text>
+                 </SafeAreaView>
+               );
+             }}
+           />
+         </View>
+       );
+     }
+     return filteringFoodItems;
+     };*/
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -445,25 +447,22 @@ function FetchFoodData() {
                       if (sliderCurrentLength < 8) {
                         return `Ripens in ${8 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${
-                          sliderMaxLength - sliderCurrentLength
-                        } days`;
+                        return `Best before in ${sliderMaxLength - sliderCurrentLength
+                          } days`;
                       }
                     } else if (foodName === "Pineapple") {
                       if (sliderCurrentLength < 6) {
                         return `Ripens in ${6 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${
-                          sliderMaxLength - sliderCurrentLength
-                        } days`;
+                        return `Best before in ${sliderMaxLength - sliderCurrentLength
+                          } days`;
                       }
                     } else if (foodName === "Avocado") {
                       if (sliderCurrentLength < 5) {
                         return `Ripens in ${5 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${
-                          sliderMaxLength - sliderCurrentLength
-                        } days`;
+                        return `Best before in ${sliderMaxLength - sliderCurrentLength
+                          } days`;
                       }
                     }
                   })()}
@@ -505,12 +504,55 @@ function FetchFoodData() {
     setIsDropdownVisible(false); // Close the dropdown after a button is clicked
   };
 
+  /*function WarningDashboardVisibility() {
+    /*const [isWarningDashboardVisible, setIsWarningDashboardVisible] =
+      useState(false);
+  
+    const handleToggleWarningDashboardVisibility = async () => {
+      if (isWarningDashboardVisible === false) {
+        setIsWarningDashboardVisible(true);
+      } else {
+        setIsWarningDashboardVisible(false);
+      }
+    };
+  
+    return (
+      <View>
+        <View style={{ flexDirection: "row" }}>
+          <View>
+            <Button onPress={handleToggleWarningDashboardVisibility}>
+              Expired
+            </Button>
+          </View>
+          <View>
+            <Button onPress={handleToggleWarningDashboardVisibility}>
+              Expiring in 3 days
+            </Button>
+          </View>
+          <View>
+            <Button onPress={handleToggleWarningDashboardVisibility}>
+              Expiring in 5 days
+            </Button>
+          </View>
+        </View>
+        <View>
+          {isWarningDashboardVisible ? <CheckExpired /> : <CheckExpiryDate />}
+        </View>
+      </View>
+    ); */
+
+  const [visibleComponent, setVisibleComponent] = useState(null);
+
+  const handleToggleWarningDashboardVisibility = (component) => {
+    setVisibleComponent(component);
+  };
+
   return (
     <View>
       <Provider>
         <View style={styles.container}>
           <IconButton
-            icon="sort-variant"
+            icon="filter-outline"
             iconColor={MD3Colors.neutral10}
             size={30}
             onPress={handleIconClick}
@@ -531,7 +573,7 @@ function FetchFoodData() {
                   mode="contained"
                   buttonColor="#FF0000"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => filterFunction(filteringFoodItems, 0)}
+                  onPress={() => handleToggleWarningDashboardVisibility("expired")}
                 >
                   Inedible
                 </Button>
@@ -539,7 +581,7 @@ function FetchFoodData() {
                   mode="contained"
                   buttonColor="#FFD700"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => filterFunction(filteringFoodItems, 3)}
+                  onPress={() => handleToggleWarningDashboardVisibility("expiring3")}
                 >
                   Best before 3 days
                 </Button>
@@ -547,13 +589,34 @@ function FetchFoodData() {
                   mode="contained"
                   buttonColor="#00FF00"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => filterFunction(filteringFoodItems, 5)}
+                  onPress={() => handleToggleWarningDashboardVisibility("expiring5")}
                 >
                   Best before 5 days and more
                 </Button>
               </View>
+              <View>
+                {visibleComponent === "expired" && <CheckExpired />}
+                {visibleComponent === "expiring3" && <CheckExpiryDate />}
+                {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
+              </View>
+              <IconButton
+                icon="close"
+                iconColor={MD3Colors.neutral10}
+                size={30}
+                onPress={() => setIsDropdownVisible(false)}
+                style={{ marginTop: 20 }}
+              />
             </TouchableOpacity>
           </Modal>
+        </View>
+        <View style={[styles.container, { flexDirection: 'row', justifyContent: 'flex-end' }]}>
+          <IconButton
+            icon="sort-variant"
+            iconColor={MD3Colors.neutral10}
+            size={30}
+            onPress={() => console.log('Button pressed!')}
+          />
+          
         </View>
       </Provider>
       <FlatList
@@ -703,36 +766,50 @@ function CheckExpiryDate5() {
 
     return () => unsubscribe();
   }, []);
+  const [modalVisible, setModalVisible] = useState(true);
 
   return (
-    <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
-        <Icon source={"alert-circle"} size={35} />
-        <Text style={{ fontSize: 25 }}>
-          Fruits that are expiring in 5 days:{" "}
-        </Text>
+    <Modal
+      visible={modalVisible}
+      animationType="slide"
+    >
+      <View style={{ flex: 1, padding: 20 }}>
+        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
+          <Icon source={"alert-circle"} size={35} />
+          <Text style={{ fontSize: 25 }}>
+            Fruits that are spoiling in 5 days or more:{" "}
+          </Text>
+        </View>
+        <FlatList
+          data={filteredFoodItems}
+          renderItem={({ item }) => {
+            return (
+              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
+                <Text
+                  key={item.id}
+                  style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                >
+                  FRUIT NAME: {item.data.foodName}
+                </Text>
+                <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
+                  EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                </Text>
+              </SafeAreaView>
+            );
+          }}
+        />
+        <TouchableOpacity
+          style={{ backgroundColor: '#007AFF', padding: 10, borderRadius: 5, marginTop: 20 }}
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
+          <Text style={{ fontSize: 18, color: 'white' }}>Close</Text>
+        </TouchableOpacity>
       </View>
-      <FlatList
-        data={filteredFoodItems}
-        renderItem={({ item }) => {
-          return (
-            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
-              <Text
-                key={item.id}
-                style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
-              >
-                FRUIT NAME: {item.data.foodName}
-              </Text>
-              <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
-              </Text>
-            </SafeAreaView>
-          );
-        }}
-      />
-    </View>
+    </Modal>
   );
-}
+};
 //This function queries and retrieves information from the database, from there it will compare each item's expiration date with a date that is set 3 days from now, if an expiration date falls within 3 days it will add it to the filtered array from there the filtered array of expiring items will be displayed in a flatlist -Faiz
 function CheckExpiryDate() {
   const foodsCol = collection(db, "foodCollection");
@@ -768,35 +845,50 @@ function CheckExpiryDate() {
     return () => unsubscribe();
   }, []);
 
+  const [modalVisible, setModalVisible] = useState(true);
+
   return (
-    <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
-        <Icon source={"alert-circle"} size={35} />
-        <Text style={{ fontSize: 25 }}>
-          Fruits that are expiring in 3 days:{" "}
-        </Text>
+    <Modal
+      visible={modalVisible}
+      animationType="slide"
+    >
+      <View style={{ flex: 1, padding: 20 }}>
+        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
+          <Icon source={"alert-circle"} size={35} />
+          <Text style={{ fontSize: 25 }}>
+            Fruits that are spoiling in 3 days or more:{" "}
+          </Text>
+        </View>
+        <FlatList
+          data={filteredFoodItems}
+          renderItem={({ item }) => {
+            return (
+              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
+                <Text
+                  key={item.id}
+                  style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                >
+                  FRUIT NAME: {item.data.foodName}
+                </Text>
+                <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
+                  EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                </Text>
+              </SafeAreaView>
+            );
+          }}
+        />
+        <TouchableOpacity
+          style={{ backgroundColor: '#007AFF', padding: 10, borderRadius: 5, marginTop: 20 }}
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
+          <Text style={{ fontSize: 18, color: 'white' }}>Close</Text>
+        </TouchableOpacity>
       </View>
-      <FlatList
-        data={filteredFoodItems}
-        renderItem={({ item }) => {
-          return (
-            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
-              <Text
-                key={item.id}
-                style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
-              >
-                FRUIT NAME: {item.data.foodName}
-              </Text>
-              <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
-              </Text>
-            </SafeAreaView>
-          );
-        }}
-      />
-    </View>
+    </Modal>
   );
-}
+};
 function CheckExpired() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -829,35 +921,52 @@ function CheckExpired() {
     return () => unsubscribe();
   }, []);
 
-  return (
-    <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 10 }}>
-        <Icon source={"alert-circle"} size={35} />
-        <Text style={{ fontSize: 25 }}>Fruits that are expired: </Text>
-      </View>
-      <FlatList
-        data={filteredFoodItems}
-        renderItem={({ item }) => {
-          return (
-            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
-              <Text
-                key={item.id}
-                style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
-              >
-                FRUIT NAME: {item.data.foodName}
-              </Text>
-              <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
-              </Text>
-            </SafeAreaView>
-          );
-        }}
-      />
-    </View>
-  );
-}
+  const [modalVisible, setModalVisible] = useState(true);
 
-function WarningDashboardVisibility() {
+  return (
+    <Modal
+      visible={modalVisible}
+      animationType="slide"
+    >
+      <View style={{ flex: 1, padding: 20 }}>
+        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
+          <Icon source={"alert-circle"} size={35} />
+          <Text style={{ fontSize: 25 }}>
+            Fruits that are spoilt:{" "}
+          </Text>
+        </View>
+        <FlatList
+          data={filteredFoodItems}
+          renderItem={({ item }) => {
+            return (
+              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
+                <Text
+                  key={item.id}
+                  style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                >
+                  FRUIT NAME: {item.data.foodName}
+                </Text>
+                <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
+                  EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                </Text>
+              </SafeAreaView>
+            );
+          }}
+        />
+        <TouchableOpacity
+          style={{ backgroundColor: '#007AFF', padding: 10, borderRadius: 5, marginTop: 20 }}
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
+          <Text style={{ fontSize: 18, color: 'white' }}>Close</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+};
+
+/*function WarningDashboardVisibility() {
   /*const [isWarningDashboardVisible, setIsWarningDashboardVisible] =
     useState(false);
 
@@ -893,7 +1002,7 @@ function WarningDashboardVisibility() {
       </View>
     </View>
   ); 
-  */
+  
   const [visibleComponent, setVisibleComponent] = useState(null);
 
   const handleToggleWarningDashboardVisibility = (component) => {
@@ -933,7 +1042,7 @@ function WarningDashboardVisibility() {
     </View>
   );
 }
-
+*/
 export default function App() {
   return (
     //add new screens here for navigation -Don
@@ -1027,7 +1136,7 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
         <View>{isLoggedIn ? <FetchFoodData /> : null}</View>
-        <View>{isLoggedIn ? <WarningDashboardVisibility /> : null}</View>
+
       </ScrollView>
       {isLoggedIn ? (
         <View style={styles.addFoodButton}>
