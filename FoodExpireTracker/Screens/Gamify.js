@@ -720,6 +720,7 @@ const styles = StyleSheet.create({
   badgesContainer: {
     flex: 1,
     width: "100%",
+    alignItems: "center",
   },
 
   storeContainerGift: {
