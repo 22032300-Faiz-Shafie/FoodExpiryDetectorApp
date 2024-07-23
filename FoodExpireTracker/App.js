@@ -54,6 +54,7 @@ import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 
+
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
@@ -446,24 +447,21 @@ function FetchFoodData() {
                       if (sliderCurrentLength < 8) {
                         return `Ripens in ${8 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${
-                          sliderMaxLength - sliderCurrentLength
+                        return `Best before in ${sliderMaxLength - sliderCurrentLength
                           } days`;
                       }
                     } else if (foodName === "Pineapple") {
                       if (sliderCurrentLength < 6) {
                         return `Ripens in ${6 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${
-                          sliderMaxLength - sliderCurrentLength
+                        return `Best before in ${sliderMaxLength - sliderCurrentLength
                           } days`;
                       }
                     } else if (foodName === "Avocado") {
                       if (sliderCurrentLength < 5) {
                         return `Ripens in ${5 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${
-                          sliderMaxLength - sliderCurrentLength
+                        return `Best before in ${sliderMaxLength - sliderCurrentLength
                           } days`;
                       }
                     }
@@ -597,10 +595,10 @@ function FetchFoodData() {
                 </Button>
               </View>
               <View>
-        {visibleComponent === "expired" && <CheckExpired />}
-        {visibleComponent === "expiring3" && <CheckExpiryDate />}
-        {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
-      </View>
+                {visibleComponent === "expired" && <CheckExpired />}
+                {visibleComponent === "expiring3" && <CheckExpiryDate />}
+                {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
+              </View>
             </TouchableOpacity>
           </Modal>
         </View>
@@ -752,12 +750,13 @@ function CheckExpiryDate5() {
 
     return () => unsubscribe();
   }, []);
-
+  
   return (
     <View>
-      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
+    
+      <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100}}>
         <Icon source={"alert-circle"} size={35} />
-        <Text style={{ fontSize: 25 }}>
+        <Text style={{ fontSize: 25}}>
           Fruits that are spoiling in 5 days or more:{" "}
         </Text>
       </View>
@@ -765,7 +764,7 @@ function CheckExpiryDate5() {
         data={filteredFoodItems}
         renderItem={({ item }) => {
           return (
-            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
+            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white'}}>
               <Text
                 key={item.id}
                 style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
@@ -829,7 +828,9 @@ function CheckExpiryDate() {
         data={filteredFoodItems}
         renderItem={({ item }) => {
           return (
-            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5 }}>
+
+            <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5}}>
+              
               <Text
                 key={item.id}
                 style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
@@ -839,11 +840,12 @@ function CheckExpiryDate() {
               <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
                 EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
               </Text>
+            
             </SafeAreaView>
-          );
-        }}
-      />
-    </View>
+  );
+}}
+/>
+    </View >
   );
 }
 function CheckExpired() {
@@ -1076,7 +1078,7 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
         <View>{isLoggedIn ? <FetchFoodData /> : null}</View>
-        
+
       </ScrollView>
       {isLoggedIn ? (
         <View style={styles.addFoodButton}>
