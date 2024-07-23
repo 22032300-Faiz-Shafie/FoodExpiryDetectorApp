@@ -552,7 +552,7 @@ function FetchFoodData() {
       <Provider>
         <View style={styles.container}>
           <IconButton
-            icon="sort-variant"
+            icon="filter-outline"
             iconColor={MD3Colors.neutral10}
             size={30}
             onPress={handleIconClick}
@@ -600,15 +600,23 @@ function FetchFoodData() {
                 {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
               </View>
               <IconButton
-              icon="close"
-              iconColor={MD3Colors.neutral10}
-              size={30}
-              onPress={() => setIsDropdownVisible(false)}
-              style={{ marginTop: 20 }}
-            />
-          </TouchableOpacity>
-
+                icon="close"
+                iconColor={MD3Colors.neutral10}
+                size={30}
+                onPress={() => setIsDropdownVisible(false)}
+                style={{ marginTop: 20 }}
+              />
+            </TouchableOpacity>
           </Modal>
+        </View>
+        <View style={[styles.container, { flexDirection: 'row', justifyContent: 'flex-end' }]}>
+          <IconButton
+            icon="sort-variant"
+            iconColor={MD3Colors.neutral10}
+            size={30}
+            onPress={() => console.log('Button pressed!')}
+          />
+          
         </View>
       </Provider>
       <FlatList
@@ -766,9 +774,9 @@ function CheckExpiryDate5() {
       animationType="slide"
     >
       <View style={{ flex: 1, padding: 20 }}>
-        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100}}>
+        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
           <Icon source={"alert-circle"} size={35} />
-          <Text style={{ fontSize: 25}}>
+          <Text style={{ fontSize: 25 }}>
             Fruits that are spoiling in 5 days or more:{" "}
           </Text>
         </View>
@@ -776,7 +784,7 @@ function CheckExpiryDate5() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white'}}>
+              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
                 <Text
                   key={item.id}
                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
@@ -845,9 +853,9 @@ function CheckExpiryDate() {
       animationType="slide"
     >
       <View style={{ flex: 1, padding: 20 }}>
-        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100}}>
+        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
           <Icon source={"alert-circle"} size={35} />
-          <Text style={{ fontSize: 25}}>
+          <Text style={{ fontSize: 25 }}>
             Fruits that are spoiling in 3 days or more:{" "}
           </Text>
         </View>
@@ -855,7 +863,7 @@ function CheckExpiryDate() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white'}}>
+              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
                 <Text
                   key={item.id}
                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
@@ -921,9 +929,9 @@ function CheckExpired() {
       animationType="slide"
     >
       <View style={{ flex: 1, padding: 20 }}>
-        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100}}>
+        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
           <Icon source={"alert-circle"} size={35} />
-          <Text style={{ fontSize: 25}}>
+          <Text style={{ fontSize: 25 }}>
             Fruits that are spoilt:{" "}
           </Text>
         </View>
@@ -931,7 +939,7 @@ function CheckExpired() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white'}}>
+              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
                 <Text
                   key={item.id}
                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
