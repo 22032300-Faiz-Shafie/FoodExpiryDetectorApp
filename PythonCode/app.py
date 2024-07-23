@@ -23,7 +23,7 @@ imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpi
 
 #Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
 #storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
-#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media.jpg"
+#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media2.jpg"
 storedImageFilePath = imageFilePath + "\\newImage" + ".jpg"     
 
 #Obsolete, combined with handleInference function for better performance -Faiz
@@ -78,9 +78,9 @@ def predict():
         commandResult2 = subprocess.run(modelCommandProject, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         if commandResult2.returncode == 0:
-            print("\nCommand executed successfully!\n")
+            print("\nFirst AI Model Command executed successfully!\n")
         else:
-            print("\nError in running command:\n")
+            print("\nError in running First AI Model command:\n")
             print(commandResult2.stderr)
 
 
@@ -140,6 +140,46 @@ def predict():
 
             return expiryInDays, currentRipenessStatus, ripenessInDays
 
+        #Function to find family of Mango -Faiz
+        def mangoFamilyFinder(mangoImage):
+
+            fruitFamily = ""
+
+            aiModel2Command = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\mangoFruitFamilyDetector.pt --agnostic --conf 0.10"
+            aiModel2CommandSource = aiModel2Command + " --source " + mangoImage
+            aiModel2Project = aiModel2CommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults --save-crop --save-txt"
+            commandResult3 = subprocess.run(aiModel2Project, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+            if commandResult3.returncode == 0:
+                print("\nSecond AI Model Command executed successfully!\n")
+            else:
+                print("\nError in running Second AI Model command:\n")
+                print(commandResult2.stderr)
+            
+            secondModelImageResults = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults"
+            
+            for exp_folder in os.listdir(secondModelImageResults):
+                exp_folder_path = os.path.join(secondModelImageResults, exp_folder)
+
+                if os.path.isdir(exp_folder_path):
+                    crops_folder_path = os.path.join(exp_folder_path, 'crops')
+
+                    if os.path.exists(crops_folder_path) and os.path.isdir(crops_folder_path):
+                        for fruit_Family in os.listdir(crops_folder_path):
+
+                            fruitFamily = ""
+
+                            # Full path of the fruit class folder -Faiz
+                            fruit_family_path = os.path.join(crops_folder_path, fruit_Family)
+
+                            if os.path.isdir(fruit_family_path):
+                                fruitFamily = re.sub(r'_', ' ', fruit_Family)
+
+
+
+            return fruitFamily
+
+
         #List containing all different listing results -Faiz
         fruitInformation = []
     
@@ -177,12 +217,16 @@ def predict():
                         #Image URI -Faiz
                         data_uri = ""
 
-                        # Full path of the fruit class folder
+                        # Full path of the fruit class folder -Faiz
                         fruit_class_path = os.path.join(crops_folder_path, fruit_class)
                         # Check if it's a directory -Faiz
                         if os.path.isdir(fruit_class_path):
+                            fruit_name = re.sub(r'_\d+', '', fruit_class)
+
                             # Add the fruit class name to the list -Faiz
                             for Images in os.listdir(fruit_class_path):
+                                fruitFamily = ""
+
                                 #Counting the quantity of fruits there are by counting the amount of images of a single fruit class -Faiz
                                 fruit_quantity = fruit_quantity + 1
 
@@ -198,8 +242,9 @@ def predict():
 
                                 data_uri = f'data:image/jpeg;base64,{base64_encoded}'
 
-
-                            fruit_name = re.sub(r'_\d+', '', fruit_class)
+                                #Conditional statement, if the fruit is a mango run the second ai model -Faiz
+                                if(fruit_name == "Mango"):
+                                    fruitFamily = mangoFamilyFinder(fruitImagePath)
 
                             expiryInDays, currentRipenessStatus, ripenessInDays = expiryDayFinder(fruit_class)
 
@@ -210,7 +255,8 @@ def predict():
                                     "expiryInDays": expiryInDays,
                                     "currentRipenessStatus": currentRipenessStatus,
                                     "fruitDateURI": data_uri,
-                                    "ripenessInDays": ripenessInDays
+                                    "ripenessInDays": ripenessInDays,
+                                    "fruitFamily": fruitFamily 
                                     }
                             fruitInformation.append(class_info)
     
@@ -220,9 +266,22 @@ def predict():
         # with open('C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\fruit_class_details.json', 'w') as json_file:
         #     json.dump(fruitInformation, json_file, indent=4)  
 
+        secondModelImageResults = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults"
+
         #Delete all results after utilizing AI Model -Faiz
         for exp_folder in os.listdir(imageResultsFolderPath):
             exp_folder_path = os.path.join(imageResultsFolderPath, exp_folder)
+            # Check if it's a directory that exists -Faiz
+            if os.path.isdir(exp_folder_path):
+                try:
+                    # Remove the folder and sub folder contents -Faiz
+                    shutil.rmtree(exp_folder_path)
+                    print(f"\nDeleted {exp_folder_path}\n")
+                except Exception as e:
+                    print(f"\nFailed to delete {exp_folder_path}: {e}\n")
+        
+        for exp_folder in os.listdir(secondModelImageResults):
+            exp_folder_path = os.path.join(secondModelImageResults, exp_folder)
             # Check if it's a directory that exists -Faiz
             if os.path.isdir(exp_folder_path):
                 try:

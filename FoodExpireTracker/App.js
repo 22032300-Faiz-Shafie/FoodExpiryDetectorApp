@@ -1185,8 +1185,9 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.addFoodButton}>
           <FAB
             icon="plus"
-            rippleColor="purple"
+            rippleColor="green"
             onPress={() => navigation.navigate("addFoodScreen")}
+            style={{backgroundColor: "green"}} color="black"
           />
         </View>
       ) : null}
@@ -1194,8 +1195,9 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.aiAccuracyFormButton}>
           <FAB
             icon="ballot"
-            rippleColor="purple"
+            rippleColor="green"
             onPress={() => navigation.navigate("aiAccuracyForm")}
+            style={{backgroundColor: "green"}} color="black"
           />
         </View>
       ) : null}
@@ -1203,14 +1205,15 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.loginButton}>
           <FAB
             icon="login"
-            rippleColor="purple"
+            rippleColor="green"
             onPress={() => navigation.navigate("loginScreen")}
+            style={{backgroundColor: "green"}} color="black"
           />
         </View>
       ) : null}
       {isLoggedIn ? (
         <View style={styles.loginButton}>
-          <FAB icon="logout" rippleColor="purple" onPress={handleLogout} />
+          <FAB icon="logout" rippleColor="green" onPress={handleLogout} style={{backgroundColor: "green"}} color="black"/>
         </View>
       ) : null}
     </View>
