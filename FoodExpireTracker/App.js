@@ -731,7 +731,50 @@ function FetchFoodData() {
     </View>
   );
 }
+function sort(){
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  const { loginID } = useContext(AuthContext);
+  
 
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      for (const food of foods) {
+        if (
+        food.data.isadded == true &&
+        food.data.userID === loginID
+      )
+        {
+          filteringFoodItems.push(food);
+        }
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+    return () => unsubscribe();
+  }, []);
+  
+  const days = foodsfetch.find((food))
+  const highest = -100;
+  function highesttolowest(){
+    if (d){
+
+    }
+  }
+
+  function lowesttohighest(){
+
+  }
+};
+    
 function CheckExpiryDate5() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
