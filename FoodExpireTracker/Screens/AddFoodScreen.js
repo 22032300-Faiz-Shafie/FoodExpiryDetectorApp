@@ -35,6 +35,7 @@ import {
 } from "react-native-paper";
 import { ref, uploadBytesResumable} from "firebase/storage";
 import AuthContext from "./AuthContext";
+import * as ImageManipulator from "expo-image-manipulator"
 
 const Stack = createNativeStackNavigator();
 
@@ -58,8 +59,9 @@ const handleInference = async (uri, loginID) => {
       base64: base64,
     };
     console.log(JSON.stringify(base64));
-
-    const response = await fetch("http://192.168.18.24:5000/predict", {
+    //Faiz School ip address 10.175.21.102
+    //Faiz Hotsport ip address 192.168.13.224
+    const response = await fetch("http://192.168.13.224:5000/predict", {
       //Don
       //fetch("http://192.168.31.1:5000/image", {
       //use FLASK IP in app.py -Don
@@ -97,6 +99,14 @@ const uploadFruitInformation = async (loginID) => {
       futureExpiryDate.setDate(futureExpiryDate.getDate() + fruit.expiryInDays);
       const futureRipeningDate = new Date();
       futureRipeningDate.setDate(futureRipeningDate.getDate() + fruit.ripenessInDays);
+      const compressedImage = await ImageManipulator.manipulateAsync(fruit.fruitDateURI, [], {compress: 0.3, format: ImageManipulator.SaveFormat.JPEG});
+      const base64CompressedImage = await FileSystem.readAsStringAsync(
+        compressedImage.uri,
+        {
+          encoding: "base64",
+        }
+      );
+      const base64CompressedImageFull = `data:image/jpg;base64,${base64CompressedImage}`;
 
       const fruitData = {
         fruitClass: fruit.class,
@@ -105,7 +115,7 @@ const uploadFruitInformation = async (loginID) => {
         foodName: fruit.name,
         quantity: fruit.quantity,
         isadded: false, 
-        fruitImageURI: fruit.fruitDateURI,
+        fruitImageURI: base64CompressedImageFull,
         userID: loginID,
         futureRipeningDate: futureRipeningDate,
         fruitFamily: fruit.fruitFamily

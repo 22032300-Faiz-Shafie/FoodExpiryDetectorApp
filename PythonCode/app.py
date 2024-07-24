@@ -23,7 +23,7 @@ imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpi
 
 #Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
 #storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
-#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media2.jpg"
+#testImageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\customtestimages\\Media3.jpg"
 storedImageFilePath = imageFilePath + "\\newImage" + ".jpg"     
 
 #Obsolete, combined with handleInference function for better performance -Faiz
@@ -145,7 +145,7 @@ def predict():
 
             fruitFamily = ""
 
-            aiModel2Command = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\mangoFruitFamilyDetector.pt --agnostic --conf 0.10"
+            aiModel2Command = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\mangoFruitFamilyDetector.pt --agnostic --conf 0.80"
             aiModel2CommandSource = aiModel2Command + " --source " + mangoImage
             aiModel2Project = aiModel2CommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults --save-crop --save-txt"
             commandResult3 = subprocess.run(aiModel2Project, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -329,6 +329,11 @@ def predict():
 
 #use own IP address. Run Flask by pressing the "Run Python File" on top left  -Don
 if __name__ == "__main__":
-    app.run(host="192.168.18.24", port=5000, debug=True) 
+    #Faiz home ip address
+    #app.run(host="192.168.18.24", port=5000, debug=True) 
+    #Faiz school ip address
+    #app.run(host="10.175.21.102", port=5000, debug=True) 
+    #Faiz hotspot ip address
+    app.run(host="192.168.13.224", port=5000, debug=True) 
     #Don
     #app.run(host="192.168.31.1", port=5000, debug=True) 
