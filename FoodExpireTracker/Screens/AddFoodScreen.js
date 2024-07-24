@@ -207,6 +207,21 @@ const takePhoto = async (setImageUri, loginID) => {
     console.log("Camera was canceled");
   }
 };
+const pickImage = async (setImageUri, loginID) => {
+  // No permissions request is necessary for launching the image library
+  const cameraResp = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+
+  if (!cameraResp.canceled) {
+    const uri = cameraResp.assets[0].uri;
+    setImageUri(uri);
+    handleInference(uri, loginID);
+  }
+};
 
 //fetches all food with isadded as false, to enable users to confirm before they add, or delete to not add, gives user more control -Don
 //should add edit button in the future -Don
@@ -499,14 +514,22 @@ export default function App() {
             </View>
           </View>
           <View style={styles.takePhotoButton}>
-            <Button
-              icon="camera"
-              mode="contained-tonal"
-              buttonColor="green"
-              onPress={() => takePhoto(setImageUri, loginID)}
-            >
-              Take Photo
-            </Button>
+            <View style={{ paddingHorizontal: 2 }}>
+              <Button
+                icon="view-gallery"
+                mode="contained-tonal"
+                buttonColor="green"
+                onPress={() => pickImage(setImageUri, loginID)}
+              ></Button>
+            </View>
+            <View style={{ paddingHorizontal: 2 }}>
+              <Button
+                icon="camera"
+                mode="contained-tonal"
+                buttonColor="green"
+                onPress={() => takePhoto(setImageUri, loginID)}
+              ></Button>
+            </View>
           </View>
           <View>
             <FetchFoodData />
@@ -525,7 +548,9 @@ const styles = StyleSheet.create({
   },
   takePhotoButton: {
     flex: 1,
-    justifyContent: "flex-end",
+
+    flexDirection: "row",
+    justifyContent: "center",
     marginHorizontal: 40,
     paddingTop: 10,
   },
