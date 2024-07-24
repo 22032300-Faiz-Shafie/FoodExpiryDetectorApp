@@ -330,10 +330,10 @@ def predict():
 #use own IP address. Run Flask by pressing the "Run Python File" on top left  -Don
 if __name__ == "__main__":
     #Faiz home ip address
-    #app.run(host="192.168.18.24", port=5000, debug=True) 
+    app.run(host="192.168.18.24", port=5000, debug=True) 
     #Faiz school ip address
     #app.run(host="10.175.21.102", port=5000, debug=True) 
     #Faiz hotspot ip address
-    app.run(host="192.168.13.224", port=5000, debug=True) 
+    #app.run(host="192.168.13.224", port=5000, debug=True) 
     #Don
     #app.run(host="192.168.31.1", port=5000, debug=True) 
