@@ -121,6 +121,7 @@ const uploadFruitInformation = async (loginID) => {
         userID: loginID,
         futureRipeningDate: futureRipeningDate,
         fruitFamily: fruit.fruitFamily,
+        version: 1,
       };
 
       const docRef = await addDoc(collection(db, "foodCollection"), fruitData);

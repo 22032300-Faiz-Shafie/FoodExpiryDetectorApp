@@ -34,6 +34,9 @@ import {
   deleteDoc,
   updateDoc,
   getDoc,
+  serverTimestamp,
+  setDoc,
+  increment,
 } from "firebase/firestore";
 import {
   Icon,
@@ -212,6 +215,7 @@ function FetchFoodData() {
   }, []);
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
+    const [version, setVersion] = useState(0);
     const [foodName, setFoodName] = useState("");
     const [quantity, setQuantity] = useState("");
     const [imageUri, setImageUri] = useState("");
@@ -220,7 +224,6 @@ function FetchFoodData() {
     const [sliderCurrentLength, setSliderCurrentLength] = useState(0);
     const [sliderCurrentLengthBefore, setSliderCurrentLengthBefore] =
       useState(0);
-    const [editImage, setEditImage] = useState(null);
 
     useEffect(() => {
       if (modalVisible && itemID) {
@@ -232,12 +235,14 @@ function FetchFoodData() {
       const docRef = doc(db, "foodCollection", itemID);
       const docSnap = await getDoc(docRef);
       const data = docSnap.data();
+      setVersion(data.version);
 
       setFoodName(data.foodName);
       setQuantity(data.quantity.toString());
       setImageUri(data.fruitImageURI.toString());
       const daysUntilExpiry = dateToDayConversion(data.expiryDate);
       setExpiryInDays(daysUntilExpiry);
+      //edit
 
       let maxLength;
       let ripeLength;
@@ -257,11 +262,39 @@ function FetchFoodData() {
       setSliderCurrentLengthBefore(currentLength);
     };
 
+    const compressImageUri = async (imageUri) => {
+      const compressedImage = await ImageManipulator.manipulateAsync(
+        imageUri,
+        [],
+        { compress: 0.2, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      const base64 = await FileSystem.readAsStringAsync(compressedImage.uri, {
+        encoding: "base64",
+      });
+      const compressedImageUri = `data:image/jpg;base64,${base64}`;
+      return compressedImageUri;
+    };
+
+    const incrementpoints = async (loginID) => {
+      try {
+        const PointDocRef = doc(db, "loginInformation", loginID);
+        await updateDoc(PointDocRef, {
+          points: increment(1),
+          gems: increment(10),
+        });
+        console.log(`Points incremented successfully for document ${loginID}`);
+      } catch (error) {
+        console.error(error);
+        console.log("are you here" + loginID);
+      }
+    };
+
     const handleEditFood = async () => {
       const newExpiryInDays = sliderMaxLength - sliderCurrentLength;
       const newExpiryDate = new Date(
         Date.now() + newExpiryInDays * 24 * 60 * 60 * 1000
       );
+
       let newRipeness = "";
       let daysUntilRipe = 0;
       if (foodName === "Mango") {
@@ -292,10 +325,34 @@ function FetchFoodData() {
           newRipeness = "Overripe";
         }
       }
+
+      const compressedImageUriAfterEdit = await compressImageUri(imageUri);
+
       const newRipeningDate = new Date(
         Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
       );
       try {
+        const editHistoryRef = collection(
+          db,
+          "foodCollection",
+          itemID,
+          "editHistory"
+        );
+        await setDoc(doc(editHistoryRef), {
+          foodNameAfterEdit: foodName,
+
+          quantityAfterEdit: parseInt(quantity),
+
+          fruitImageUriAfterEdit: compressedImageUriAfterEdit,
+
+          currentRipenessStatusAfterEdit: newRipeness,
+
+          futureRipeningDateAfterEdit: newRipeningDate,
+          version: version,
+
+          editedAt: serverTimestamp(), // Timestamp of when the edit was made
+        });
+
         await updateDoc(doc(db, "foodCollection", itemID), {
           foodName: foodName,
           quantity: parseInt(quantity),
@@ -303,10 +360,12 @@ function FetchFoodData() {
           fruitImageURI: imageUri,
           currentRipenessStatus: newRipeness,
           futureRipeningDate: newRipeningDate,
+          version: increment(1),
         });
+        incrementpoints(loginID);
         setModalVisible(false);
         if (newRipeness != "Overripe") {
-          Alert.alert("Food details updated successfully!");
+          Alert.alert("Food details updated successfully!\n+10 gems +1 Exp");
         }
       } catch (error) {
         console.error("Error updating document: ", error);
