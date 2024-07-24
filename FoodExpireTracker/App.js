@@ -54,7 +54,6 @@ import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 
-
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
@@ -112,7 +111,6 @@ function FetchFoodData() {
       console.log(result);
     }
   };
-
 
   /*const filterFunction = async (filteringFoodItems, days) => {
      function CheckExpiry() {
@@ -447,22 +445,25 @@ function FetchFoodData() {
                       if (sliderCurrentLength < 8) {
                         return `Ripens in ${8 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${sliderMaxLength - sliderCurrentLength
-                          } days`;
+                        return `Best before in ${
+                          sliderMaxLength - sliderCurrentLength
+                        } days`;
                       }
                     } else if (foodName === "Pineapple") {
                       if (sliderCurrentLength < 6) {
                         return `Ripens in ${6 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${sliderMaxLength - sliderCurrentLength
-                          } days`;
+                        return `Best before in ${
+                          sliderMaxLength - sliderCurrentLength
+                        } days`;
                       }
                     } else if (foodName === "Avocado") {
                       if (sliderCurrentLength < 5) {
                         return `Ripens in ${5 - sliderCurrentLength} days`;
                       } else {
-                        return `Best before in ${sliderMaxLength - sliderCurrentLength
-                          } days`;
+                        return `Best before in ${
+                          sliderMaxLength - sliderCurrentLength
+                        } days`;
                       }
                     }
                   })()}
@@ -551,12 +552,27 @@ function FetchFoodData() {
     <View>
       <Provider>
         <View style={styles.container}>
-          <IconButton
-            icon="filter-outline"
-            iconColor={MD3Colors.neutral10}
-            size={30}
-            onPress={handleIconClick}
-          />
+          <View
+            style={[
+              styles.container,
+              { flexDirection: "row", justifyContent: "flex-end" },
+            ]}
+          >
+            <View style={{ position: "absolute", left: 8 }}>
+              <IconButton
+                icon="sort-variant"
+                iconColor={MD3Colors.neutral10}
+                size={30}
+                onPress={() => console.log("Button pressed!")}
+              />
+            </View>
+            <IconButton
+              icon="filter-outline"
+              iconColor={MD3Colors.neutral10}
+              size={30}
+              onPress={handleIconClick}
+            />
+          </View>
           <Modal
             transparent={true}
             visible={isDropdownVisible}
@@ -573,7 +589,9 @@ function FetchFoodData() {
                   mode="contained"
                   buttonColor="#FF0000"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => handleToggleWarningDashboardVisibility("expired")}
+                  onPress={() =>
+                    handleToggleWarningDashboardVisibility("expired")
+                  }
                 >
                   Inedible
                 </Button>
@@ -581,7 +599,9 @@ function FetchFoodData() {
                   mode="contained"
                   buttonColor="#FFD700"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => handleToggleWarningDashboardVisibility("expiring3")}
+                  onPress={() =>
+                    handleToggleWarningDashboardVisibility("expiring3")
+                  }
                 >
                   Best before 3 days
                 </Button>
@@ -589,7 +609,9 @@ function FetchFoodData() {
                   mode="contained"
                   buttonColor="#00FF00"
                   textColor={MD3Colors.neutral10}
-                  onPress={() => handleToggleWarningDashboardVisibility("expiring5")}
+                  onPress={() =>
+                    handleToggleWarningDashboardVisibility("expiring5")
+                  }
                 >
                   Best before 5 days and more
                 </Button>
@@ -608,15 +630,6 @@ function FetchFoodData() {
               />
             </TouchableOpacity>
           </Modal>
-        </View>
-        <View style={[styles.container, { flexDirection: 'row', justifyContent: 'flex-end' }]}>
-          <IconButton
-            icon="sort-variant"
-            iconColor={MD3Colors.neutral10}
-            size={30}
-            onPress={() => console.log('Button pressed!')}
-          />
-          
         </View>
       </Provider>
       <FlatList
@@ -731,11 +744,10 @@ function FetchFoodData() {
     </View>
   );
 }
-function sort(){
+function sort() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   const { loginID } = useContext(AuthContext);
-  
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -749,11 +761,7 @@ function sort(){
         });
       });
       for (const food of foods) {
-        if (
-        food.data.isadded == true &&
-        food.data.userID === loginID
-      )
-        {
+        if (food.data.isadded == true && food.data.userID === loginID) {
           filteringFoodItems.push(food);
         }
       }
@@ -761,20 +769,17 @@ function sort(){
     });
     return () => unsubscribe();
   }, []);
-  
-  const days = foodsfetch.find((food))
-  const highest = -100;
-  function highesttolowest(){
-    if (d){
 
+  const days = foodsfetch.find(food);
+  const highest = -100;
+  function highesttolowest() {
+    if (d) {
     }
   }
 
-  function lowesttohighest(){
+  function lowesttohighest() {}
+}
 
-  }
-};
-    
 function CheckExpiryDate5() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -812,12 +817,11 @@ function CheckExpiryDate5() {
   const [modalVisible, setModalVisible] = useState(true);
 
   return (
-    <Modal
-      visible={modalVisible}
-      animationType="slide"
-    >
+    <Modal visible={modalVisible} animationType="slide">
       <View style={{ flex: 1, padding: 20 }}>
-        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
+        <View
+          style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}
+        >
           <Icon source={"alert-circle"} size={35} />
           <Text style={{ fontSize: 25 }}>
             Fruits that are spoiling in 5 days or more:{" "}
@@ -827,7 +831,13 @@ function CheckExpiryDate5() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
+              <SafeAreaView
+                style={{
+                  borderWidth: 1,
+                  marginHorizontal: 5,
+                  backgroundColor: "white",
+                }}
+              >
                 <Text
                   key={item.id}
                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
@@ -835,24 +845,30 @@ function CheckExpiryDate5() {
                   FRUIT NAME: {item.data.foodName}
                 </Text>
                 <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                  EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                  EXPIRATION DAY:{" "}
+                  {item.data.expiryDate.toDate().toLocaleString()}
                 </Text>
               </SafeAreaView>
             );
           }}
         />
         <TouchableOpacity
-          style={{ backgroundColor: '#007AFF', padding: 10, borderRadius: 5, marginTop: 20 }}
+          style={{
+            backgroundColor: "#007AFF",
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 20,
+          }}
           onPress={() => {
             setModalVisible(false);
           }}
         >
-          <Text style={{ fontSize: 18, color: 'white' }}>Close</Text>
+          <Text style={{ fontSize: 18, color: "white" }}>Close</Text>
         </TouchableOpacity>
       </View>
     </Modal>
   );
-};
+}
 //This function queries and retrieves information from the database, from there it will compare each item's expiration date with a date that is set 3 days from now, if an expiration date falls within 3 days it will add it to the filtered array from there the filtered array of expiring items will be displayed in a flatlist -Faiz
 function CheckExpiryDate() {
   const foodsCol = collection(db, "foodCollection");
@@ -891,12 +907,11 @@ function CheckExpiryDate() {
   const [modalVisible, setModalVisible] = useState(true);
 
   return (
-    <Modal
-      visible={modalVisible}
-      animationType="slide"
-    >
+    <Modal visible={modalVisible} animationType="slide">
       <View style={{ flex: 1, padding: 20 }}>
-        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
+        <View
+          style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}
+        >
           <Icon source={"alert-circle"} size={35} />
           <Text style={{ fontSize: 25 }}>
             Fruits that are spoiling in 3 days or more:{" "}
@@ -906,7 +921,13 @@ function CheckExpiryDate() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
+              <SafeAreaView
+                style={{
+                  borderWidth: 1,
+                  marginHorizontal: 5,
+                  backgroundColor: "white",
+                }}
+              >
                 <Text
                   key={item.id}
                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
@@ -914,24 +935,30 @@ function CheckExpiryDate() {
                   FRUIT NAME: {item.data.foodName}
                 </Text>
                 <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                  EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                  EXPIRATION DAY:{" "}
+                  {item.data.expiryDate.toDate().toLocaleString()}
                 </Text>
               </SafeAreaView>
             );
           }}
         />
         <TouchableOpacity
-          style={{ backgroundColor: '#007AFF', padding: 10, borderRadius: 5, marginTop: 20 }}
+          style={{
+            backgroundColor: "#007AFF",
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 20,
+          }}
           onPress={() => {
             setModalVisible(false);
           }}
         >
-          <Text style={{ fontSize: 18, color: 'white' }}>Close</Text>
+          <Text style={{ fontSize: 18, color: "white" }}>Close</Text>
         </TouchableOpacity>
       </View>
     </Modal>
   );
-};
+}
 function CheckExpired() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -967,22 +994,25 @@ function CheckExpired() {
   const [modalVisible, setModalVisible] = useState(true);
 
   return (
-    <Modal
-      visible={modalVisible}
-      animationType="slide"
-    >
+    <Modal visible={modalVisible} animationType="slide">
       <View style={{ flex: 1, padding: 20 }}>
-        <View style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}>
+        <View
+          style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}
+        >
           <Icon source={"alert-circle"} size={35} />
-          <Text style={{ fontSize: 25 }}>
-            Fruits that are spoilt:{" "}
-          </Text>
+          <Text style={{ fontSize: 25 }}>Fruits that are spoilt: </Text>
         </View>
         <FlatList
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView style={{ borderWidth: 1, marginHorizontal: 5, backgroundColor: 'white' }}>
+              <SafeAreaView
+                style={{
+                  borderWidth: 1,
+                  marginHorizontal: 5,
+                  backgroundColor: "white",
+                }}
+              >
                 <Text
                   key={item.id}
                   style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
@@ -990,24 +1020,30 @@ function CheckExpired() {
                   FRUIT NAME: {item.data.foodName}
                 </Text>
                 <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                  EXPIRATION DAY: {item.data.expiryDate.toDate().toLocaleString()}
+                  EXPIRATION DAY:{" "}
+                  {item.data.expiryDate.toDate().toLocaleString()}
                 </Text>
               </SafeAreaView>
             );
           }}
         />
         <TouchableOpacity
-          style={{ backgroundColor: '#007AFF', padding: 10, borderRadius: 5, marginTop: 20 }}
+          style={{
+            backgroundColor: "#007AFF",
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 20,
+          }}
           onPress={() => {
             setModalVisible(false);
           }}
         >
-          <Text style={{ fontSize: 18, color: 'white' }}>Close</Text>
+          <Text style={{ fontSize: 18, color: "white" }}>Close</Text>
         </TouchableOpacity>
       </View>
     </Modal>
   );
-};
+}
 
 /*function WarningDashboardVisibility() {
   /*const [isWarningDashboardVisible, setIsWarningDashboardVisible] =
@@ -1179,7 +1215,6 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
         <View>{isLoggedIn ? <FetchFoodData /> : null}</View>
-
       </ScrollView>
       {isLoggedIn ? (
         <View style={styles.addFoodButton}>
@@ -1187,7 +1222,8 @@ const HomeScreen = ({ navigation }) => {
             icon="plus"
             rippleColor="green"
             onPress={() => navigation.navigate("addFoodScreen")}
-            style={{backgroundColor: "green"}} color="black"
+            style={{ backgroundColor: "green" }}
+            color="black"
           />
         </View>
       ) : null}
@@ -1197,7 +1233,8 @@ const HomeScreen = ({ navigation }) => {
             icon="ballot"
             rippleColor="green"
             onPress={() => navigation.navigate("aiAccuracyForm")}
-            style={{backgroundColor: "green"}} color="black"
+            style={{ backgroundColor: "green" }}
+            color="black"
           />
         </View>
       ) : null}
@@ -1207,13 +1244,20 @@ const HomeScreen = ({ navigation }) => {
             icon="login"
             rippleColor="green"
             onPress={() => navigation.navigate("loginScreen")}
-            style={{backgroundColor: "green"}} color="black"
+            style={{ backgroundColor: "green" }}
+            color="black"
           />
         </View>
       ) : null}
       {isLoggedIn ? (
         <View style={styles.loginButton}>
-          <FAB icon="logout" rippleColor="green" onPress={handleLogout} style={{backgroundColor: "green"}} color="black"/>
+          <FAB
+            icon="logout"
+            rippleColor="green"
+            onPress={handleLogout}
+            style={{ backgroundColor: "green" }}
+            color="black"
+          />
         </View>
       ) : null}
     </View>
