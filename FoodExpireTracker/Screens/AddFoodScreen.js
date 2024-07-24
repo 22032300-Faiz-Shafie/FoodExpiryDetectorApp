@@ -464,7 +464,7 @@ function FetchFoodData() {
                   <IconButton
                     size={30}
                     icon="check"
-                    onPress={() => makeAdded()}
+                    onPress={() => makeAdded(item)}
                   />
                   <IconButton
                     icon="delete"

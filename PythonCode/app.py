@@ -145,7 +145,7 @@ def predict():
 
             fruitFamily = ""
 
-            aiModel2Command = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\mangoFruitFamilyDetector.pt --agnostic --conf 0.80"
+            aiModel2Command = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\mangoFruitFamilyDetector.pt --agnostic --conf 0.10"
             aiModel2CommandSource = aiModel2Command + " --source " + mangoImage
             aiModel2Project = aiModel2CommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults --save-crop --save-txt"
             commandResult3 = subprocess.run(aiModel2Project, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
