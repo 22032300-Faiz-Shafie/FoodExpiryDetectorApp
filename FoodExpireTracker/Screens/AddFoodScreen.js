@@ -270,10 +270,15 @@ function FetchFoodData() {
   };
 
   const makeAllAdded = async () => {
-    //const updateBatch = writeBatch(db);
+    const updateBatch = writeBatch(db);
     for (const item of foodsfetch) {
-      await trackWastage(item);
+      updateBatch.update(doc(db, "foodCollection", item.id), {
+        isadded: true,
+      });
     }
+
+    await updateBatch.commit();
+  };
 
     //await updateBatch.commit();
   };
