@@ -9,7 +9,7 @@ import {
   ScrollView,
   FlatList,
   SafeAreaView,
-  Alert
+  Alert,
 } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
@@ -23,19 +23,19 @@ import {
   deleteDoc,
   updateDoc,
   writeBatch,
-  addDoc
+  addDoc,
 } from "firebase/firestore";
 import {
   Icon,
   Button,
-  IconButton, 
+  IconButton,
   MD3Colors,
   Divider,
   PaperProvider,
 } from "react-native-paper";
-import { ref, uploadBytesResumable} from "firebase/storage";
+import { ref, uploadBytesResumable } from "firebase/storage";
 import AuthContext from "./AuthContext";
-import * as ImageManipulator from "expo-image-manipulator"
+import * as ImageManipulator from "expo-image-manipulator";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,11 +46,9 @@ var fruitInformation = [];
 // Delay function that returns a Promise -Faiz
 //const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-
 //This handles Inference, makes a http request using flask to our app.py python. -Faiz
 //inserts image and sends it to python, the image will then be used for computer vision -Don
 const handleInference = async (uri, loginID) => {
-  
   try {
     const base64 = await FileSystem.readAsStringAsync(uri, {
       encoding: "base64",
@@ -69,37 +67,40 @@ const handleInference = async (uri, loginID) => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(data),
     })
-    .then(response => response.json())
-    .then(data => {
-      const jsonData = data
+      .then((response) => response.json())
+      .then((data) => {
+        const jsonData = data;
 
-      jsonData.forEach(fruit => {
-        fruitInformation.push(fruit)
+        jsonData.forEach((fruit) => {
+          fruitInformation.push(fruit);
+        });
+
+        console.log(fruitInformation);
+        uploadFruitInformation(loginID);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
       });
-
-      console.log(fruitInformation);
-      uploadFruitInformation(loginID);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-
-  }
-
-  catch (error) {
+  } catch (error) {
     console.log("Error: ", error);
   }
 };
 
 //This function upload fruitinformation collected from inference into firebase database, officially adding them -Faiz
 const uploadFruitInformation = async (loginID) => {
-  try{
-    for(const fruit of fruitInformation){
+  try {
+    for (const fruit of fruitInformation) {
       const futureExpiryDate = new Date();
       futureExpiryDate.setDate(futureExpiryDate.getDate() + fruit.expiryInDays);
       const futureRipeningDate = new Date();
-      futureRipeningDate.setDate(futureRipeningDate.getDate() + fruit.ripenessInDays);
-      const compressedImage = await ImageManipulator.manipulateAsync(fruit.fruitDateURI, [], {compress: 0.3, format: ImageManipulator.SaveFormat.JPEG});
+      futureRipeningDate.setDate(
+        futureRipeningDate.getDate() + fruit.ripenessInDays
+      );
+      const compressedImage = await ImageManipulator.manipulateAsync(
+        fruit.fruitDateURI,
+        [],
+        { compress: 0.3, format: ImageManipulator.SaveFormat.JPEG }
+      );
       const base64CompressedImage = await FileSystem.readAsStringAsync(
         compressedImage.uri,
         {
@@ -114,30 +115,26 @@ const uploadFruitInformation = async (loginID) => {
         expiryDate: futureExpiryDate,
         foodName: fruit.name,
         quantity: fruit.quantity,
-        isadded: false, 
+        isadded: false,
         fruitImageURI: base64CompressedImageFull,
         userID: loginID,
         futureRipeningDate: futureRipeningDate,
-        fruitFamily: fruit.fruitFamily
+        fruitFamily: fruit.fruitFamily,
       };
-     
-      const docRef = await addDoc(
-        collection(db, "foodCollection"),fruitData
-      );
-      console.log(
-        "The following Fruit Information has been uploaded: ", docRef.id
-      );
 
+      const docRef = await addDoc(collection(db, "foodCollection"), fruitData);
+      console.log(
+        "The following Fruit Information has been uploaded: ",
+        docRef.id
+      );
     }
 
     //Empty Array as fruit information has already been transferred to firebase -Faiz
-    fruitInformation = []
+    fruitInformation = [];
+  } catch (error) {
+    console.log("Error: ", error);
   }
-  catch(error){
-    console.log("Error: ", error)
-  }
-
-}
+};
 
 //This uploads an image of the fruit to the Firebase storage. It converts the uri of the image into a blob before uploading it. Right now it's obsolete but in the future this could be a better storage option rather than firestore -Faiz
 // const uploadFruitImageToFirebase = async(uri, docRefID) => {
@@ -145,7 +142,7 @@ const uploadFruitInformation = async (loginID) => {
 //     //Convert uri into a blob which is one of the suitable format type to upload files to firebase storage -Faiz
 //     const response = await fetch(uri);
 //     const blob = await response.blob();
-    
+
 //     // Create a reference to the file in Firebase Storage -Faiz
 //     const storageRef = ref(storage, "images/" + docRefID + ".jpg");
 
@@ -220,53 +217,63 @@ function FetchFoodData() {
 
   //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
   const dateToDayConversion = (givenDate) => {
-    currentDate = new Date(); 
+    currentDate = new Date();
     expiryDate = givenDate.toDate();
     const timeDifference = expiryDate - currentDate;
     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
-    return daysDifference; 
+    return daysDifference;
   };
 
   //This function checks the fruit that is being added if it's considered a waste or not, warns the user if they would like to proceed -Faiz
   const trackWastage = async (item) => {
     const minDaysToConsiderWaste = 3;
-    var waste = false; 
+    var waste = false;
 
-    allFruitsFetch.forEach(fruit => {
-      if(fruit.data.foodName === item.data.foodName && dateToDayConversion(fruit.data.expiryDate) > minDaysToConsiderWaste && fruit.data.isadded === true){
-        waste = true; 
+    allFruitsFetch.forEach((fruit) => {
+      if (
+        fruit.data.foodName === item.data.foodName &&
+        dateToDayConversion(fruit.data.expiryDate) > minDaysToConsiderWaste &&
+        fruit.data.isadded === true
+      ) {
+        waste = true;
       }
     });
-    
+
     return new Promise((resolve) => {
-      if(waste === true){
+      if (waste === true) {
         Alert.alert(
           "Confirm Action",
           `${item.data.foodName} already exists within your list and has a bestbefore date of ${minDaysToConsiderWaste} days or more. Do you still want to add?`,
           [
-            { text: 'Yes', onPress: () => {addFruit(item); resolve();} },
             {
-              text: 'No',
-              onPress: () => {resolve();},
-              style: 'cancel',
+              text: "Yes",
+              onPress: () => {
+                addFruit(item);
+                resolve();
+              },
+            },
+            {
+              text: "No",
+              onPress: () => {
+                resolve();
+              },
+              style: "cancel",
             },
           ],
           { cancelable: false }
         );
-      }
-      else{
+      } else {
         addFruit(item);
       }
-    })
-    
-  }
+    });
+  };
 
   //Extension of Don's code to ensure correct execution of wastage tracking adding fruit -Faiz
   const addFruit = async (item) => {
-      updateDoc(doc(db, "foodCollection", item.id), {
-        isadded: true,
-      });
+    updateDoc(doc(db, "foodCollection", item.id), {
+      isadded: true,
+    });
   };
 
   const makeAllAdded = async () => {
@@ -280,8 +287,6 @@ function FetchFoodData() {
     await updateBatch.commit();
   };
 
-    //await updateBatch.commit();
-  };
   const makeAdded = (item) => {
     trackWastage(item);
   };
@@ -356,16 +361,16 @@ function FetchFoodData() {
                     padding: 10,
                     marginHorizontal: 5,
                     borderRadius: 5,
-                    borderWidth: 0.5
+                    borderWidth: 0.5,
                   }}
                 >
                   <View style={{ flex: 1 }}>
-                      <View style={{ flex: 1 }}>
-                        <Image
-                          style={styles.image}
-                          source={{ uri: item.data.fruitImageURI }}
-                        ></Image>
-                      </View>
+                    <View style={{ flex: 1 }}>
+                      <Image
+                        style={styles.image}
+                        source={{ uri: item.data.fruitImageURI }}
+                      ></Image>
+                    </View>
                     <Text style={{ fontSize: 20, fontWeight: "bold" }}>
                       {item.data.foodName}
 
@@ -374,16 +379,57 @@ function FetchFoodData() {
                         x{item.data.quantity}
                       </Text>
                     </Text>
-                    {item.data.currentRipenessStatus === "Underripe" ? (<View> 
-                      <Text>Ripens in: {dateToDayConversion(item.data.futureRipeningDate)} Days</Text> 
-                      <Text>Ripens on: {item.data.futureRipeningDate.toDate().toLocaleString('en-GB', {       day: '2-digit',       month: '2-digit',       year: 'numeric' })}</Text> 
-                      <Text>Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days</Text> 
-                      <Text>Best Before:{" "} {item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })}</Text> 
-                      </View>) : null}
-                    {item.data.currentRipenessStatus === "Ripe" ? (<View> 
-                      <Text>Best Before{" (days)"}: {dateToDayConversion(item.data.expiryDate)} Days</Text> 
-                      <Text>Best Before:{" "} {item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })}</Text> 
-                      </View>) : null}
+                    {item.data.currentRipenessStatus === "Underripe" ? (
+                      <View>
+                        <Text>
+                          Ripens in:{" "}
+                          {dateToDayConversion(item.data.futureRipeningDate)}{" "}
+                          Days
+                        </Text>
+                        <Text>
+                          Ripens on:{" "}
+                          {item.data.futureRipeningDate
+                            .toDate()
+                            .toLocaleString("en-GB", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                        </Text>
+                        <Text>
+                          Best Before{" (days)"}:{" "}
+                          {dateToDayConversion(item.data.expiryDate)} Days
+                        </Text>
+                        <Text>
+                          Best Before:{" "}
+                          {item.data.expiryDate
+                            .toDate()
+                            .toLocaleString("en-GB", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (
+                      <View>
+                        <Text>
+                          Best Before{" (days)"}:{" "}
+                          {dateToDayConversion(item.data.expiryDate)} Days
+                        </Text>
+                        <Text>
+                          Best Before:{" "}
+                          {item.data.expiryDate
+                            .toDate()
+                            .toLocaleString("en-GB", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                        </Text>
+                      </View>
+                    ) : null}
                     {/* <Text>expires in:{" "}
                           {item.data.expiryInDays}
                     </Text>
@@ -392,18 +438,18 @@ function FetchFoodData() {
                       {item.data.expiryDate.toDate().toLocaleString()}
                     </Text> */}
                     <Text>
-                      Current Ripeness Status:{" "}
-                      {item.data.currentRipenessStatus}
+                      Current Ripeness Status: {item.data.currentRipenessStatus}
                     </Text>
-                    {item.data.fruitFamily != "" ? 
-                    (<View> 
-                      <Text>Fruit Family: {item.data.fruitFamily}</Text> 
-                    </View>) : null}
+                    {item.data.fruitFamily != "" ? (
+                      <View>
+                        <Text>Fruit Family: {item.data.fruitFamily}</Text>
+                      </View>
+                    ) : null}
                   </View>
                   <IconButton
                     size={30}
                     icon="check"
-                    onPress={() => makeAdded(item)}
+                    onPress={() => makeAdded()}
                   />
                   <IconButton
                     icon="delete"
@@ -506,6 +552,6 @@ const styles = StyleSheet.create({
   image: {
     width: 140,
     height: 140,
-    resizeMode:"cover"
+    resizeMode: "cover",
   },
 });
