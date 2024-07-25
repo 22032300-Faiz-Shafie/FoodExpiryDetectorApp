@@ -384,43 +384,45 @@ function FetchUserData() {
               </View>
             )}
           </View>
-          <FlatList
-            style={{ flex: 1, width: "100%" }}
-            contentContainerStyle={{ flexGrow: 1 }}
-            data={sortUsersWithoutTop3}
-            renderItem={({ item, index }) => (
-              <View
-                style={{
-                  backgroundColor: "white",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: 10,
-                  margin: 3,
-                  elevation: 4,
-                }}
-              >
-                <Text style={{ fontSize: 25, marginRight: 10 }}>
-                  {index + 4}
-                </Text>
-                <Text style={{ fontSize: 25, flex: 1 }}>
-                  {item.data.username}
-                </Text>
-                <View style={{ flexDirection: "row" }}>
-                  <Text
-                    style={{ fontSize: 15, minWidth: 80, textAlign: "right" }}
-                  >
-                    Exp: {item.data.points}
+          <View style={{ flex: 1, width: "100%" }}>
+            <FlatList
+              style={{ flex: 1, width: "100%" }}
+              contentContainerStyle={{ flexGrow: 1 }}
+              data={sortUsersWithoutTop3}
+              renderItem={({ item, index }) => (
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 10,
+                    margin: 3,
+                    elevation: 4,
+                  }}
+                >
+                  <Text style={{ fontSize: 25, marginRight: 10 }}>
+                    {index + 4}
                   </Text>
-                  <Image
-                    source={require("../assets/EXP.png")}
-                    style={{ height: 25, width: 25 }}
-                  ></Image>
+                  <Text style={{ fontSize: 25, flex: 1 }}>
+                    {item.data.username}
+                  </Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={{ fontSize: 15, minWidth: 80, textAlign: "right" }}
+                    >
+                      Exp: {item.data.points}
+                    </Text>
+                    <Image
+                      source={require("../assets/EXP.png")}
+                      style={{ height: 25, width: 25 }}
+                    ></Image>
+                  </View>
+                  <Divider />
                 </View>
-                <Divider />
-              </View>
-            )}
-            keyExtractor={(item) => item.id}
-          />
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
         </>
       );
     } else if (value === "badges") {
@@ -495,7 +497,7 @@ function FetchUserData() {
                       <Text style={{ fontSize: 25, fontWeight: "bold" }}>
                         {item.titleDisplayed}
                       </Text>
-                      <Text style={{ fontSize: 13 }}>{item.description}</Text>
+                      <Text style={{ fontSize: 12 }}>{item.description}</Text>
                       <View>{item.progressText}</View>
                     </View>
                   </View>
