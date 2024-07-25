@@ -71,7 +71,7 @@ const handleInference = async (uri, loginID) => {
     //Faiz Home ip address 192.168.18.24
     //Faiz School ip address 10.175.21.102
     //Faiz Hotspot ip address 192.168.13.224
-    const response = await fetch("http://192.168.65.224:5000/predict", {
+    const response = await fetch("http://192.168.18.24:5000/predict", {
       //Don
       //fetch("http://192.168.31.1:5000/image", {
       //use FLASK IP in app.py -Don
