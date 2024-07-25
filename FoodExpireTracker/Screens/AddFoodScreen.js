@@ -195,18 +195,17 @@ const takePhoto = async (setImageUri, loginID) => {
     mediaTypes: ImagePicker.MediaTypeOptions.All,
     quality: 1,
     allowsEditing: false,
-
   });
 
   if (!cameraResp.canceled) {
     const uri = cameraResp.assets[0].uri;
-  const manipResult = await manipulateAsync(uri,
+    const manipResult = await manipulateAsync(
+      uri,
       [{ rotate: 90 }, { flip: FlipType.Vertical }],
       { compress: 1, format: SaveFormat.PNG }
     );
     setImageUri(manipResult);
-  };
-  
+
     console.log(uri);
     //sendToPython(uri);
     //await delay(14000);
