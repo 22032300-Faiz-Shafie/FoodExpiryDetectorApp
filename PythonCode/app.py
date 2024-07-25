@@ -68,7 +68,7 @@ def predict():
         newProcessedImageLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
 
         #Save preprocessed image to original image, overwriting it -Faiz
-        cv2.imwrite(newProcessedImageLocation, image_rotate)
+        cv2.imwrite(newProcessedImageLocation, image)
         
         #Loading the lastest model using detect -Faiz
         modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\best22.pt --agnostic --conf 0.10"
@@ -330,10 +330,10 @@ def predict():
 #use own IP address. Run Flask by pressing the "Run Python File" on top left  -Don
 if __name__ == "__main__":
     #Faiz home ip address
-    app.run(host="192.168.18.24", port=5000, debug=True) 
+    #app.run(host="192.168.18.24", port=5000, debug=True) 
     #Faiz school ip address
     #app.run(host="10.175.21.102", port=5000, debug=True) 
     #Faiz hotspot ip address
-    #app.run(host="192.168.13.224", port=5000, debug=True) 
+    app.run(host="192.168.65.224", port=5000, debug=True) 
     #Don
     #app.run(host="192.168.31.1", port=5000, debug=True) 
