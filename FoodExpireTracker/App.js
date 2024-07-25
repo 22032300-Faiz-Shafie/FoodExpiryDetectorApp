@@ -215,7 +215,7 @@ function FetchFoodData() {
   }, []);
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
-    const [version, setVersion] = useState(0);
+    const [version, setVersion] = useState(2);
     const [foodName, setFoodName] = useState("");
     const [quantity, setQuantity] = useState("");
     const [imageUri, setImageUri] = useState("");

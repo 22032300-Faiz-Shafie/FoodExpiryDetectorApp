@@ -10,20 +10,26 @@ import {
   FlatList,
   SafeAreaView,
   Alert,
+  Modal,
+  Dimensions,
 } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { db, storage } from "../firebaseConfig";
 import {
+  getDoc,
   doc,
   onSnapshot,
   query,
   collection,
   deleteDoc,
+  setDoc,
   updateDoc,
   writeBatch,
   addDoc,
+  serverTimestamp,
+  increment,
 } from "firebase/firestore";
 import {
   Icon,
@@ -32,13 +38,18 @@ import {
   MD3Colors,
   Divider,
   PaperProvider,
+  RadioButton,
+  TextInput,
 } from "react-native-paper";
+import Slider from "@react-native-community/slider";
 import { ref, uploadBytesResumable } from "firebase/storage";
 import AuthContext from "./AuthContext";
 import * as ImageManipulator from "expo-image-manipulator";
 
 const Stack = createNativeStackNavigator();
 
+const windowHeight = Dimensions.get("window").height;
+const modalheight = windowHeight - 200;
 //A temporary Array that holds all fruit information -Faiz
 var fruitInformation = [];
 
@@ -86,6 +97,354 @@ const handleInference = async (uri, loginID) => {
     console.log("Error: ", error);
   }
 };
+const dateToDayConversion = (givenDate) => {
+  currentDate = new Date();
+  expiryDate = givenDate.toDate();
+  const timeDifference = expiryDate - currentDate;
+  const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+  return daysDifference;
+};
+
+function EditFood({ itemID }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [version, setVersion] = useState(1);
+  const [foodName, setFoodName] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [imageUri, setImageUri] = useState("");
+  const [expiryInDays, setExpiryInDays] = useState(0);
+  const [sliderMaxLength, setSliderMaxLength] = useState(0);
+  const [sliderCurrentLength, setSliderCurrentLength] = useState(0);
+  const [sliderCurrentLengthBefore, setSliderCurrentLengthBefore] = useState(0);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const { loginID } = useContext(AuthContext);
+  const handleIconClick = () => {
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
+  useEffect(() => {
+    if (modalVisible && itemID) {
+      fetchEditingFoodData(itemID);
+    }
+  }, [modalVisible, itemID]);
+
+  const fetchEditingFoodData = async (itemID) => {
+    const docRef = doc(db, "foodCollection", itemID);
+    const docSnap = await getDoc(docRef);
+    const data = docSnap.data();
+    setVersion(data.version);
+
+    setFoodName(data.foodName);
+    setQuantity(data.quantity.toString());
+    setImageUri(data.fruitImageURI.toString());
+    const daysUntilExpiry = dateToDayConversion(data.expiryDate);
+    setExpiryInDays(daysUntilExpiry);
+    //edit
+
+    let maxLength;
+    let ripeLength;
+    if (data.foodName === "Mango") {
+      maxLength = 16;
+      ripeLength = 8;
+    } else if (data.foodName === "Pineapple") {
+      maxLength = 13;
+      ripeLength = 6;
+    } else if (data.foodName === "Avocado") {
+      maxLength = 8;
+      ripeLength = 5;
+    }
+    setSliderMaxLength(maxLength);
+    const currentLength = maxLength - daysUntilExpiry;
+    setSliderCurrentLength(currentLength);
+    setSliderCurrentLengthBefore(currentLength);
+  };
+
+  const compressImageUri = async (imageUri) => {
+    const compressedImage = await ImageManipulator.manipulateAsync(
+      imageUri,
+      [],
+      { compress: 0.2, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    const base64 = await FileSystem.readAsStringAsync(compressedImage.uri, {
+      encoding: "base64",
+    });
+    const compressedImageUri = `data:image/jpg;base64,${base64}`;
+    return compressedImageUri;
+  };
+
+  const incrementpoints = async (loginID) => {
+    try {
+      const PointDocRef = doc(db, "loginInformation", loginID);
+      await updateDoc(PointDocRef, {
+        points: increment(1),
+        gems: increment(10),
+      });
+      console.log(`Points incremented successfully for document ${loginID}`);
+    } catch (error) {
+      console.error(error);
+      console.log("are you here" + loginID);
+    }
+  };
+
+  const handleEditFood = async () => {
+    const newExpiryInDays = sliderMaxLength - sliderCurrentLength;
+    const newExpiryDate = new Date(
+      Date.now() + newExpiryInDays * 24 * 60 * 60 * 1000
+    );
+
+    let newRipeness = "";
+    let daysUntilRipe = 0;
+    if (foodName === "Mango") {
+      if (newExpiryInDays > 8) {
+        newRipeness = "Underripe";
+        daysUntilRipe = newExpiryInDays - 8;
+      } else if (newExpiryInDays > 0 && newExpiryInDays <= 8) {
+        newRipeness = "Ripe";
+      } else {
+        newRipeness = "Overripe";
+      }
+    } else if (foodName === "Pineapple") {
+      if (newExpiryInDays > 7) {
+        newRipeness = "Underripe";
+        daysUntilRipe = newExpiryInDays - 7;
+      } else if (newExpiryInDays > 0 && newExpiryInDays <= 7) {
+        newRipeness = "Ripe";
+      } else {
+        newRipeness = "Overripe";
+      }
+    } else if (foodName === "Avocado") {
+      if (newExpiryInDays > 3) {
+        newRipeness = "Underripe";
+        daysUntilRipe = newExpiryInDays - 3;
+      } else if (newExpiryInDays > 0 && newExpiryInDays <= 3) {
+        newRipeness = "Ripe";
+      } else {
+        newRipeness = "Overripe";
+      }
+    }
+
+    const compressedImageUriAfterEdit = await compressImageUri(imageUri);
+
+    const newRipeningDate = new Date(
+      Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
+    );
+    try {
+      const editHistoryRef = collection(
+        db,
+        "foodCollection",
+        itemID,
+        "editHistory"
+      );
+      await setDoc(doc(editHistoryRef), {
+        foodNameAfterEdit: foodName,
+
+        quantityAfterEdit: parseInt(quantity),
+
+        fruitImageUriAfterEdit: compressedImageUriAfterEdit,
+
+        currentRipenessStatusAfterEdit: newRipeness,
+
+        futureRipeningDateAfterEdit: newRipeningDate,
+        version: version,
+
+        editedAt: serverTimestamp(), // Timestamp of when the edit was made
+      });
+
+      await updateDoc(doc(db, "foodCollection", itemID), {
+        foodName: foodName,
+        quantity: parseInt(quantity),
+        expiryDate: newExpiryDate,
+        fruitImageURI: imageUri,
+        currentRipenessStatus: newRipeness,
+        futureRipeningDate: newRipeningDate,
+        version: increment(1),
+      });
+      incrementpoints(loginID);
+      setModalVisible(false);
+      if (newRipeness != "Overripe") {
+        Alert.alert("Food details updated successfully!\n+10 gems +1 Exp");
+      }
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setSliderCurrentLength(sliderCurrentLengthBefore);
+    setModalVisible(false);
+  };
+
+  const takePhoto = async (setImageUri, loginID) => {
+    const cameraResp = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 0.2,
+      allowsEditing: false,
+    });
+
+    if (!cameraResp.canceled) {
+      try {
+        const compressedImage = await ImageManipulator.manipulateAsync(
+          cameraResp.assets[0].uri,
+          [],
+          { compress: 0.3, format: ImageManipulator.SaveFormat.JPEG }
+        );
+        const base64 = await FileSystem.readAsStringAsync(compressedImage.uri, {
+          encoding: "base64",
+        });
+
+        const base64Image = `data:image/jpg;base64,${base64}`;
+        setImageUri(base64Image);
+      } catch (error) {
+        console.error("Error reading file:", error);
+      }
+    } else {
+      console.log("Camera was canceled");
+    }
+  };
+
+  return (
+    <PaperProvider>
+      <View style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Edit Fruit</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  width: "100%",
+                  marginTop: 20,
+                }}
+              >
+                <View style={{ flex: 1, alignItems: "center" }}>
+                  <Image
+                    style={{
+                      width: 120,
+                      height: 120,
+                      resizeMode: "contain",
+                      marginBottom: 10,
+                    }}
+                    source={{ uri: imageUri }}
+                  />
+                  <Button
+                    icon="camera"
+                    mode="contained-tonal"
+                    buttonColor="green"
+                    onPress={() => takePhoto(setImageUri, loginID)}
+                  >
+                    Edit Photo
+                  </Button>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 23 }}>Choose Fruit</Text>
+                  <RadioButton.Group
+                    onValueChange={(newFoodName) => {
+                      setFoodName(newFoodName);
+                      let newMaxLength;
+                      if (newFoodName === "Mango") {
+                        newMaxLength = 16;
+                      } else if (newFoodName === "Pineapple") {
+                        newMaxLength = 13;
+                      } else if (newFoodName === "Avocado") {
+                        newMaxLength = 8;
+                      }
+                      setSliderMaxLength(newMaxLength);
+                      setSliderCurrentLength(newMaxLength - expiryInDays);
+                    }}
+                    value={foodName}
+                  >
+                    <RadioButton.Item label="Pineapple" value="Pineapple" />
+                    <RadioButton.Item label="Mango" value="Mango" />
+                    <RadioButton.Item label="Avocado" value="Avocado" />
+                  </RadioButton.Group>
+                </View>
+              </View>
+              <TextInput
+                style={styles.input2}
+                value={quantity}
+                onChangeText={setQuantity}
+                label="Enter Quantity"
+                keyboardType="number-pad"
+              />
+              <Text style={{ fontSize: 23, paddingBottom: 10 }}>
+                Enter ripeness
+              </Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text>Unripe</Text>
+                <Slider
+                  style={{ width: 200, height: 40 }}
+                  minimumValue={0}
+                  maximumValue={sliderMaxLength}
+                  value={sliderCurrentLength}
+                  step={1}
+                  minimumTrackTintColor="black"
+                  maximumTrackTintColor="#000000"
+                  onValueChange={(value) => setSliderCurrentLength(value)}
+                />
+                <Text>Overripe</Text>
+              </View>
+              <Text style={{ fontSize: 15 }}>
+                {(() => {
+                  if (foodName === "Mango") {
+                    if (sliderCurrentLength < 8) {
+                      return `Ripens in ${8 - sliderCurrentLength} days`;
+                    } else {
+                      return `Best before in ${
+                        sliderMaxLength - sliderCurrentLength
+                      } days`;
+                    }
+                  } else if (foodName === "Pineapple") {
+                    if (sliderCurrentLength < 6) {
+                      return `Ripens in ${6 - sliderCurrentLength} days`;
+                    } else {
+                      return `Best before in ${
+                        sliderMaxLength - sliderCurrentLength
+                      } days`;
+                    }
+                  } else if (foodName === "Avocado") {
+                    if (sliderCurrentLength < 5) {
+                      return `Ripens in ${5 - sliderCurrentLength} days`;
+                    } else {
+                      return `Best before in ${
+                        sliderMaxLength - sliderCurrentLength
+                      } days`;
+                    }
+                  }
+                })()}
+              </Text>
+              <View style={{ marginTop: 10 }}>
+                <Button
+                  icon="upload"
+                  mode="contained-tonal"
+                  buttonColor="green"
+                  onPress={handleEditFood}
+                >
+                  Save
+                </Button>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        <IconButton
+          icon="square-edit-outline"
+          iconColor={MD3Colors.neutral10}
+          size={30}
+          onPress={() => setModalVisible(true)}
+        />
+      </View>
+    </PaperProvider>
+  );
+}
 
 //This function upload fruitinformation collected from inference into firebase database, officially adding them -Faiz
 const uploadFruitInformation = async (loginID) => {
@@ -129,6 +488,26 @@ const uploadFruitInformation = async (loginID) => {
         "The following Fruit Information has been uploaded: ",
         docRef.id
       );
+      const editHistoryRef = collection(
+        db,
+        "foodCollection",
+        itemID,
+        "editHistory"
+      );
+      await setDoc(doc(editHistoryRef), {
+        foodNameAfterEdit: fruit.name,
+
+        quantityAfterEdit: fruit.quantity,
+
+        fruitImageUriAfterEdit: base64CompressedImageFull,
+
+        currentRipenessStatusAfterEdit: fruit.currentRipenessStatus,
+
+        futureRipeningDateAfterEdit: futureRipeningDate,
+        version: 1,
+
+        editedAt: serverTimestamp(), // Timestamp of when the edit was made
+      });
     }
 
     //Empty Array as fruit information has already been transferred to firebase -Faiz
@@ -204,7 +583,7 @@ const takePhoto = async (setImageUri, loginID) => {
       [{ rotate: 180 }, { flip: ImageManipulator.FlipType.Vertical }],
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     );
-    setImageUri(manipResult.uri)
+    setImageUri(manipResult.uri);
     console.log(ImageURI);
     //sendToPython(uri);
     //await delay(14000);
@@ -386,7 +765,7 @@ function FetchFoodData() {
                     borderWidth: 0.5,
                   }}
                 >
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, marginRight: -100 }}>
                     <View style={{ flex: 1 }}>
                       <Image
                         style={styles.image}
@@ -468,20 +847,24 @@ function FetchFoodData() {
                       </View>
                     ) : null}
                   </View>
-                  <IconButton
-                    size={30}
-                    icon="check"
-                    onPress={() => makeAdded(item)}
-                  />
-                  <IconButton
-                    icon="delete"
-                    iconColor={MD3Colors.error50}
-                    size={30}
-                    onPress={() =>
-                      deleteDoc(doc(db, "foodCollection", item.id))
-                    }
-                  />
-
+                  <View style={{ flexDirection: "column" }}>
+                    <IconButton
+                      size={30}
+                      icon="check"
+                      onPress={() => makeAdded(item)}
+                    />
+                    <IconButton
+                      icon="delete"
+                      iconColor={MD3Colors.error50}
+                      size={30}
+                      onPress={() =>
+                        deleteDoc(doc(db, "foodCollection", item.id))
+                      }
+                    />
+                    <View>
+                      <EditFood itemID={item.id} />
+                    </View>
+                  </View>
                   <Divider />
                 </View>
               </SafeAreaView>
@@ -585,5 +968,38 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     resizeMode: "contain",
+  },
+  modalText: {
+    textAlign: "center",
+    fontSize: 35,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    position: "absolute",
+    bottom: 0,
+    alignItems: "center",
+    shadowColor: "#000",
+    width: 400,
+    height: modalheight,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  input2: {
+    margin: 12,
+    borderWidth: 1,
+    width: "95%",
+    marginVertical: 10,
   },
 });
