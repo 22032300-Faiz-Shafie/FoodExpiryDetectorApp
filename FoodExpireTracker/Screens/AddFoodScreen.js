@@ -355,7 +355,9 @@ function EditFood({ itemID }) {
                   </Button>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 23 }}>Choose Fruit</Text>
+                  <Text style={{ fontSize: 23, fontWeight: "bold" }}>
+                    Choose Fruit
+                  </Text>
                   <RadioButton.Group
                     onValueChange={(newFoodName) => {
                       setFoodName(newFoodName);
@@ -385,8 +387,10 @@ function EditFood({ itemID }) {
                 label="Enter Quantity"
                 keyboardType="number-pad"
               />
-              <Text style={{ fontSize: 23, paddingBottom: 10 }}>
-                Enter ripeness
+              <Text
+                style={{ fontSize: 17, paddingBottom: 10, fontWeight: "bold" }}
+              >
+                Adjust slider to indicate fruit ripeness
               </Text>
               <View style={{ flexDirection: "row" }}>
                 <Text>Unripe</Text>
@@ -491,6 +495,7 @@ const uploadFruitInformation = async (loginID) => {
         futureRipeningDate: futureRipeningDate,
         fruitFamily: fruit.fruitFamily,
         version: 1,
+        isDeleted: false,
       };
 
       const docRef = await addDoc(collection(db, "foodCollection"), fruitData);
@@ -631,8 +636,10 @@ const pickImage = async (setImageUri, loginID) => {
 //fetches all food with isadded as false, to enable users to confirm before they add, or delete to not add, gives user more control -Don
 //should add edit button in the future -Don
 function FetchFoodData() {
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [foodsfetch, setFoodsfetch] = useState([]);
   const [allFruitsFetch, setAllFruitsFetch] = useState([]);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const foodsCol = collection(db, "foodCollection");
 
   //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
@@ -696,6 +703,36 @@ function FetchFoodData() {
     });
   };
 
+  const handleDelete = async () => {
+    if (itemToDelete === "all") {
+      const deleteBatch = writeBatch(db);
+      for (const item of foodsfetch) {
+        const docRef = doc(db, "foodCollection", item.id);
+        deleteBatch.update(docRef, { isDeleted: true });
+      }
+      await deleteBatch.commit();
+    } else if (itemToDelete) {
+      await updateDoc(doc(db, "foodCollection", itemToDelete.id), {
+        isDeleted: true,
+      });
+    }
+    setDeleteModalVisible(false);
+    setItemToDelete(null);
+  };
+
+  const makeDelete = (item) => {
+    setItemToDelete(item);
+    setDeleteModalVisible(true);
+  };
+
+  const makeAllDeleted = () => {
+    setItemToDelete("all");
+    setDeleteModalVisible(true);
+  };
+
+  const makeAdded = (item) => {
+    trackWastage(item);
+  };
   const makeAllAdded = async () => {
     const updateBatch = writeBatch(db);
     for (const item of foodsfetch) {
@@ -706,19 +743,6 @@ function FetchFoodData() {
 
     await updateBatch.commit();
   };
-
-  const makeAdded = (item) => {
-    trackWastage(item);
-  };
-
-  const makeAllDeleted = async () => {
-    const deleteBatch = writeBatch(db);
-    for (const item of foodsfetch) {
-      deleteBatch.delete(doc(db, "foodCollection", item.id), {});
-    }
-    await deleteBatch.commit();
-  };
-
   useEffect(() => {
     const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -734,7 +758,7 @@ function FetchFoodData() {
       setFoodsfetch(foods);
       for (const food of foods) {
         allFruitItems.push(food);
-        if (food.data.isadded == false) {
+        if (food.data.isadded == false && food.data.isDeleted == false) {
           filteringFoodItems.push(food);
         }
       }
@@ -876,9 +900,7 @@ function FetchFoodData() {
                       icon="delete"
                       iconColor={MD3Colors.error50}
                       size={30}
-                      onPress={() =>
-                        deleteDoc(doc(db, "foodCollection", item.id))
-                      }
+                      onPress={() => makeDelete(item)}
                     />
                     <View>
                       <EditFood itemID={item.id} />
@@ -890,6 +912,34 @@ function FetchFoodData() {
             );
           }}
         />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={deleteModalVisible}
+          onRequestClose={() => {
+            setDeleteModalVisible(!deleteModalVisible);
+          }}
+        >
+          <View style={styles.deleteCenteredView}>
+            <View style={styles.deleteModalView}>
+              <Text>Are you sure you want to delete?</Text>
+              <View style={{ flexDirection: "row" }}>
+                <IconButton
+                  iconColor={MD3Colors.primary50}
+                  icon="check"
+                  size={30}
+                  onPress={handleDelete}
+                />
+                <IconButton
+                  icon="close"
+                  iconColor={MD3Colors.error50}
+                  size={30}
+                  onPress={() => setDeleteModalVisible(false)}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </PaperProvider>
   );
@@ -991,6 +1041,7 @@ const styles = StyleSheet.create({
   modalText: {
     textAlign: "center",
     fontSize: 35,
+    fontWeight: "bold",
   },
   centeredView: {
     flex: 1,
@@ -1020,5 +1071,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "95%",
     marginVertical: 10,
+  },
+  deleteModalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  deleteCenteredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
   },
 });

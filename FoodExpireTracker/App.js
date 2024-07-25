@@ -67,7 +67,8 @@ function FetchFoodData() {
   const foodsCol = collection(db, "foodCollection");
   const { loginID } = useContext(AuthContext);
   const filteringFoodItems = [];
-
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
   const dateToDayConversion = (givenDate) => {
     currentDate = new Date();
@@ -202,7 +203,11 @@ function FetchFoodData() {
       });
       setFoodsfetch(foods);
       for (const food of foods) {
-        if (food.data.isadded === true && food.data.userID === loginID) {
+        if (
+          food.data.isadded === true &&
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
+        ) {
           filteringFoodItems.push(food);
           //filteringFoodItems = filterFunction(filteringFoodItems);
         }
@@ -461,7 +466,9 @@ function FetchFoodData() {
                     </Button>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 23 }}>Choose Fruit</Text>
+                    <Text style={{ fontSize: 23, fontWeight: "bold" }}>
+                      Choose Fruit
+                    </Text>
                     <RadioButton.Group
                       onValueChange={(newFoodName) => {
                         setFoodName(newFoodName);
@@ -491,8 +498,14 @@ function FetchFoodData() {
                   label="Enter Quantity"
                   keyboardType="number-pad"
                 />
-                <Text style={{ fontSize: 23, paddingBottom: 10 }}>
-                  Enter ripeness
+                <Text
+                  style={{
+                    fontSize: 17,
+                    paddingBottom: 10,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Adjust slider to indicate fruit ripeness
                 </Text>
                 <View style={{ flexDirection: "row" }}>
                   <Text>Unripe</Text>
@@ -561,6 +574,20 @@ function FetchFoodData() {
       </PaperProvider>
     );
   }
+  const makeDelete = useCallback((item) => {
+    setItemToDelete(item);
+    setDeleteModalVisible(true);
+  }, []);
+
+  const handleDelete = useCallback(async () => {
+    if (itemToDelete) {
+      await updateDoc(doc(db, "foodCollection", itemToDelete.id), {
+        isDeleted: true,
+      });
+      setDeleteModalVisible(false);
+      setItemToDelete(null);
+    }
+  }, [itemToDelete]);
 
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -798,13 +825,41 @@ function FetchFoodData() {
                   icon="delete"
                   iconColor={MD3Colors.error50}
                   size={30}
-                  onPress={() => deleteDoc(doc(db, "foodCollection", item.id))}
+                  onPress={() => makeDelete(item)}
                 />
 
                 <Divider />
                 <View style={{ marginLeft: -25 }}>
                   <EditFood itemID={item.id} />
                 </View>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={deleteModalVisible}
+                  onRequestClose={() => {
+                    setDeleteModalVisible(!deleteModalVisible);
+                  }}
+                >
+                  <View style={styles.deleteCenteredView}>
+                    <View style={styles.deleteModalView}>
+                      <Text>Are you sure you want to delete?</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <IconButton
+                          iconColor={MD3Colors.primary50}
+                          icon="check"
+                          size={30}
+                          onPress={handleDelete}
+                        />
+                        <IconButton
+                          icon="close"
+                          iconColor={MD3Colors.error50}
+                          size={30}
+                          onPress={() => setDeleteModalVisible(false)}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
               </View>
             </SafeAreaView>
           );
@@ -830,7 +885,11 @@ function sort() {
         });
       });
       for (const food of foods) {
-        if (food.data.isadded == true && food.data.userID === loginID) {
+        if (
+          food.data.isadded == true &&
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
+        ) {
           filteringFoodItems.push(food);
         }
       }
@@ -873,7 +932,8 @@ function CheckExpiryDate5() {
           food.data.expiryDate.toDate() > three &&
           food.data.expiryDate.toDate() > today &&
           food.data.isadded == true &&
-          food.data.userID === loginID
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
         ) {
           filteringFoodItems.push(food);
         }
@@ -962,7 +1022,8 @@ function CheckExpiryDate() {
           food.data.expiryDate.toDate() <= threeDaysFromNow &&
           food.data.expiryDate.toDate() > today &&
           food.data.isadded == true &&
-          food.data.userID === loginID
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
         ) {
           filteringFoodItems.push(food);
         }
@@ -1049,7 +1110,8 @@ function CheckExpired() {
         if (
           food.data.expiryDate.toDate() < today &&
           food.data.isadded == true &&
-          food.data.userID === loginID
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
         ) {
           filteringFoodItems.push(food);
         }
@@ -1398,6 +1460,7 @@ const styles = StyleSheet.create({
   modalText: {
     textAlign: "center",
     fontSize: 35,
+    fontWeight: "bold",
   },
   input2: {
     margin: 12,
@@ -1409,5 +1472,26 @@ const styles = StyleSheet.create({
     width: 110,
     height: 150,
     resizeMode: "contain",
+  },
+  deleteModalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  deleteCenteredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
   },
 });
