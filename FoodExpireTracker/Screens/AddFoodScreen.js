@@ -491,7 +491,7 @@ const uploadFruitInformation = async (loginID) => {
       const editHistoryRef = collection(
         db,
         "foodCollection",
-        itemID,
+        docRef.id,
         "editHistory"
       );
       await setDoc(doc(editHistoryRef), {
