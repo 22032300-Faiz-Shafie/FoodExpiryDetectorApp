@@ -199,17 +199,16 @@ const takePhoto = async (setImageUri, loginID) => {
 
   if (!cameraResp.canceled) {
     const uri = cameraResp.assets[0].uri;
-    const manipResult = await manipulateAsync(
+    const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ rotate: 90 }, { flip: FlipType.Vertical }],
-      { compress: 1, format: SaveFormat.PNG }
+      [{ rotate: 180 }, { flip: ImageManipulator.FlipType.Vertical }],
+      { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     );
-    setImageUri(manipResult);
-
-    console.log(uri);
+    setImageUri(manipResult.uri)
+    console.log(ImageURI);
     //sendToPython(uri);
     //await delay(14000);
-    handleInference(uri, loginID);
+    handleInference(ImageURI, loginID);
     //uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");
