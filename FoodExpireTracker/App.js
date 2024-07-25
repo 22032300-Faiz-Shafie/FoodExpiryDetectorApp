@@ -303,8 +303,10 @@ function FetchFoodData() {
           daysUntilRipe = newExpiryInDays - 8;
         } else if (newExpiryInDays > 0 && newExpiryInDays <= 8) {
           newRipeness = "Ripe";
+          daysUntilRipe = newExpiryInDays - 8;
         } else {
           newRipeness = "Overripe";
+          daysUntilRipe = newExpiryInDays - 8;
         }
       } else if (foodName === "Pineapple") {
         if (newExpiryInDays > 7) {
@@ -312,8 +314,10 @@ function FetchFoodData() {
           daysUntilRipe = newExpiryInDays - 7;
         } else if (newExpiryInDays > 0 && newExpiryInDays <= 7) {
           newRipeness = "Ripe";
+          daysUntilRipe = newExpiryInDays - 7;
         } else {
           newRipeness = "Overripe";
+          daysUntilRipe = newExpiryInDays - 7;
         }
       } else if (foodName === "Avocado") {
         if (newExpiryInDays > 3) {
@@ -321,8 +325,10 @@ function FetchFoodData() {
           daysUntilRipe = newExpiryInDays - 3;
         } else if (newExpiryInDays > 0 && newExpiryInDays <= 3) {
           newRipeness = "Ripe";
+          daysUntilRipe = newExpiryInDays - 3;
         } else {
           newRipeness = "Overripe";
+          daysUntilRipe = newExpiryInDays - 3;
         }
       }
 
@@ -332,6 +338,10 @@ function FetchFoodData() {
         Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
       );
       try {
+        const docRef = doc(db, "foodCollection", itemID);
+        const docSnap = await getDoc(docRef);
+        const currentVersion = docSnap.data().version;
+        const newVersion = currentVersion + 1;
         const editHistoryRef = collection(
           db,
           "foodCollection",
@@ -346,9 +356,9 @@ function FetchFoodData() {
           fruitImageUriAfterEdit: compressedImageUriAfterEdit,
 
           currentRipenessStatusAfterEdit: newRipeness,
-
+          expiryDateAfterEdit: newExpiryDate,
           futureRipeningDateAfterEdit: newRipeningDate,
-          version: version,
+          version: newVersion,
 
           editedAt: serverTimestamp(), // Timestamp of when the edit was made
         });

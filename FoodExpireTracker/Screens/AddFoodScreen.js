@@ -71,7 +71,7 @@ const handleInference = async (uri, loginID) => {
     //Faiz Home ip address 192.168.18.24
     //Faiz School ip address 10.175.21.102
     //Faiz Hotspot ip address 192.168.13.224
-    const response = await fetch("http://192.168.18.24:5000/predict", {
+    const response = await fetch("http://192.168.65.224:5000/predict", {
       //Don
       //fetch("http://192.168.31.1:5000/image", {
       //use FLASK IP in app.py -Don
@@ -200,8 +200,10 @@ function EditFood({ itemID }) {
         daysUntilRipe = newExpiryInDays - 8;
       } else if (newExpiryInDays > 0 && newExpiryInDays <= 8) {
         newRipeness = "Ripe";
+        daysUntilRipe = newExpiryInDays - 8;
       } else {
         newRipeness = "Overripe";
+        daysUntilRipe = newExpiryInDays - 8;
       }
     } else if (foodName === "Pineapple") {
       if (newExpiryInDays > 7) {
@@ -209,8 +211,10 @@ function EditFood({ itemID }) {
         daysUntilRipe = newExpiryInDays - 7;
       } else if (newExpiryInDays > 0 && newExpiryInDays <= 7) {
         newRipeness = "Ripe";
+        daysUntilRipe = newExpiryInDays - 7;
       } else {
         newRipeness = "Overripe";
+        daysUntilRipe = newExpiryInDays - 7;
       }
     } else if (foodName === "Avocado") {
       if (newExpiryInDays > 3) {
@@ -218,8 +222,10 @@ function EditFood({ itemID }) {
         daysUntilRipe = newExpiryInDays - 3;
       } else if (newExpiryInDays > 0 && newExpiryInDays <= 3) {
         newRipeness = "Ripe";
+        daysUntilRipe = newExpiryInDays - 3;
       } else {
         newRipeness = "Overripe";
+        daysUntilRipe = newExpiryInDays - 3;
       }
     }
 
@@ -235,6 +241,10 @@ function EditFood({ itemID }) {
         itemID,
         "editHistory"
       );
+      const docRef = doc(db, "foodCollection", itemID);
+      const docSnap = await getDoc(docRef);
+      const currentVersion = docSnap.data().version;
+      const newVersion = currentVersion + 1;
       await setDoc(doc(editHistoryRef), {
         foodNameAfterEdit: foodName,
 
@@ -243,9 +253,9 @@ function EditFood({ itemID }) {
         fruitImageUriAfterEdit: compressedImageUriAfterEdit,
 
         currentRipenessStatusAfterEdit: newRipeness,
-
+        expiryDateAfterEdit: newExpiryDate,
         futureRipeningDateAfterEdit: newRipeningDate,
-        version: version,
+        version: newVersion,
 
         editedAt: serverTimestamp(), // Timestamp of when the edit was made
       });
@@ -488,26 +498,35 @@ const uploadFruitInformation = async (loginID) => {
         "The following Fruit Information has been uploaded: ",
         docRef.id
       );
-      const editHistoryRef = collection(
-        db,
-        "foodCollection",
-        docRef.id,
-        "editHistory"
-      );
-      await setDoc(doc(editHistoryRef), {
-        foodNameAfterEdit: fruit.name,
 
-        quantityAfterEdit: fruit.quantity,
+      try {
+        const docRef = doc(db, "foodCollection", itemID);
+        const docSnap = await getDoc(docRef);
+        const currentVersion = docSnap.data().version;
+        const newVersion = currentVersion + 1;
+        const editHistoryRef = collection(
+          db,
+          "foodCollection",
+          docRef.id,
+          "editHistory"
+        );
+        await setDoc(doc(editHistoryRef), {
+          foodNameAfterEdit: fruit.name,
 
-        fruitImageUriAfterEdit: base64CompressedImageFull,
+          quantityAfterEdit: fruit.quantity,
 
-        currentRipenessStatusAfterEdit: fruit.currentRipenessStatus,
+          fruitImageUriAfterEdit: base64CompressedImageFull,
 
-        futureRipeningDateAfterEdit: futureRipeningDate,
-        version: 1,
+          currentRipenessStatusAfterEdit: fruit.currentRipenessStatus,
+          expiryDateAfterEdit: futureExpiryDate,
+          futureRipeningDateAfterEdit: futureRipeningDate,
+          version: newVersion,
 
-        editedAt: serverTimestamp(), // Timestamp of when the edit was made
-      });
+          editedAt: serverTimestamp(), // Timestamp of when the edit was made
+        });
+      } catch (error) {
+        console.error("Error updating document: ", error);
+      }
     }
 
     //Empty Array as fruit information has already been transferred to firebase -Faiz
