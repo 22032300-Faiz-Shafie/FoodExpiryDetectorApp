@@ -598,12 +598,12 @@ function FetchFoodData() {
                   {visibleComponent === "least" && <LeastTimeleft />}
                 </View>
                 <IconButton
-                  icon="close"
-                  iconColor={MD3Colors.neutral10}
-                  size={30}
-                  onPress={() => setIsDropdownVisible(false)}
-                  style={{ marginTop: 20 }}
-                />
+                icon="close"
+                iconColor={MD3Colors.neutral10}
+                size={30}
+                onPress={() => SetIsDropdownVisible(false)}
+                style={{ marginTop: 20 }}
+              />
               </TouchableOpacity>
             </Modal>
             <IconButton
