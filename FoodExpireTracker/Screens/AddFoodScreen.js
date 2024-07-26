@@ -45,9 +45,6 @@ import Slider from "@react-native-community/slider";
 import { ref, uploadBytesResumable } from "firebase/storage";
 import AuthContext from "./AuthContext";
 import * as ImageManipulator from "expo-image-manipulator";
-import { LogBox } from "react-native";
-
-LogBox.ignoreLogs(["Warning: ..."]);
 
 const Stack = createNativeStackNavigator();
 
@@ -237,15 +234,14 @@ function EditFood({ itemID }) {
     const newRipeningDate = new Date(
       Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
     );
-    const docRef = doc(db, "foodCollection", itemID);
     try {
       const editHistoryRef = collection(
         db,
         "foodCollection",
-        docRef.id,
+        itemID,
         "editHistory"
       );
-
+      const docRef = doc(db, "foodCollection", itemID);
       const docSnap = await getDoc(docRef);
       const currentVersion = docSnap.data().version;
       const newVersion = currentVersion + 1;
@@ -509,14 +505,14 @@ const uploadFruitInformation = async (loginID) => {
       );
 
       try {
-        const docRef = doc(db, "foodCollection", docRef.id);
         const docSnap = await getDoc(docRef);
         const currentVersion = docSnap.data().version;
         const newVersion = currentVersion + 1;
+        const newItemID = docRef.id;
         const editHistoryRef = collection(
           db,
           "foodCollection",
-          docRef.id,
+          newItemID,
           "editHistory"
         );
         await setDoc(doc(editHistoryRef), {
