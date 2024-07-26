@@ -45,6 +45,9 @@ import Slider from "@react-native-community/slider";
 import { ref, uploadBytesResumable } from "firebase/storage";
 import AuthContext from "./AuthContext";
 import * as ImageManipulator from "expo-image-manipulator";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(["Warning: ..."]);
 
 const Stack = createNativeStackNavigator();
 
