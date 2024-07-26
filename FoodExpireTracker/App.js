@@ -1384,6 +1384,7 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
+
 const windowHeight = Dimensions.get("window").height;
 const modalheight = windowHeight - 200;
 const styles = StyleSheet.create({
@@ -1394,18 +1395,18 @@ const styles = StyleSheet.create({
   },
   addFoodButton: {
     position: "absolute",
-    bottom: 80,
+    bottom: 30,
     right: 20,
   },
   aiAccuracyFormButton: {
     position: "absolute",
-    bottom: 150,
-    right: 20,
+    bottom: 30,
+    right: 160,
   },
   loginButton: {
     position: "absolute",
-    bottom: 10,
-    right: 20,
+    bottom: 30,
+    right: 320,
   },
   input: {
     height: 40,
