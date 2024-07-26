@@ -749,88 +749,77 @@ function FetchFoodData() {
                   shadowRadius: 4,
 
                   elevation: 4,
+                  height: 200
                 }}
               >
-                <View style={{ flex: 1 }}>
+                <View style={styles.imageContainer}>
                   <Image
                     style={styles.image}
                     source={{ uri: item.data.fruitImageURI }}
                   ></Image>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                  <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline"}}>
                     {item.data.foodName}
 
                     <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                   </Text>
                   {item.data.currentRipenessStatus === "Underripe" ? (
                     <View>
-                      <Text>
-                        Ripens in:{" "}
-                        {dateToDayConversion(item.data.futureRipeningDate)} Days
+                      <Text style={styles.listText}>
+                        <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                        {item.data.currentRipenessStatus}
                       </Text>
-                      <Text>
-                        Ripens on:{" "}
-                        {item.data.futureRipeningDate
-                          .toDate()
-                          .toLocaleString("en-GB", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          })}
+                      <Text style={styles.listText}>
+                        <Text style={{fontWeight: "bold"}}>Ripens in:{"\n"}</Text>
+                        {dateToDayConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})}) 
                       </Text>
-                      <Text>
-                        Best Before{" (days)"}:{" "}
-                        {dateToDayConversion(item.data.expiryDate)} Days
-                      </Text>
-                      <Text>
-                        Best Before:{" "}
-                        {item.data.expiryDate.toDate().toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })}
+                      <Text style={styles.listText}>
+                        <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                        {dateToDayConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
                       </Text>
                     </View>
                   ) : null}
                   {item.data.currentRipenessStatus === "Ripe" ? (
                     <View>
-                      <Text>
-                        Best Before{" (days)"}:{" "}
-                        {dateToDayConversion(item.data.expiryDate)} Days
+                      <Text style={styles.listText}>
+                        <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                        {item.data.currentRipenessStatus}
                       </Text>
-                      <Text>
-                        Best Before:{" "}
-                        {item.data.expiryDate.toDate().toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })}
+                      <Text style={styles.listText}>
+                        <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                        {dateToDayConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
                       </Text>
                     </View>
                   ) : null}
-                  {/* <Text>expires in:</Text>
-                  <Text>
-                    expires on: {item.data.expiryDate.toDate().toLocaleString()}
-                  </Text> */}
+                  {item.data.currentRipenessStatus === "Overripe" ? (
+                    <View>
+                      <Text style={styles.listText}>
+                        <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                        {item.data.currentRipenessStatus}
+                      </Text>
+                    </View>
+                  ) : null}
                 </View>
-                <IconButton
-                  icon="information"
-                  iconColor={"blue"}
-                  size={30}
-                  style={{ marginRight: -20 }}
-                  onPress={() => browserFunction(item)}
-                />
-                <IconButton
-                  icon="delete"
-                  iconColor={MD3Colors.error50}
-                  size={30}
-                  onPress={() => makeDelete(item)}
-                />
+                <View style={{flexDirection: "column"}}>
+                  <IconButton
+                    icon="information"
+                    iconColor={"blue"}
+                    size={30}
+                    style={{marginBottom: -10}}
+                    onPress={() => browserFunction(item)}
+                  />
+                  <IconButton
+                    icon="delete"
+                    iconColor={MD3Colors.error50}
+                    size={30}
+                    onPress={() => makeDelete(item)}
+                  />
 
-                <Divider />
-                <View style={{ marginLeft: -25 }}>
-                  <EditFood itemID={item.id} />
+
+                  <View style={{marginTop: 10}}>
+                    <EditFood itemID={item.id} />
+                  </View>
                 </View>
                 <Modal
                   animationType="slide"
@@ -1469,9 +1458,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   image: {
-    width: 110,
-    height: 150,
+    width: '100%',
+    height: '100%',
     resizeMode: "contain",
+  },
+  imageContainer: {
+    width: 100,
+    height: 100,
+    overflow: 'hidden',
+    marginRight: 10
   },
   deleteModalView: {
     margin: 20,
@@ -1494,4 +1489,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 22,
   },
+  listText: {
+    fontSize: 18
+  }
 });

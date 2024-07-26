@@ -71,7 +71,7 @@ const handleInference = async (uri, loginID) => {
     //Faiz Home ip address 192.168.18.24
     //Faiz School ip address 10.175.21.102
     //Faiz Hotspot ip address 192.168.13.224
-    const response = await fetch("http://192.168.65.224:5000/predict", {
+    const response = await fetch("http://192.168.18.24:5000/predict", {
       //Don
       //fetch("http://192.168.31.1:5000/image", {
       //use FLASK IP in app.py -Don
@@ -802,20 +802,20 @@ function FetchFoodData() {
                     backgroundColor: "white",
                     flexDirection: "row",
                     alignItems: "center",
-                    padding: 10,
                     marginHorizontal: 5,
                     borderRadius: 5,
                     borderWidth: 0.5,
+                    height: 200
                   }}
                 >
-                  <View style={{ flex: 1, marginRight: -100 }}>
-                    <View style={{ flex: 1 }}>
+                  <View style={styles.imageContainer}>
                       <Image
                         style={styles.image}
                         source={{ uri: item.data.fruitImageURI }}
                       ></Image>
-                    </View>
-                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                  </View>
+                  <View style={{ flex: 1, marginRight: -100 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline"}}>
                       {item.data.foodName}
 
                       <Text style={{ fontSize: 16 }}>
@@ -825,82 +825,62 @@ function FetchFoodData() {
                     </Text>
                     {item.data.currentRipenessStatus === "Underripe" ? (
                       <View>
-                        <Text>
-                          Ripens in:{" "}
-                          {dateToDayConversion(item.data.futureRipeningDate)}{" "}
-                          Days
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
                         </Text>
-                        <Text>
-                          Ripens on:{" "}
-                          {item.data.futureRipeningDate
-                            .toDate()
-                            .toLocaleString("en-GB", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })}
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripens in:{"\n"}</Text>
+                          {dateToDayConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})}) 
                         </Text>
-                        <Text>
-                          Best Before{" (days)"}:{" "}
-                          {dateToDayConversion(item.data.expiryDate)} Days
-                        </Text>
-                        <Text>
-                          Best Before:{" "}
-                          {item.data.expiryDate
-                            .toDate()
-                            .toLocaleString("en-GB", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })}
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDayConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
                         </Text>
                       </View>
                     ) : null}
                     {item.data.currentRipenessStatus === "Ripe" ? (
                       <View>
-                        <Text>
-                          Best Before{" (days)"}:{" "}
-                          {dateToDayConversion(item.data.expiryDate)} Days
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
                         </Text>
-                        <Text>
-                          Best Before:{" "}
-                          {item.data.expiryDate
-                            .toDate()
-                            .toLocaleString("en-GB", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })}
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDayConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
                         </Text>
                       </View>
                     ) : null}
-                    {/* <Text>expires in:{" "}
-                          {item.data.expiryInDays}
-                    </Text>
-                    <Text>
-                      expires on:{" "}
-                      {item.data.expiryDate.toDate().toLocaleString()}
-                    </Text> */}
-                    <Text>
-                      Current Ripeness Status: {item.data.currentRipenessStatus}
-                    </Text>
+                    {item.data.currentRipenessStatus === "Overripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                      </View>
+                    ) : null}
                     {item.data.fruitFamily != "" ? (
                       <View>
-                        <Text>Fruit Family: {item.data.fruitFamily}</Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Fruit Family:{"\n"}</Text>
+                          {item.data.fruitFamily}
+                        </Text>
                       </View>
                     ) : null}
-                  </View>
+                </View>
                   <View style={{ flexDirection: "column" }}>
                     <IconButton
                       size={30}
                       icon="check"
                       onPress={() => makeAdded(item)}
+                      style={{marginBottom: -10}}
                     />
                     <IconButton
                       icon="delete"
                       iconColor={MD3Colors.error50}
                       size={30}
                       onPress={() => makeDelete(item)}
+                      style={{marginBottom: 20}}
                     />
                     <View>
                       <EditFood itemID={item.id} />
@@ -1034,9 +1014,15 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   image: {
-    width: 150,
-    height: 150,
+    width: '100%',
+    height: '100%',
     resizeMode: "contain",
+  },
+  imageContainer: {
+    width: 125,
+    height: 150,
+    overflow: 'hidden',
+    marginRight: 5
   },
   modalText: {
     textAlign: "center",
@@ -1092,5 +1078,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22,
+  },
+  listText: {
+    fontSize: 16, 
   },
 });
