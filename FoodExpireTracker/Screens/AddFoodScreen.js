@@ -234,14 +234,15 @@ function EditFood({ itemID }) {
     const newRipeningDate = new Date(
       Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
     );
+    const docRef = doc(db, "foodCollection", itemID);
     try {
       const editHistoryRef = collection(
         db,
         "foodCollection",
-        itemID,
+        docRef.id,
         "editHistory"
       );
-      const docRef = doc(db, "foodCollection", itemID);
+
       const docSnap = await getDoc(docRef);
       const currentVersion = docSnap.data().version;
       const newVersion = currentVersion + 1;
