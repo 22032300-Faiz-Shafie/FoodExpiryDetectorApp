@@ -643,6 +643,7 @@ function FetchFoodData() {
   const handleToggleWarningDashboardVisibility = (component) => {
     setVisibleComponent(component);
   };
+  
 
   return (
     <View>
@@ -904,6 +905,14 @@ function CheckExpiryDate5() {
   const FiveDaysFromNow = new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000);
   const three = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
   const { loginID } = useContext(AuthContext);
+  const dateToDaysConversion = (givenDate) => {
+    currentDate = new Date();
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference;
+  };
 
   useEffect(() => {
     const q = query(foodsCol);
@@ -949,26 +958,79 @@ function CheckExpiryDate5() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView
-                style={{
-                  borderWidth: 1,
-                  marginHorizontal: 5,
-                  backgroundColor: "white",
-                }}
-              >
-                <Text
+              <SafeAreaView>
+                <View
                   key={item.id}
-                  style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    //padding: 10,
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 4,
+  
+                    elevation: 4,
+                    height: 200
+                  }}
                 >
-                  FRUIT NAME: {item.data.foodName}
-                </Text>
-                <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                  EXPIRATION DAY:{" "}
-                  {item.data.expiryDate.toDate().toLocaleString()}
-                </Text>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: item.data.fruitImageURI }}
+                    ></Image>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline"}}>
+                      {item.data.foodName}
+  
+                      <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+                    </Text>
+                    {item.data.currentRipenessStatus === "Underripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripens in:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})}) 
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Overripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                  </View>
               </SafeAreaView>
             );
-          }}
+        }}
         />
         <TouchableOpacity
           style={{
@@ -994,7 +1056,14 @@ function CheckExpiryDate() {
   var today = new Date();
   const threeDaysFromNow = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
   const { loginID } = useContext(AuthContext);
+  const dateToDaysConversion = (givenDate) => {
+    currentDate = new Date();
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
+    return daysDifference;
+  };
   useEffect(() => {
     const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -1040,24 +1109,77 @@ function CheckExpiryDate() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView
-                style={{
-                  borderWidth: 1,
-                  marginHorizontal: 5,
-                  backgroundColor: "white",
-                }}
-              >
-                <Text
+              <SafeAreaView>
+                <View
                   key={item.id}
-                  style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    //padding: 10,
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 4,
+  
+                    elevation: 4,
+                    height: 200
+                  }}
                 >
-                  FRUIT NAME: {item.data.foodName}
-                </Text>
-                <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                  EXPIRATION DAY:{" "}
-                  {item.data.expiryDate.toDate().toLocaleString()}
-                </Text>
-              </SafeAreaView>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: item.data.fruitImageURI }}
+                    ></Image>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline"}}>
+                      {item.data.foodName}
+  
+                      <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+                    </Text>
+                    {item.data.currentRipenessStatus === "Underripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripens in:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})}) 
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Overripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                  </View>
+                  </SafeAreaView>
             );
           }}
         />
@@ -1083,7 +1205,14 @@ function CheckExpired() {
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   var today = new Date();
   const { loginID } = useContext(AuthContext);
+  const dateToDaysConversion = (givenDate) => {
+    currentDate = new Date();
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 
+    return daysDifference;
+  };
   useEffect(() => {
     const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -1126,24 +1255,77 @@ function CheckExpired() {
           data={filteredFoodItems}
           renderItem={({ item }) => {
             return (
-              <SafeAreaView
-                style={{
-                  borderWidth: 1,
-                  marginHorizontal: 5,
-                  backgroundColor: "white",
-                }}
-              >
-                <Text
+              <SafeAreaView>
+                <View
                   key={item.id}
-                  style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    //padding: 10,
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 4,
+  
+                    elevation: 4,
+                    height: 200
+                  }}
                 >
-                  FRUIT NAME: {item.data.foodName}
-                </Text>
-                <Text style={{ fontSize: 15, padding: 0, marginHorizontal: 5 }}>
-                  EXPIRATION DAY:{" "}
-                  {item.data.expiryDate.toDate().toLocaleString()}
-                </Text>
-              </SafeAreaView>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: item.data.fruitImageURI }}
+                    ></Image>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline"}}>
+                      {item.data.foodName}
+  
+                      <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+                    </Text>
+                    {item.data.currentRipenessStatus === "Underripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripens in:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})}) 
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", {day: "2-digit",month: "2-digit",year: "numeric",})})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Overripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                  </View>
+                  </SafeAreaView>
             );
           }}
         />
