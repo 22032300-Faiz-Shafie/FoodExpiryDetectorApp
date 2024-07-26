@@ -525,7 +525,7 @@ const uploadFruitInformation = async (loginID) => {
           currentRipenessStatusAfterEdit: fruit.currentRipenessStatus,
           expiryDateAfterEdit: futureExpiryDate,
           futureRipeningDateAfterEdit: futureRipeningDate,
-          version: newVersion,
+          version: 1,
 
           editedAt: serverTimestamp(), // Timestamp of when the edit was made
         });
