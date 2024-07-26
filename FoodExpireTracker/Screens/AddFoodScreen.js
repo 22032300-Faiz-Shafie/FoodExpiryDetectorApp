@@ -506,7 +506,7 @@ const uploadFruitInformation = async (loginID) => {
       );
 
       try {
-        const docRef = doc(db, "foodCollection", itemID);
+        const docRef = doc(db, "foodCollection", docRef.id);
         const docSnap = await getDoc(docRef);
         const currentVersion = docSnap.data().version;
         const newVersion = currentVersion + 1;
