@@ -315,8 +315,7 @@ function FetchUserData() {
     await updateDoc(docRef, {
       [`fairprice${value}`]: increment(-1),
     });
-
-    Linking.openURL("https://www.fairprice.com.sg/accounts?tab=vouchers");
+Alert.alert("gift card purhcased")
   };
   const yesOptionForCard = async () => {
     const gemsLeftAfterBuying = cUser.data.gems + selectedGemValue;
@@ -585,7 +584,7 @@ function FetchUserData() {
                     }}
                   >
                     <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                      Fairprice X{item.quantity}
+                      fastMart X{item.quantity}
                     </Text>
                     <Text>Value: ${item.value}</Text>
                     <Text style={{ fontSize: 13 }}>{item.description}</Text>
