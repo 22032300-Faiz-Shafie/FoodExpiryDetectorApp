@@ -324,7 +324,7 @@ function FetchUserData() {
       setModalVisible(!modalVisible);
       console.log("Selected gem value:", selectedGemValue);
       const docRef = doc(db, "loginInformation", loginID);
-      Alert.alert("giftcard successfully added");
+      Alert.alert("gift card successfully added");
 
       await updateDoc(docRef, {
         gems: increment(selectedGemValue),
@@ -515,7 +515,7 @@ function FetchUserData() {
         <ScrollView style={styles.storeContainerGift}>
           <View style={{ flex: 1, width: "100%", alignItems: "center" }}>
             <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-              Buy giftcards
+              Buy gift cards
             </Text>
             <FlatList
               style={{ maxHeight: 180, width: "100%" }}
@@ -549,7 +549,7 @@ function FetchUserData() {
             />
 
             <Text style={{ fontSize: 25, fontWeight: "bold", marginTop: 30 }}>
-              Your giftcards
+              Your gift cards
             </Text>
             <FlatList
               style={{ flex: 1, width: "100%", marginTop: 10 }}
