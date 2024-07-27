@@ -692,7 +692,7 @@ function FetchFoodData() {
       if (
         fruit.data.foodName === item.data.foodName &&
         dateToDayConversion(fruit.data.expiryDate) > minDaysToConsiderWaste &&
-        fruit.data.isadded === true
+        fruit.data.isadded === true && fruit.data.isDeleted === false
       ) {
         waste = true;
       }
