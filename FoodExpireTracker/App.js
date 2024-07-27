@@ -1641,12 +1641,86 @@ export default function App() {
 
 const HomeScreen = ({ navigation }) => {
   const { isLoggedIn, logout } = useContext(AuthContext);
+  const [ isLegendInformationViewable, setIsLegendInformationViewable] = useState(false); 
 
   //Handles logout, calls upon logout method which sets isLoggedIn to false. -Faiz
   const handleLogout = () => {
     logout();
     Alert.alert("", "You Have Successfully Logged Out");
   };
+
+  //Hanles legend information Button -Faiz
+  const handleLegendInformation = () => {
+    setIsLegendInformationViewable(!isLegendInformationViewable);
+  }
+
+  //Handles legend information view -Faiz
+  const LegendInformationModalView = () => {  
+
+    return(
+      <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isLegendInformationViewable}
+      onRequestClose={() => {
+        setIsLegendInformationViewable(!isLegendInformationViewable);
+      }}
+    >
+    <View style={styles.centeredView}>
+      <View style={styles.modalView}>
+        <ScrollView>
+          <Text style={styles.modalText}>Legend Information</Text>
+          <View style={{flexDirection: "column", alignItems: "center", padding: 20, marginHorizontal: 20}}>
+          {/* <View style={{borderWidth: 1, borderRadius: 25}}>
+            <Image source={require("./assets/LegendSort.jpg")} style={styles.legendImage}/>
+          </View> */}
+            <Text style={{fontSize: 30, fontWeight: "bold", textDecorationLine: "underline"}}>Main Menu</Text>
+            <View style={{marginTop: 5, alignItems: "center"}}>
+              <IconButton icon="trophy" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the gamify button. Want to compete against others through giving feedbacks? Includes leaderboard, badges and rewards!</Text>
+            </View>
+            <View style={{marginTop: 20, alignItems: "center"}}>
+              <IconButton icon="sort-variant" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the sort button. It helps sort your fruit list the way you want it!</Text>
+            </View>
+            <View style={{marginTop: 20, alignItems: "center"}}>
+              <IconButton icon="filter-outline" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the filter button. It helps filter your fruit list based on your preferences!</Text>
+            </View>
+            <Text style={{fontSize: 30, fontWeight: "bold", textDecorationLine: "underline", marginTop: 30}}>Fruit Listings</Text>
+            <View style={{marginTop: 5, alignItems: "center"}}>
+              <IconButton icon="information" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the nutrional information button. Want to know more about the fruit? Click here</Text>
+            </View>
+            <View style={{marginTop: 20, alignItems: "center"}}>
+              <IconButton icon="delete" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the delete button. It removes a fruit listing from your fruit list.</Text>
+            </View>
+            <View style={{marginTop: 20, alignItems: "center"}}>
+              <IconButton icon="square-edit-outline" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the edit button. AI made a mistake on something? Edit here manually, help give us feedback to improve our service!</Text>
+            </View>
+            <Text style={{fontSize: 30, fontWeight: "bold", textDecorationLine: "underline", marginTop: 30}}>Floating Action Buttons</Text>
+            <View style={{marginTop: 5, alignItems: "center"}}>
+              <IconButton icon="information" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the nutrional information button. Want to know more about the fruit? Click here</Text>
+            </View>
+            <View style={{marginTop: 20, alignItems: "center"}}>
+              <IconButton icon="square-edit-outline" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the edit button. AI made a mistake on something? Edit here manually, help give us feedback to improve our service!</Text>
+            </View>
+            <View style={{marginTop: 20, alignItems: "center"}}>
+              <IconButton icon="square-edit-outline" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the edit button. AI made a mistake on something? Edit here manually, help give us feedback to improve our service!</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+    </View>
+
+    </Modal>
+    )
+  }
 
   return (
     <View style={styles.backGround}>
@@ -1668,6 +1742,11 @@ const HomeScreen = ({ navigation }) => {
               onPress={() => navigation.navigate("gamify")}
             ></IconButton>
           </View>
+          {isLoggedIn && 
+            <View style={{position: "absolute", right: -5, top: 28}}>
+              <IconButton icon="help-circle" size={35} onPress={() => handleLegendInformation()}/>
+            </View>
+          }
           <Text style={{ textAlign: "center", fontSize: 20 }}>Fruit List</Text>
           <Image
             source={logoImg}
@@ -1675,6 +1754,7 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
         <View>{isLoggedIn ? <FetchFoodData /> : null}</View>
+        {LegendInformationModalView()}
       </ScrollView>
       {isLoggedIn ? (
         <View style={styles.addFoodButton}>
