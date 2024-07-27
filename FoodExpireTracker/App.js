@@ -1614,7 +1614,7 @@ export default function App() {
             component={Gamify}
             options={{
               headerStyle: { backgroundColor: "green" },
-              title: "Points and achievements",
+              title: "Progress and rewards",
             }}
           />
           <Stack.Screen
