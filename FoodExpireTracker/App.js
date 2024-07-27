@@ -56,6 +56,7 @@ import { AuthProvider } from "./Screens/AuthContext";
 import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
+import { Rating } from 'react-native-ratings';
 
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
@@ -153,8 +154,9 @@ function FetchFoodData() {
     const [expiryInDays, setExpiryInDays] = useState(0);
     const [sliderMaxLength, setSliderMaxLength] = useState(0);
     const [sliderCurrentLength, setSliderCurrentLength] = useState(0);
-    const [sliderCurrentLengthBefore, setSliderCurrentLengthBefore] =
-      useState(0);
+    const [sliderCurrentLengthBefore, setSliderCurrentLengthBefore] = useState(0);
+    const [aiAccuracyRemarkValue, setAiAccuracyRemarkValue] = useState("");
+    const [aiSatisfactionResultValue, setAiSatisfactionResultValue] = useState(0);
 
     useEffect(() => {
       if (modalVisible && itemID) {
@@ -291,6 +293,9 @@ function FetchFoodData() {
           futureRipeningDateAfterEdit: newRipeningDate,
           version: newVersion,
 
+          aiAccuracyRemark: aiAccuracyRemarkValue,
+          aiSatisfactionResult: aiSatisfactionResultValue,
+
           editedAt: serverTimestamp(), // Timestamp of when the edit was made
         });
 
@@ -301,6 +306,8 @@ function FetchFoodData() {
           fruitImageURI: imageUri,
           currentRipenessStatus: newRipeness,
           futureRipeningDate: newRipeningDate,
+          aiAccuracyRemark: aiAccuracyRemarkValue,
+          aiSatisfactionResult: aiSatisfactionResultValue,
           version: increment(1),
         });
         incrementpoints(loginID);
@@ -423,6 +430,7 @@ function FetchFoodData() {
                   onChangeText={setQuantity}
                   label="Enter Quantity"
                   keyboardType="number-pad"
+                  mode="flat"
                 />
                 <Text
                   style={{
@@ -473,6 +481,25 @@ function FetchFoodData() {
                     }
                   })()}
                 </Text>
+                <TextInput
+                  style={styles.input2}
+                  value={aiAccuracyRemarkValue}
+                  onChangeText={setAiAccuracyRemarkValue}
+                  label="Enter Remarks For AI Result"
+                  mode="flat"
+                />
+                <Text style={{ fontSize: 17, paddingBottom: 10, marginTop: 10, fontWeight: "bold" }}>AI Result Satisfaction</Text>
+                <Rating 
+                type='star'
+                ratingCount={5}
+                imageSize={50}
+                onFinishRating={(rate) => setAiSatisfactionResultValue(rate)}
+                startingValue={0}
+                style={{marginBottom: 10}}
+                jumpValue={0.5}
+                fractions={1}
+                showRating
+                />
                 <View style={{ marginTop: 10 }}>
                   <Button
                     icon="upload"
@@ -1683,7 +1710,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
       ) : null}
       {isLoggedIn ? (
-        <View style={styles.loginButton}>
+        <View style={styles.logoutButton}>
           <FAB
             icon="logout"
             rippleColor="green"
@@ -1699,7 +1726,7 @@ const HomeScreen = ({ navigation }) => {
 
 
 const windowHeight = Dimensions.get("window").height;
-const modalheight = windowHeight - 200;
+const modalheight = windowHeight - 80;
 const styles = StyleSheet.create({
   backGround: {
     flex: 1,
@@ -1716,10 +1743,15 @@ const styles = StyleSheet.create({
     bottom: 30,
     right: 160,
   },
-  loginButton: {
+  logoutButton: {
     position: "absolute",
     bottom: 30,
     right: 320,
+  },
+  loginButton: {
+    position: "absolute",
+    bottom: 10,
+    right: 20,
   },
   input: {
     height: 40,
@@ -1768,7 +1800,8 @@ const styles = StyleSheet.create({
   input2: {
     margin: 12,
     borderWidth: 1,
-    width: "95%",
+    width: "90%",
+    height: 50,
     marginVertical: 10,
   },
   image: {

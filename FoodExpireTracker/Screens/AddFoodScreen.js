@@ -45,11 +45,12 @@ import Slider from "@react-native-community/slider";
 import { ref, uploadBytesResumable } from "firebase/storage";
 import AuthContext from "./AuthContext";
 import * as ImageManipulator from "expo-image-manipulator";
+import { Rating } from 'react-native-ratings';
 
 const Stack = createNativeStackNavigator();
 
 const windowHeight = Dimensions.get("window").height;
-const modalheight = windowHeight - 200;
+const modalheight = windowHeight - 80;
 //A temporary Array that holds all fruit information -Faiz
 var fruitInformation = [];
 
@@ -118,6 +119,9 @@ function EditFood({ itemID }) {
   const [sliderCurrentLengthBefore, setSliderCurrentLengthBefore] = useState(0);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const { loginID } = useContext(AuthContext);
+  const [aiAccuracyRemarkValue, setAiAccuracyRemarkValue] = useState("");
+  const [aiSatisfactionResultValue, setAiSatisfactionResultValue] = useState(0);
+
   const handleIconClick = () => {
     setIsDropdownVisible(!isDropdownVisible);
   };
@@ -257,6 +261,10 @@ function EditFood({ itemID }) {
         futureRipeningDateAfterEdit: newRipeningDate,
         version: newVersion,
 
+        aiAccuracyRemark: aiAccuracyRemarkValue,
+        aiSatisfactionResult: aiSatisfactionResultValue,
+
+
         editedAt: serverTimestamp(), // Timestamp of when the edit was made
       });
 
@@ -268,6 +276,9 @@ function EditFood({ itemID }) {
         currentRipenessStatus: newRipeness,
         futureRipeningDate: newRipeningDate,
         version: increment(1),
+
+        aiAccuracyRemark: aiAccuracyRemarkValue,
+        aiSatisfactionResult: aiSatisfactionResultValue,
       });
       incrementpoints(loginID);
       setModalVisible(false);
@@ -386,6 +397,7 @@ function EditFood({ itemID }) {
                 onChangeText={setQuantity}
                 label="Enter Quantity"
                 keyboardType="number-pad"
+                mode="flat"
               />
               <Text
                 style={{ fontSize: 17, paddingBottom: 10, fontWeight: "bold" }}
@@ -435,6 +447,25 @@ function EditFood({ itemID }) {
                   }
                 })()}
               </Text>
+              <TextInput
+                style={styles.input2}
+                value={aiAccuracyRemarkValue}
+                onChangeText={setAiAccuracyRemarkValue}
+                label="Enter Remarks For AI Result"
+                mode="flat"
+              />
+              <Text style={{ fontSize: 17, paddingBottom: 10, marginTop: 10, fontWeight: "bold" }}>AI Result Satisfaction</Text>
+              <Rating 
+              type='star'
+              ratingCount={5}
+              imageSize={50}
+              onFinishRating={(rate) => setAiSatisfactionResultValue(rate)}
+              startingValue={0}
+              style={{marginBottom: 10}}
+              jumpValue={0.5}
+              fractions={1}
+              showRating
+              />
               <View style={{ marginTop: 10 }}>
                 <Button
                   icon="upload"
@@ -1055,7 +1086,8 @@ const styles = StyleSheet.create({
   input2: {
     margin: 12,
     borderWidth: 1,
-    width: "95%",
+    width: "90%",
+    height: 50,
     marginVertical: 10,
   },
   deleteModalView: {
