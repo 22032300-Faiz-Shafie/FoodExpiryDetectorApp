@@ -739,12 +739,13 @@ function FetchFoodData() {
       const deleteBatch = writeBatch(db);
       for (const item of foodsfetch) {
         const docRef = doc(db, "foodCollection", item.id);
-        deleteBatch.update(docRef, { isDeleted: true });
+        deleteBatch.update(docRef, { isDeleted: true, DeleteTimestamp: serverTimestamp() });
       }
       await deleteBatch.commit();
     } else if (itemToDelete) {
       await updateDoc(doc(db, "foodCollection", itemToDelete.id), {
         isDeleted: true,
+        DeleteTimestamp: serverTimestamp(),
       });
     }
     setDeleteModalVisible(false);

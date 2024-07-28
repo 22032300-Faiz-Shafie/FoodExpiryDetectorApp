@@ -533,6 +533,7 @@ function FetchFoodData() {
     if (itemToDelete) {
       await updateDoc(doc(db, "foodCollection", itemToDelete.id), {
         isDeleted: true,
+        DeleteTimestamp: serverTimestamp(),
       });
       setDeleteModalVisible(false);
       setItemToDelete(null);
