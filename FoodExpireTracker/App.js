@@ -686,11 +686,42 @@ function FetchFoodData() {
                 >
                   Best before 5 days or more
                 </Button>
+                <Button
+                  mode="contained"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() =>
+                    handlesort("mango")
+                  }
+                >
+                  Mango
+                </Button>
+                <Button
+                  mode="contained"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() =>
+                    handlesort("avacado")
+                  }
+                >
+                  Avacado
+                </Button>
+                <Button
+                  mode="contained"
+                  textColor={MD3Colors.neutral10}
+                  onPress={() =>
+                    handlesort("pineapple")
+                  }
+                >
+                  Pineapple
+                </Button>
               </View>
+              
               <View>
                 {visibleComponent === "expired" && <CheckExpired />}
                 {visibleComponent === "expiring3" && <CheckExpiryDate />}
                 {visibleComponent === "expiring5" && <CheckExpiryDate5 />}
+                {visibleComponent === "mango" && <Mango />}
+                {visibleComponent === "avacado" && <Avocado />}
+                {visibleComponent === "pineapple" && <Pineapple />}
               </View>
               <IconButton
                 icon="close"
@@ -833,6 +864,451 @@ function FetchFoodData() {
     </View>
   );
 }
+function Mango (){
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  
+  const dateToDaysConversion = (givenDate) => {
+    currentDate = new Date();
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference;
+  };
+
+  const { loginID } = useContext(AuthContext);
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      for (const food of foods) {
+        if (
+          food.data.foodName.includes("Mango") &&
+          food.data.isadded == true &&
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
+        ) {
+          filteringFoodItems.push(food);
+        }
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+    return () => unsubscribe();
+  }, []);
+  const [modalVisible, setModalVisible] = useState(true);
+  return (
+    <Modal visible={modalVisible} animationType="slide">
+      <View style={{ flex: 1, padding: 20 }}>
+        <View
+          style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}
+        >
+          <Icon source={"alert-circle"} size={35} />
+          <Text style={{ fontSize: 25 }}>
+            Mango:{" "}
+          </Text>
+        </View>
+        <FlatList
+          data={filteredFoodItems}
+          renderItem={({ item }) => {
+            return (
+              <SafeAreaView>
+                <View
+                  key={item.id}
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    //padding: 10,
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 4,
+
+                    elevation: 4,
+                    height: 200
+                  }}
+                >
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: item.data.fruitImageURI }}
+                    ></Image>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline" }}>
+                      {item.data.foodName}
+
+                      <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+                    </Text>
+                    {item.data.currentRipenessStatus === "Underripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripens in:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Overripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                </View>
+              </SafeAreaView>
+            );
+          }}
+        />
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#007AFF",
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 20,
+          }}
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
+          <Text style={{ fontSize: 18, color: "white" }}>Close</Text>
+        </TouchableOpacity>
+      </View>
+
+    </Modal>
+
+  );
+};
+
+function Pineapple (){
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  
+  const dateToDaysConversion = (givenDate) => {
+    currentDate = new Date();
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference;
+  };
+
+  const { loginID } = useContext(AuthContext);
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      for (const food of foods) {
+        if (
+          food.data.foodName.includes("Pineapple") &&
+          food.data.isadded == true &&
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
+        ) {
+          filteringFoodItems.push(food);
+        }
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+    return () => unsubscribe();
+  }, []);
+  const [modalVisible, setModalVisible] = useState(true);
+  return (
+    <Modal visible={modalVisible} animationType="slide">
+      <View style={{ flex: 1, padding: 20 }}>
+        <View
+          style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}
+        >
+          <Icon source={"alert-circle"} size={35} />
+          <Text style={{ fontSize: 25 }}>
+            Pineapple:{" "}
+          </Text>
+        </View>
+        <FlatList
+          data={filteredFoodItems}
+          renderItem={({ item }) => {
+            return (
+              <SafeAreaView>
+                <View
+                  key={item.id}
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    //padding: 10,
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 4,
+
+                    elevation: 4,
+                    height: 200
+                  }}
+                >
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: item.data.fruitImageURI }}
+                    ></Image>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline" }}>
+                      {item.data.foodName}
+
+                      <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+                    </Text>
+                    {item.data.currentRipenessStatus === "Underripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripens in:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Overripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                </View>
+              </SafeAreaView>
+            );
+          }}
+        />
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#007AFF",
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 20,
+          }}
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
+          <Text style={{ fontSize: 18, color: "white" }}>Close</Text>
+        </TouchableOpacity>
+      </View>
+
+    </Modal>
+
+  );
+};
+function Avocado (){
+  const foodsCol = collection(db, "foodCollection");
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  
+  const dateToDaysConversion = (givenDate) => {
+    currentDate = new Date();
+    expiryDate = givenDate.toDate();
+    const timeDifference = expiryDate - currentDate;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference;
+  };
+  
+  const { loginID } = useContext(AuthContext);
+  useEffect(() => {
+    const q = query(foodsCol);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const foods = [];
+      const filteringFoodItems = [];
+      querySnapshot.forEach((doc) => {
+        foods.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      for (const food of foods) {
+        if (
+          food.data.foodName.includes("Avacado") &&
+          food.data.isadded == true &&
+          food.data.userID === loginID &&
+          food.data.isDeleted == false
+        ) {
+          filteringFoodItems.push(food);
+        }
+      }
+      setFilteredFoodItems(filteringFoodItems);
+    });
+    return () => unsubscribe();
+  }, []);
+  const [modalVisible, setModalVisible] = useState(true);
+  return (
+    <Modal visible={modalVisible} animationType="slide">
+      <View style={{ flex: 1, padding: 20 }}>
+        <View
+          style={{ flexDirection: "row", marginBottom: 10, marginTop: 100 }}
+        >
+          <Icon source={"alert-circle"} size={35} />
+          <Text style={{ fontSize: 25 }}>
+            Avocado:{" "}
+          </Text>
+        </View>
+        <FlatList
+          data={filteredFoodItems}
+          renderItem={({ item }) => {
+            return (
+              <SafeAreaView>
+                <View
+                  key={item.id}
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    //padding: 10,
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 4,
+
+                    elevation: 4,
+                    height: 200
+                  }}
+                >
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: item.data.fruitImageURI }}
+                    ></Image>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textDecorationLine: "underline" }}>
+                      {item.data.foodName}
+
+                      <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
+                    </Text>
+                    {item.data.currentRipenessStatus === "Underripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripens in:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.futureRipeningDate)} Days ({item.data.futureRipeningDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Ripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Best Before:{"\n"}</Text>
+                          {dateToDaysConversion(item.data.expiryDate)} Days ({item.data.expiryDate.toDate().toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", })})
+                        </Text>
+                      </View>
+                    ) : null}
+                    {item.data.currentRipenessStatus === "Overripe" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{ fontWeight: "bold" }}>Ripeness Status:{"\n"}</Text>
+                          {item.data.currentRipenessStatus}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                </View>
+              </SafeAreaView>
+            );
+          }}
+        />
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#007AFF",
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 20,
+          }}
+          onPress={() => {
+            setModalVisible(false);
+          }}
+        >
+          <Text style={{ fontSize: 18, color: "white" }}>Close</Text>
+        </TouchableOpacity>
+      </View>
+
+    </Modal>
+
+  );
+};
 
 function MostTimeleft() {
   const foodsCol = collection(db, "foodCollection");
