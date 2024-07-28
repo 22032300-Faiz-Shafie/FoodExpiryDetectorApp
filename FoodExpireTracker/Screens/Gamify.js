@@ -262,7 +262,7 @@ function FetchUserData() {
     {
       id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
       title: "First!",
-      description: "Submit a form through the accuracy form",
+      description: "Make 1 total edit to fruit items",
       imgAchieved: require("../assets/First!Achieved.png"),
       imgNotAchieved: require("../assets/First!NotAchieved.png"),
       achieved: firstAchievedOrNot(),
@@ -273,7 +273,7 @@ function FetchUserData() {
     {
       id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
       title: "BigRater",
-      description: "Submit 10 forms through the accuracy form",
+      description: "make 10 total edits to fruit items",
       imgAchieved: require("../assets/BigRaterAchieved.png"),
       imgNotAchieved: require("../assets/BigRaterNotAchieved.png"),
       achieved: bigRaterAchievedOrNot(),
@@ -285,7 +285,7 @@ function FetchUserData() {
     {
       id: "3ac68afc-c605-48d3-a4c8-fbx91aa97f63",
       title: "KingRater",
-      description: "Submit 50 forms through the accuracy form",
+      description: "make 50 total edits to fruit items",
       imgAchieved: require("../assets/KingRaterAchieved.png"),
       imgNotAchieved: require("../assets/KingRaterNotAchieved.png"),
       achieved: kingRaterAchievedOrNot(),
@@ -496,7 +496,7 @@ Alert.alert("gift card purhcased")
                       <Text style={{ fontSize: 25, fontWeight: "bold" }}>
                         {item.titleDisplayed}
                       </Text>
-                      <Text style={{ fontSize: 12 }}>{item.description}</Text>
+                      <Text style={{ fontSize: 16 }}>{item.description}</Text>
                       <View>{item.progressText}</View>
                     </View>
                   </View>

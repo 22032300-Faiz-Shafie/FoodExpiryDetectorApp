@@ -283,7 +283,7 @@ function EditFood({ itemID }) {
       incrementpoints(loginID);
       setModalVisible(false);
       if (newRipeness != "Overripe") {
-        Alert.alert("Food details updated successfully!\n+10 gems +1 Exp");
+        Alert.alert("edited successfully!\n+10 gems +1 Exp");
       }
     } catch (error) {
       console.error("Error updating document: ", error);

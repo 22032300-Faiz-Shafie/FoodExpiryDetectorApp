@@ -57,7 +57,9 @@ import AuthContext from "./Screens/AuthContext";
 import { TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { Rating } from 'react-native-ratings';
-
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
@@ -313,7 +315,7 @@ function FetchFoodData() {
         incrementpoints(loginID);
         setModalVisible(false);
         if (newRipeness != "Overripe") {
-          Alert.alert("Food details updated successfully!\n+10 gems +1 Exp");
+          Alert.alert("edited successfully!\n+10 gems +1 Exp");
         }
       } catch (error) {
         console.error("Error updating document: ", error);
@@ -384,7 +386,7 @@ function FetchFoodData() {
                       style={{
                         width: 120,
                         height: 120,
-                        resizeMode: "cover",
+                        resizeMode: "contain",
                         marginBottom: 10,
                       }}
                       source={{ uri: imageUri }}
