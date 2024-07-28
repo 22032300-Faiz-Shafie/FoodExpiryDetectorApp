@@ -672,6 +672,7 @@ function FetchFoodData() {
   const [allFruitsFetch, setAllFruitsFetch] = useState([]);
   const [itemToDelete, setItemToDelete] = useState(null);
   const foodsCol = collection(db, "foodCollection");
+  const { loginID } = useContext(AuthContext);
 
   //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
   const dateToDayConversion = (givenDate) => {
@@ -788,7 +789,7 @@ function FetchFoodData() {
       setFoodsfetch(foods);
       for (const food of foods) {
         allFruitItems.push(food);
-        if (food.data.isadded == false && food.data.isDeleted == false) {
+        if (food.data.isadded == false && food.data.isDeleted == false && food.data.userID === loginID) {
           filteringFoodItems.push(food);
         }
       }
