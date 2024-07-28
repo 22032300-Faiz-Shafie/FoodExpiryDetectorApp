@@ -1188,7 +1188,7 @@ function Avocado (){
       });
       for (const food of foods) {
         if (
-          food.data.foodName.includes("Avacado") &&
+          food.data.foodName.includes("Avocado") &&
           food.data.isadded == true &&
           food.data.userID === loginID &&
           food.data.isDeleted == false
