@@ -83,7 +83,7 @@ function FetchFoodData() {
   //An alert function that notifies user when fruits in the fruit list have been expired -Faiz
   const alertFunction = async (fruits) => {
     for (const fruit of fruits) {
-      if (dateToDayConversion(fruit.data.expiryDate) === 0) {
+      if (dateToDayConversion(fruit.data.expiryDate) <= 0) {
         Alert.alert(
           "Confirm Action",
           `${fruit.data.foodName} is already past Best Before Date.`,
