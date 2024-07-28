@@ -87,9 +87,6 @@ function LoginScreen({navigation}) {
                 <View style={styles.loginButton}>
                     <Button icon="login" mode="contained-tonal" buttonColor="green" onPress={handleLogin}>Login</Button>
                 </View>
-                <View>
-                    <Button onPress={() => navigation.navigate("signUpScreen")}>Don't Have An Account? Sign Up Here!</Button>
-                </View>
             </ScrollView>
         </PaperProvider>
     )

@@ -1789,6 +1789,17 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
       ) : null}
+            {!isLoggedIn ? (
+        <View style={styles.signUpButton}>
+          <FAB
+            icon="account-plus"
+            rippleColor="green"
+            onPress={() => navigation.navigate("signUpScreen")}
+            style={{ backgroundColor: "green" }}
+            color="black"
+          />
+        </View>
+      ) : null}
       {isLoggedIn ? (
         <View style={styles.logoutButton}>
           <FAB
@@ -1831,6 +1842,11 @@ const styles = StyleSheet.create({
   loginButton: {
     position: "absolute",
     bottom: 10,
+    right: 20,
+  },
+  signUpButton: {
+    position: "absolute",
+    bottom: 80,
     right: 20,
   },
   input: {

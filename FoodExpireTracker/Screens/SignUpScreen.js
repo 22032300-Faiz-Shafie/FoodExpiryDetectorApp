@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Alert} from "react-native";
 import {
   Button,
   PaperProvider,
@@ -29,29 +29,83 @@ function SignUpScreen({ navigation }) {
 
   //Adds newly created user login information to the database -Faiz
   const handleAddLoginInformation = async () => {
-    try {
-      const loginData = {
-        username: username,
-        password: password,
-        points: 0,
-        gems: 0,
-      };
-
-      const docRef = await addDoc(
-        collection(db, "loginInformation"),
-        loginData
+    const specialCharRegex = /[^a-zA-Z0-9]/;
+    if(username.length > 3 && username.length < 30){
+      if(password.length >= 8){
+        if(!specialCharRegex.test(password)){
+          try {
+            const loginData = {
+              username: username,
+              password: password,
+              points: 0,
+              gems: 0,
+            };
+      
+            const docRef = await addDoc(
+              collection(db, "loginInformation"),
+              loginData
+            );
+            console.log(
+              "The following Login Information Document was written with ID: ",
+              docRef.id
+            );
+      
+            setUsername("");
+            setPassword("");
+            navigation.navigate("Home");
+            Alert.alert(
+              "Confirm Action",
+              "You have successfully created a new account, you may now login.",
+              [
+                {
+                  text: "Dismiss",
+                },
+              ],
+              { cancelable: false }
+            );
+          } catch (error) {
+            console.error("Error Adding Document: ", error);
+          }
+        }
+        else{
+          Alert.alert(
+            "Confirm Action",
+            "Invalid Password, Password must not contain any special characters.",
+            [
+              {
+                text: "Dismiss",
+              },
+            ],
+            { cancelable: false }
+          );
+        }
+      }
+    else{
+      Alert.alert(
+        "Confirm Action",
+        "Invalid Password, Password has to be 8 characters or greater.",
+        [
+          {
+            text: "Dismiss",
+          },
+        ],
+        { cancelable: false }
       );
-      console.log(
-        "The following Login Information Document was written with ID: ",
-        docRef.id
-      );
-
-      setUsername("");
-      setPassword("");
-      navigation.navigate("Home");
-    } catch (error) {
-      console.error("Error Adding Document: ", error);
     }
+    }
+    else{
+      Alert.alert(
+        "Confirm Action",
+        "Invalid Username, Username has to be greater than 3 characters and shorter than 30 characters.",
+        [
+          {
+            text: "Dismiss",
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+    
   };
 
   //Sign Up Screen UI -Faiz
@@ -91,11 +145,6 @@ function SignUpScreen({ navigation }) {
             onPress={handleAddLoginInformation}
           >
             Sign Up
-          </Button>
-        </View>
-        <View>
-          <Button onPress={() => navigation.navigate("loginScreen")}>
-            Already have an account? Login Here!
           </Button>
         </View>
       </ScrollView>
