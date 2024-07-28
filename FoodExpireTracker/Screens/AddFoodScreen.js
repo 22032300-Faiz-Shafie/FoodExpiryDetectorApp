@@ -685,13 +685,12 @@ function FetchFoodData() {
 
   //This function checks the fruit that is being added if it's considered a waste or not, warns the user if they would like to proceed -Faiz
   const trackWastage = async (item) => {
-    const minDaysToConsiderWaste = 3;
     var waste = false;
 
     allFruitsFetch.forEach((fruit) => {
       if (
         fruit.data.foodName === item.data.foodName &&
-        dateToDayConversion(fruit.data.expiryDate) > minDaysToConsiderWaste &&
+        dateToDayConversion(fruit.data.expiryDate) > 0 &&
         fruit.data.isadded === true && fruit.data.isDeleted === false
       ) {
         waste = true;
@@ -702,7 +701,7 @@ function FetchFoodData() {
       if (waste === true) {
         Alert.alert(
           "Confirm Action",
-          `${item.data.foodName} already exists within your list and has a bestbefore date of ${minDaysToConsiderWaste} days or more. Do you still want to add?`,
+          `${item.data.foodName} already exists within your list and is still within best before date. Do you still want to add?`,
           [
             {
               text: "Yes",
