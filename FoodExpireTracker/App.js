@@ -632,7 +632,8 @@ function FetchFoodData() {
                 iconColor={MD3Colors.neutral10}
                 size={30}
                 onPress={() => SetIsDropdownVisible(false)}
-                style={{ marginTop: 20 }}
+                containerColor="white"
+                style={{ marginTop: 20, borderRadius: 50 }}
               />
               </TouchableOpacity>
             </Modal>
@@ -696,7 +697,8 @@ function FetchFoodData() {
                 iconColor={MD3Colors.neutral10}
                 size={30}
                 onPress={() => setIsDropdownVisible(false)}
-                style={{ marginTop: 20 }}
+                containerColor="white"
+                style={{ marginTop: 20, borderRadius: 50 }}
               />
             </TouchableOpacity>
           </Modal>
