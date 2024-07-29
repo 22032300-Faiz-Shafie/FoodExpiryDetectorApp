@@ -702,7 +702,7 @@ function FetchFoodData() {
                     handlesort("avacado")
                   }
                 >
-                  Avacado
+                  Avocado
                 </Button>
                 <Button
                   mode="contained"
