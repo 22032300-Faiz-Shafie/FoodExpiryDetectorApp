@@ -315,7 +315,7 @@ function FetchUserData() {
     await updateDoc(docRef, {
       [`fairprice${value}`]: increment(-1),
     });
-Alert.alert("gift card purhcased")
+Alert.alert("gift card purchased")
   };
   const yesOptionForCard = async () => {
     const gemsLeftAfterBuying = cUser.data.gems + selectedGemValue;

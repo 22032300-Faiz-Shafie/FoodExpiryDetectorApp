@@ -504,7 +504,7 @@ const uploadFruitInformation = async (loginID) => {
       const compressedImage = await ImageManipulator.manipulateAsync(
         fruit.fruitDateURI,
         [],
-        { compress: 0.3, format: ImageManipulator.SaveFormat.JPEG }
+        { compress: 0.1, format: ImageManipulator.SaveFormat.JPEG }
       );
       const base64CompressedImage = await FileSystem.readAsStringAsync(
         compressedImage.uri,
@@ -639,10 +639,10 @@ const takePhoto = async (setImageUri, loginID) => {
       { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
     );
     setImageUri(manipResult.uri);
-    console.log(ImageURI);
+    console.log(manipResult.uri);
     //sendToPython(uri);
     //await delay(14000);
-    handleInference(ImageURI, loginID);
+    handleInference(manipResult.uri, loginID);
     //uploadFruitImageToFirebase(uri);
   } else {
     console.log("Camera was canceled");
