@@ -2191,16 +2191,16 @@ const HomeScreen = ({ navigation }) => {
             </View>
             <Text style={{fontSize: 30, fontWeight: "bold", textDecorationLine: "underline", marginTop: 30}}>Floating Action Buttons</Text>
             <View style={{marginTop: 5, alignItems: "center"}}>
-              <IconButton icon="information" style={{borderWidth: 1, borderRadius: 25}}/>
-              <Text>This is the nutrional information button. Want to know more about the fruit? Click here</Text>
+              <IconButton icon="plus" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the add fruit button. Press here to add fruit using our latest AI technology.</Text>
             </View>
             <View style={{marginTop: 20, alignItems: "center"}}>
-              <IconButton icon="square-edit-outline" style={{borderWidth: 1, borderRadius: 25}}/>
-              <Text>This is the edit button. AI made a mistake on something? Edit here manually, help give us feedback to improve our service!</Text>
+              <IconButton icon="ballot" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the AI Accuracy Form. Press here to give us feedback based on your satisfaction from recent AI Results</Text>
             </View>
             <View style={{marginTop: 20, alignItems: "center"}}>
-              <IconButton icon="square-edit-outline" style={{borderWidth: 1, borderRadius: 25}}/>
-              <Text>This is the edit button. AI made a mistake on something? Edit here manually, help give us feedback to improve our service!</Text>
+              <IconButton icon="logout" style={{borderWidth: 1, borderRadius: 25}}/>
+              <Text>This is the logout button. Press here to logout from your account</Text>
             </View>
           </View>
         </ScrollView>
