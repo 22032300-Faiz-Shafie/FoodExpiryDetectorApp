@@ -807,6 +807,14 @@ function FetchFoodData() {
                       </Text>
                     </View>
                   ) : null}
+                  {item.data.fruitFamily != "" ? (
+                      <View>
+                        <Text style={styles.listText}>
+                          <Text style={{fontWeight: "bold"}}>Fruit Family:{"\n"}</Text>
+                          {item.data.fruitFamily}
+                        </Text>
+                      </View>
+                  ) : null}
                 </View>
                 <View style={{ flexDirection: "column" }}>
                   <IconButton
@@ -2414,6 +2422,6 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   listText: {
-    fontSize: 18
+    fontSize: 17
   }
 });
