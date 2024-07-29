@@ -2150,7 +2150,7 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
         <ScrollView>
-          <Text style={styles.modalText}>Legend Information</Text>
+          <Text style={styles.modalText}>Help Information</Text>
           <View style={{flexDirection: "column", alignItems: "center", padding: 20, marginHorizontal: 20}}>
           {/* <View style={{borderWidth: 1, borderRadius: 25}}>
             <Image source={require("./assets/LegendSort.jpg")} style={styles.legendImage}/>
