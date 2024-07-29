@@ -2313,12 +2313,12 @@ const styles = StyleSheet.create({
   aiAccuracyFormButton: {
     position: "absolute",
     bottom: 30,
-    right: 160,
+    right: 150,
   },
   logoutButton: {
     position: "absolute",
     bottom: 30,
-    right: 320,
+    right: 280,
   },
   loginButton: {
     position: "absolute",
