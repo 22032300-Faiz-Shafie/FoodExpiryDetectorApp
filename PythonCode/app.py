@@ -56,28 +56,34 @@ def predict():
         image = PIL.Image.open(BytesIO(decodedData)) 
         image.save(storedImageFilePath, "JPEG") #the image here might not need to be stored, and instead just goes into computer vision directly -Don
 
-        #Change directory to the working directory -Faiz
+        #Change directory to the working directory. This is because the files and folders required to run the AI model are located in yolov5 repo folder. -Faiz
         CDWorkingDirectoryCommand = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\"
 
         os.chdir(CDWorkingDirectoryCommand)
         print(f'Current working directory: {os.getcwd()}\n')
 
+        #Image preprocessing for AI Model. AI Model can't accept non-preprocessed Images -Faiz
         image = cv2.imread(storedImageFilePath)
-        image_rotate = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+
+        #Obsolete. Rotation and Resizing not needed as AI Model works best with 9:16 aspect ratio images. Resizing would change the aspect ratio -Faiz
+        #image_rotate = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
         #image_resized = cv2.resize(image_rotate, (768, 1024))
+
+        #Location of the processed image to be used by AI Model -Faiz
         newProcessedImageLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
 
-        #Save preprocessed image to original image, overwriting it -Faiz
+        #Save preprocessed image to the location specified -Faiz
         cv2.imwrite(newProcessedImageLocation, image)
         
-        #Loading the lastest model using detect -Faiz
+        #Loading the lastest model using detect.py, utilizing the model using subprocess module so that it can run the AI model command -Faiz
         modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\FruitRipenessDetector620.pt --agnostic --conf 0.10"
         modelCommandSource = modelCommand + " --source " + newProcessedImageLocation
         modelCommandProject = modelCommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages --save-crop --save-txt"
-
+        
+        #The actual running of the command after everything is specified including location of processed image and the location of the results folder -Faiz
         commandResult2 = subprocess.run(modelCommandProject, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        if commandResult2.returncode == 0:
+        if commandResult2.returncode == 0:  
             print("\nFirst AI Model Command executed successfully!\n")
         else:
             print("\nError in running First AI Model command:\n")
@@ -140,7 +146,7 @@ def predict():
 
             return expiryInDays, currentRipenessStatus, ripenessInDays
 
-        #Function to find family of Mango -Faiz
+        #Function to find family of Mango. This will only run if the fruit name is Mango, ensuring that only mango will use the second AI Model -Faiz
         def mangoFamilyFinder(mangoImage):
 
             fruitFamily = ""
@@ -182,7 +188,8 @@ def predict():
 
         #List containing all different listing results -Faiz
         fruitInformation = []
-    
+
+        #Code below are a set of code designed to extract the results of the AI model which comes in the form of folders. I extracted the results and put them into an array before sending it back to the React Native Application -Faiz
         # Loop through the highest folder in the folder structure which is the exp folder -Faiz
         for exp_folder in os.listdir(imageResultsFolderPath):
 
@@ -279,7 +286,7 @@ def predict():
                     print(f"\nDeleted {exp_folder_path}\n")
                 except Exception as e:
                     print(f"\nFailed to delete {exp_folder_path}: {e}\n")
-        
+        #Delete all results after utilizing second AI Model -Faiz
         for exp_folder in os.listdir(secondModelImageResults):
             exp_folder_path = os.path.join(secondModelImageResults, exp_folder)
             # Check if it's a directory that exists -Faiz
