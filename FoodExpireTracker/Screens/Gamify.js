@@ -33,7 +33,7 @@ import {
   Portal,
   PaperProvider,
 } from "react-native-paper";
-
+//User data is fetched in real time from Firestore and used in this function -Don
 function FetchUserData() {
   const usercol = collection(db, "loginInformation");
   const [usersfetch, setUsersfetch] = useState([]);
@@ -66,7 +66,7 @@ function FetchUserData() {
 
     return () => unsubscribe();
   }, [loginID]);
-
+//sort user by points for leaderboard -Don
   const cUser = usersfetch.find((user) => user.id === loginID);
   const sortTheUsersPoints = [...usersfetch].sort(
     (a, b) => b.data.points - a.data.points
@@ -76,7 +76,7 @@ function FetchUserData() {
   const top2User = sortTheUsersPoints[1];
   const top3User = sortTheUsersPoints[2];
   const [value, setValue] = useState("leaderboard");
-
+//functions to determine what is displayed to user on badges screen -Don
   function firstAchievedOrNot() {
     if (cUser && cUser.data.points >= 1) {
       return true;
@@ -214,6 +214,7 @@ function FetchUserData() {
       );
     }
   }
+  //Old code, ignore -Don
   function mangoSquire() {}
   const currentFairpriceCards = [
     {
@@ -238,6 +239,7 @@ function FetchUserData() {
   const currentFairpriceCardsDisplay = currentFairpriceCards.filter(
     (item) => item.quantity > 0
   );
+  //data for gift cards -Don
   const fairpriceCards = [
     {
       id: "bd7adfdf-c1b1-46cx-aed5-3vd53abb28ba",
@@ -258,6 +260,7 @@ function FetchUserData() {
       fairpriceLogo: require("../assets/10.png"),
     },
   ];
+  //data for badges -Don
   const Badges = [
     {
       id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -310,6 +313,7 @@ function FetchUserData() {
       ></View>
     );
   }
+  //logic for buying gift cards -Don
   const buyGiftcard = async (value) => {
     const docRef = doc(db, "loginInformation", loginID);
     await updateDoc(docRef, {
@@ -334,7 +338,7 @@ Alert.alert("gift card purchased")
       Alert.alert("Not enough gems");
     }
   };
-
+//code that determines which screen, leaderboard, badges or rewards should be shown
   const leaderboardOrBadges = () => {
     if (value === "leaderboard") {
       return (

@@ -64,7 +64,7 @@ const Stack = createNativeStackNavigator();
 const logoImg = require("./assets/download-removebg-preview.png");
 const addImg = require("./assets/add.png");
 
-//fetches all food with isadded as true, so that only added foods are displayed -Don
+//fetches all food Data in real time from Firestore -Don
 function FetchFoodData() {
   const [foodsfetch, setFoodsfetch] = useState([]);
   const foodsCol = collection(db, "foodCollection");
@@ -119,7 +119,7 @@ function FetchFoodData() {
     }
   };
 
-
+//fetches data from Firestore in real time for the fruit list -Don
   useEffect(() => {
     const q = query(foodsCol);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -147,6 +147,7 @@ function FetchFoodData() {
 
     return () => unsubscribe();
   }, []);
+ //edit function to edit fruit detail and for data collection -Don
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [version, setVersion] = useState(1);
@@ -283,6 +284,8 @@ function FetchFoodData() {
           itemID,
           "editHistory"
         );
+        //sets edit versions of fruit item in Firestore. Everytime you edit a new version is saved with new editted details.
+      //Old versions are saved too -Don
         await setDoc(doc(editHistoryRef), {
           foodNameAfterEdit: foodName,
 
@@ -359,6 +362,7 @@ function FetchFoodData() {
     };
 
     return (
+       //this is the screen that pops up after you press the edit button -Don
       <PaperProvider>
         <View style={styles.centeredView}>
           <Modal
@@ -526,6 +530,7 @@ function FetchFoodData() {
       </PaperProvider>
     );
   }
+  //code to handle the deletion of fruits from fruit list -Don
   const makeDelete = useCallback((item) => {
     setItemToDelete(item);
     setDeleteModalVisible(true);
@@ -836,6 +841,7 @@ function FetchFoodData() {
                     <EditFood itemID={item.id} />
                   </View>
                 </View>
+                 {/*Confirmation screen for delete button -Don*/}
                 <Modal
                   animationType="slide"
                   transparent={true}
@@ -872,6 +878,7 @@ function FetchFoodData() {
     </View>
   );
 }
+//UI for showing fruits in fruit list -Don
 function Mango (){
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);

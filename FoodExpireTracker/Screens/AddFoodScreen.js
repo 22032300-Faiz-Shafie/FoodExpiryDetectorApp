@@ -106,7 +106,7 @@ const dateToDayConversion = (givenDate) => {
 
   return daysDifference;
 };
-
+//edit function to edit fruit detail and for data collection -Don
 function EditFood({ itemID }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [version, setVersion] = useState(1);
@@ -143,7 +143,7 @@ function EditFood({ itemID }) {
     setImageUri(data.fruitImageURI.toString());
     const daysUntilExpiry = dateToDayConversion(data.expiryDate);
     setExpiryInDays(daysUntilExpiry);
-    //edit
+
 
     let maxLength;
     let ripeLength;
@@ -245,6 +245,8 @@ function EditFood({ itemID }) {
         itemID,
         "editHistory"
       );
+      //sets edit versions of fruit item in Firestore. Everytime you edit a new version is saved with new editted details.
+      //Old versions are saved too -Don
       const docRef = doc(db, "foodCollection", itemID);
       const docSnap = await getDoc(docRef);
       const currentVersion = docSnap.data().version;
@@ -324,6 +326,7 @@ function EditFood({ itemID }) {
   };
 
   return (
+    //this is the screen that pops up after you press the edit button -Don
     <PaperProvider>
       <View style={styles.centeredView}>
         <Modal
@@ -623,7 +626,8 @@ const uploadFruitInformation = async (loginID) => {
 //     console.log("food added");
 //   });
 // };
-//code to take photo -Don Added LoginID so that other functions can take use of that -Faiz
+//code to take photo, or use image from library as input for AI model -Don 
+//Added LoginID so that other functions can take use of that -Faiz
 const takePhoto = async (setImageUri, loginID) => {
   const cameraResp = await ImagePicker.launchCameraAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -664,8 +668,7 @@ const pickImage = async (setImageUri, loginID) => {
   }
 };
 
-//fetches all food with isadded as false, to enable users to confirm before they add, or delete to not add, gives user more control -Don
-//should add edit button in the future -Don
+//This function acts as a confirmation screen for the fruits -Don
 function FetchFoodData() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [foodsfetch, setFoodsfetch] = useState([]);
@@ -733,7 +736,7 @@ function FetchFoodData() {
       isadded: true,
     });
   };
-
+//code to handle the deletion and confirmation of fruits in confirmation screen -Don
   const handleDelete = async () => {
     if (itemToDelete === "all") {
       const deleteBatch = writeBatch(db);
@@ -802,6 +805,7 @@ function FetchFoodData() {
   }, []);
 
   return (
+    //UI for the confirmation screen -Don
     <PaperProvider>
       <View style={{ flex: 1 }}>
         <View style={styles.buttonContainer}>
@@ -924,7 +928,9 @@ function FetchFoodData() {
             );
           }}
         />
+               {/*Confirmation screen for delete button -Don*/}
         <Modal
+      
           animationType="slide"
           transparent={true}
           visible={deleteModalVisible}
