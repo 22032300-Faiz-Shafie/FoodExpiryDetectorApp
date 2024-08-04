@@ -145,7 +145,7 @@ function EditFood({ itemID }) {
     const daysUntilExpiry = dateToDayConversion(data.expiryDate);
     setExpiryInDays(daysUntilExpiry);
 
-
+//the slider for fruit ripeness has different logic regarding max length of slider and point in slider for fruit to be determined as ripe -Don
     let maxLength;
     let ripeLength;
     if (data.foodName === "Mango") {
@@ -176,7 +176,7 @@ function EditFood({ itemID }) {
     const compressedImageUri = `data:image/jpg;base64,${base64}`;
     return compressedImageUri;
   };
-
+//this is used to add Exp and gems after editing -Don
   const incrementpoints = async (loginID) => {
     try {
       const PointDocRef = doc(db, "loginInformation", loginID);
@@ -192,11 +192,12 @@ function EditFood({ itemID }) {
   };
 
   const handleEditFood = async () => {
+    //set days until fruit becomes overripe and date based of slider -Don
     const newExpiryInDays = sliderMaxLength - sliderCurrentLength;
     const newExpiryDate = new Date(
       Date.now() + newExpiryInDays * 24 * 60 * 60 * 1000
     );
-
+    //sets new ripeness category for fruit after editing ripeness -Don
     let newRipeness = "";
     let daysUntilRipe = 0;
     if (foodName === "Mango") {
@@ -235,7 +236,7 @@ function EditFood({ itemID }) {
     }
 
     const compressedImageUriAfterEdit = await compressImageUri(imageUri);
-
+//sets new ripening date for fruit after editing fruit ripeness -Don
     const newRipeningDate = new Date(
       Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
     );
@@ -246,7 +247,7 @@ function EditFood({ itemID }) {
         itemID,
         "editHistory"
       );
-      //sets edit versions of fruit item in Firestore. Everytime you edit a new version is saved with new editted details.
+      //sets edit versions of fruit item in Firestore. Everytime you edit a new version is saved with new editted details. 
       //Old versions are saved too -Don
       const docRef = doc(db, "foodCollection", itemID);
       const docSnap = await getDoc(docRef);
@@ -327,7 +328,7 @@ function EditFood({ itemID }) {
   };
 
   return (
-    //this is the screen that pops up after you press the edit button -Don
+    //this is the screen that pops up after you press the edit button. here the fields are prefilled with current fruit details, which users can edit -Don
     <PaperProvider>
       <View style={styles.centeredView}>
         <Modal
@@ -423,7 +424,7 @@ function EditFood({ itemID }) {
                 <Text>Overripe</Text>
               </View>
               <Text style={{ fontSize: 15 }}>
-                
+                 {/*Fruit ripeness is shown different depending on slider*/}
                 {(() => {
                   if (foodName === "Mango") {
                     if (sliderCurrentLength < 8) {
@@ -509,7 +510,7 @@ const uploadFruitInformation = async (loginID) => {
       futureRipeningDate.setDate(
         futureRipeningDate.getDate() + fruit.ripenessInDays
       );
-      //Compression of cropped images for use to display in the fruit list. This is important because firebase has a strict character limit, compressed images would have shorter base64 uri string compared to non-compressed images -Faiz
+      //Compression of cropped images for use to display in the fruit list. This is important because firebase has a strict character limit, compressed images would have shorter base64 uri string compared to non-compressed images -Don
       const compressedImage = await ImageManipulator.manipulateAsync(
         fruit.fruitDateURI,
         [],
@@ -556,7 +557,7 @@ const uploadFruitInformation = async (loginID) => {
           "editHistory"
         );
         {/*sets edit versions of fruit item in Firestore. 
-          Here it specifically sets version to 1 as this is the initial version upon creation of fruit item*/}  
+          Here it specifically sets version to 1 as this is the initial version upon creation of fruit item -Don*/}  
         await setDoc(doc(editHistoryRef), {
           foodNameAfterEdit: fruit.name,
 
@@ -661,7 +662,6 @@ const takePhoto = async (setImageUri, loginID) => {
   }
 };
 const pickImage = async (setImageUri, loginID) => {
-  // No permissions request is necessary for launching the image library
   const cameraResp = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.All,
     allowsEditing: false,
@@ -748,7 +748,7 @@ function FetchFoodData() {
       isadded: true,
     });
   };
-//code to handle the deletion and confirmation of fruits in confirmation screen -Don
+//code to handle the deletion and of fruits in confirmation screen -Don
   const handleDelete = async () => {
     if (itemToDelete === "all") {
       const deleteBatch = writeBatch(db);
@@ -776,7 +776,7 @@ function FetchFoodData() {
     setItemToDelete("all");
     setDeleteModalVisible(true);
   };
-
+//code to handle the confirmation of fruits in confirmation screen -Don
   const makeAdded = (item) => {
     trackWastage(item);
   };

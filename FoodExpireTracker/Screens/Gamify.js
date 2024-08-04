@@ -76,8 +76,8 @@ function FetchUserData() {
   const top2User = sortTheUsersPoints[1];
   const top3User = sortTheUsersPoints[2];
   const [value, setValue] = useState("leaderboard");
-     {/*functions to determine what is displayed to user on badges screen 
-      such as whether badges appear, and the UI of progress bar for achievement of badges -Don*/}
+     {/*functions to determine data of each badge, 
+      such as whether it had been achieved, the progress bar progress, and text next to progres bar. -Don*/}
 function firstAchievedOrNot() {
     if (cUser && cUser.data.points >= 1) {
       return true;
@@ -215,7 +215,7 @@ function firstAchievedOrNot() {
       );
     }
   }
-  //Old code, ignore -Don
+  //Old code, ignore. Originally meant to be used for user Avatars -Don
   function mangoSquire() {}
   const currentFairpriceCards = [
     {
@@ -339,7 +339,7 @@ Alert.alert("gift card purchased")
       Alert.alert("Not enough gems");
     }
   };
-//code that determines which screen, leaderboard, badges or rewards should be shown
+//code that determines which screen, leaderboard, badges or rewards should be shown -Don
   const leaderboardOrBadges = () => {
     if (value === "leaderboard") {
       return (
@@ -359,6 +359,7 @@ Alert.alert("gift card purchased")
                 </View>
               </View>
             )}
+                    {/*shows the top 3 users with highest Exp on podium -Don*/}
             {top1User && (
               <View style={{ alignItems: "center" }}>
                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>1</Text>
@@ -389,7 +390,7 @@ Alert.alert("gift card purchased")
             )}
           </View>
           <View style={{ flex: 1, width: "100%" }}>
-                {/*Flatlist for leaderboard*/}
+                {/*Flatlist for leaderboard of users with highest Exp, shows users starting from those not in top 3 -Don*/}
             <FlatList
               style={{ flex: 1, width: "100%" }}
               contentContainerStyle={{ flexGrow: 1 }}
@@ -438,7 +439,7 @@ Alert.alert("gift card purchased")
           <View
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
-          {/*Flatlist to show badges achieved*/}
+          {/*Flatlist to show badges achieved -Don*/}
             <FlatList
               style={{ width: "100%" }}
               contentContainerStyle={{ alignItems: "center" }}
@@ -472,7 +473,7 @@ Alert.alert("gift card purchased")
               contentContainerStyle={{ alignItems: "center" }}
               style={{ maxHeight: 300 }}
             >
-            {/*Flatlist to show badge achievement progress*/}
+            {/*Flatlist to show badge achievement progress -Don*/}
               <FlatList
                 style={{
                   flex: 1,
@@ -524,7 +525,7 @@ Alert.alert("gift card purchased")
             <Text style={{ fontSize: 25, fontWeight: "bold" }}>
               Buy gift cards
             </Text>
-                {/*Flatlist to show badges achieved -Don*/}
+                {/*Flatlist to gift cards users can buy -Don*/}
             <FlatList
               style={{ maxHeight: 180, width: "100%" }}
               contentContainerStyle={{ flexGrow: 1 }}
@@ -583,7 +584,7 @@ Alert.alert("gift card purchased")
                         height: 80,
                         width: 120,
                         resizeMode: "contain",
-                      }} // Adjust image size here
+                      }} 
                     />
                   </View>
                   <View
@@ -619,7 +620,7 @@ Alert.alert("gift card purchased")
               keyExtractor={(item) => item.id}
             />
           </View>
-
+ {/*code for popup for confirmation screen when buying gift cards -Don*/}
           <Modal
             animationType="slide"
             transparent={true}

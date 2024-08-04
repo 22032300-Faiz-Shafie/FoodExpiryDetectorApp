@@ -185,7 +185,7 @@ function FetchFoodData() {
       setImageUri(data.fruitImageURI.toString());
       const daysUntilExpiry = dateToDayConversion(data.expiryDate);
       setExpiryInDays(daysUntilExpiry);
-//UI and functionality of slider such as it's length and max length is different depending on fruit -Don
+//the slider for fruit ripeness has different logic regarding max length of slider and point in slider for fruit to be determined as ripe -Don
       let maxLength;
       let ripeLength;
       if (data.foodName === "Mango") {
@@ -216,7 +216,7 @@ function FetchFoodData() {
       const compressedImageUri = `data:image/jpg;base64,${base64}`;
       return compressedImageUri;
     };
-
+//this is used to add Exp and gems after editing -Don
     const incrementpoints = async (loginID) => {
       try {
         const PointDocRef = doc(db, "loginInformation", loginID);
@@ -232,11 +232,12 @@ function FetchFoodData() {
     };
 
     const handleEditFood = async () => {
+     //set days until fruit becomes overripe and date based of slider -Don
       const newExpiryInDays = sliderMaxLength - sliderCurrentLength;
       const newExpiryDate = new Date(
         Date.now() + newExpiryInDays * 24 * 60 * 60 * 1000
       );
-//sets the new ripeness category of fruit depending on the slider -Don
+     //sets the new ripeness category of fruit depending on the slider -Don
       let newRipeness = "";
       let daysUntilRipe = 0;
       if (foodName === "Mango") {
@@ -275,7 +276,7 @@ function FetchFoodData() {
       }
 
       const compressedImageUriAfterEdit = await compressImageUri(imageUri);
-
+      //sets new ripening date for fruit after editing fruit ripeness -Don
       const newRipeningDate = new Date(
         Date.now() + daysUntilRipe * 24 * 60 * 60 * 1000
       );
@@ -290,7 +291,7 @@ function FetchFoodData() {
           itemID,
           "editHistory"
         );
-        //sets edit versions of fruit item in Firestore. Everytime you edit a new version is saved with new editted details.
+        //sets edit versions of fruit item in Firestore. Everytime you edit a new version is saved with new editted details. -Don
       //Old versions are saved too -Don
         await setDoc(doc(editHistoryRef), {
           foodNameAfterEdit: foodName,
@@ -368,7 +369,7 @@ function FetchFoodData() {
     };
 
     return (
-       //this is the screen that pops up after you press the edit button -Don
+      //this is the screen that pops up after you press the edit button. here the fields are prefilled with current fruit details, which users can edit -Don
       <PaperProvider>
         <View style={styles.centeredView}>
           <Modal
@@ -887,6 +888,7 @@ function FetchFoodData() {
     </View>
   );
 }
+//code for sort feature, sorts fruit to only show Mangos -Eugene
 function Mango (){
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -1035,7 +1037,7 @@ function Mango (){
 
   );
 };
-
+//code for sort feature, sorts fruit to only show Pineapple -Eugene
 function Pineapple (){
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -1184,6 +1186,7 @@ function Pineapple (){
 
   );
 };
+//code for sort feature, sorts fruit to only show Avocados -Eugene
 function Avocado (){
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -1332,7 +1335,8 @@ function Avocado (){
 
   );
 };
-
+//below are filters -Eugene
+//filter by most time left till overripe to least -Eugene
 function MostTimeleft() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -1483,7 +1487,7 @@ function MostTimeleft() {
 
   );
 };
-
+//filter by least time left till overripe to most -Eugene
 function LeastTimeleft() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -1636,7 +1640,7 @@ function LeastTimeleft() {
 };
 
 
-
+//filter to show fruits that become overripe in 5 days or more -Eugene
 function CheckExpiryDate5() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
@@ -1939,6 +1943,7 @@ function CheckExpiryDate() {
     </Modal>
   );
 }
+//filter to show expired fruits -Eugene
 function CheckExpired() {
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
