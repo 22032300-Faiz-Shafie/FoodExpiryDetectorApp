@@ -16,10 +16,10 @@ temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
 
 #REQUIRE PERSONALIZED CHANGE. Location of hubconf needed for first AI Model, utilize your own absolute path -Faiz
-hubconfLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5"
+hubconfLocation = "C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5"
 
 #REQUIRE PERSONALIZED CHANGE. Location of your own image folder, utilize your own absolute path -Faiz
-imageFilePath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images"
+imageFilePath = "C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images"
 
 #Variable that holds the path of the image folder, keeps track of the image that's saved and infered upon -Faiz
 #storedImageFilePath = imageFilePath + "\\newImage" + str(uuid.uuid4())+".jpg"
@@ -56,8 +56,8 @@ def predict():
         image = PIL.Image.open(BytesIO(decodedData)) 
         image.save(storedImageFilePath, "JPEG") #the image here might not need to be stored, and instead just goes into computer vision directly -Don
 
-        #Change directory to the working directory. This is because the files and folders required to run the AI model are located in yolov5 repo folder. -Faiz
-        CDWorkingDirectoryCommand = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\"
+        #REQUIRE PERSONALIZED CHANGE. Change directory to the working directory. This is because the files and folders required to run the AI model are located in yolov5 repo folder. -Faiz
+        CDWorkingDirectoryCommand = "C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\yolov5\\"
 
         os.chdir(CDWorkingDirectoryCommand)
         print(f'Current working directory: {os.getcwd()}\n')
@@ -70,15 +70,15 @@ def predict():
         #image_resized = cv2.resize(image_rotate, (768, 1024))
 
         #Location of the processed image to be used by AI Model -Faiz
-        newProcessedImageLocation = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
+        newProcessedImageLocation = "C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg"
 
         #Save preprocessed image to the location specified -Faiz
         cv2.imwrite(newProcessedImageLocation, image)
         
         #Loading the lastest model using detect.py, utilizing the model using subprocess module so that it can run the AI model command -Faiz
-        modelCommand = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\FruitRipenessDetector620.pt --agnostic --conf 0.10"
+        modelCommand = "python detect.py --weights C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\FruitRipenessDetector620.pt --agnostic --conf 0.10"
         modelCommandSource = modelCommand + " --source " + newProcessedImageLocation
-        modelCommandProject = modelCommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages --save-crop --save-txt"
+        modelCommandProject = modelCommandSource + " --project C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages --save-crop --save-txt"
         
         #The actual running of the command after everything is specified including location of processed image and the location of the results folder -Faiz
         commandResult2 = subprocess.run(modelCommandProject, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -91,7 +91,7 @@ def predict():
 
 
         #Extract classes from result -Faiz
-        imageResultsFolderPath = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages"
+        imageResultsFolderPath = "C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\AIResultImages"
 
         #This is a function to find expiry days and ripeness day by taking the result folder's name and using the class day to calculate further the expiry days and ripeness day -Faiz
         def expiryDayFinder(fruitClass):
@@ -151,9 +151,9 @@ def predict():
 
             fruitFamily = ""
 
-            aiModel2Command = "python detect.py --weights C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\mangoFruitFamilyDetector2.pt --agnostic --conf 0.50"
+            aiModel2Command = "python detect.py --weights C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\\PythonCode\\InferenceCode\\yolov5\\runs\\train\\yolov5s_results\\weights\\mangoFruitFamilyDetector2.pt --agnostic --conf 0.50"
             aiModel2CommandSource = aiModel2Command + " --source " + mangoImage
-            aiModel2Project = aiModel2CommandSource + " --project C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults --save-crop --save-txt"
+            aiModel2Project = aiModel2CommandSource + " --project C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults --save-crop --save-txt"
             commandResult3 = subprocess.run(aiModel2Project, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
             if commandResult3.returncode == 0:
@@ -162,7 +162,7 @@ def predict():
                 print("\nError in running Second AI Model command:\n")
                 print(commandResult2.stderr)
             
-            secondModelImageResults = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults"
+            secondModelImageResults = "C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults"
             
             for exp_folder in os.listdir(secondModelImageResults):
                 exp_folder_path = os.path.join(secondModelImageResults, exp_folder)
@@ -276,7 +276,7 @@ def predict():
         #     json.dump(fruitInformation, json_file, indent=4)  
 
         #A variable that holds the location of the second AI model results. This is used later to help delete the contents inside after a prediction has been made -Faiz
-        secondModelImageResults = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults"
+        secondModelImageResults = "C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults"
 
         #Delete all results from the first AI Model after utilizing first AI Model -Faiz
         #loop through the exp folders - Faiz
@@ -306,13 +306,13 @@ def predict():
                     print(f"\nFailed to delete {exp_folder_path}: {e}\n")
 
         #Remove unneeded images -Faiz
-        if os.path.isfile("C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\newImage.jpg"):
-            os.remove("C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\newImage.jpg")
+        if os.path.isfile("C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\newImage.jpg"):
+            os.remove("C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\newImage.jpg")
             print("newImage removed")
 
         #Remove unneeded images -Faiz
-        if os.path.isfile("C:\\Users\\22032300\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\PythonCode\\images\\processedImage.jpg"):
-            os.remove("C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg")
+        if os.path.isfile("C:\\Users\\placeholder\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\PythonCode\\images\\processedImage.jpg"):
+            os.remove("C:\\Users\\placeholder\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg")
             print("processedImage removed")
 
         #Everything below obsolete unless switching back to torch -Faiz
