@@ -76,8 +76,9 @@ function FetchUserData() {
   const top2User = sortTheUsersPoints[1];
   const top3User = sortTheUsersPoints[2];
   const [value, setValue] = useState("leaderboard");
-//functions to determine what is displayed to user on badges screen -Don
-  function firstAchievedOrNot() {
+     {/*functions to determine what is displayed to user on badges screen 
+      such as whether badges appear, and the UI of progress bar for achievement of badges -Don*/}
+function firstAchievedOrNot() {
     if (cUser && cUser.data.points >= 1) {
       return true;
     } else {
@@ -388,6 +389,7 @@ Alert.alert("gift card purchased")
             )}
           </View>
           <View style={{ flex: 1, width: "100%" }}>
+                {/*Flatlist for leaderboard*/}
             <FlatList
               style={{ flex: 1, width: "100%" }}
               contentContainerStyle={{ flexGrow: 1 }}
@@ -436,6 +438,7 @@ Alert.alert("gift card purchased")
           <View
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
+          {/*Flatlist to show badges achieved*/}
             <FlatList
               style={{ width: "100%" }}
               contentContainerStyle={{ alignItems: "center" }}
@@ -469,6 +472,7 @@ Alert.alert("gift card purchased")
               contentContainerStyle={{ alignItems: "center" }}
               style={{ maxHeight: 300 }}
             >
+            {/*Flatlist to show badge achievement progress*/}
               <FlatList
                 style={{
                   flex: 1,
@@ -520,6 +524,7 @@ Alert.alert("gift card purchased")
             <Text style={{ fontSize: 25, fontWeight: "bold" }}>
               Buy gift cards
             </Text>
+                {/*Flatlist to show badges achieved -Don*/}
             <FlatList
               style={{ maxHeight: 180, width: "100%" }}
               contentContainerStyle={{ flexGrow: 1 }}
@@ -543,7 +548,7 @@ Alert.alert("gift card purchased")
                   >
                     <Image
                       source={item.fairpriceLogo}
-                      style={{ height: 150, width: 200, resizeMode: "contain" }} // Adjust image size here
+                      style={{ height: 150, width: 200, resizeMode: "contain" }} 
                     />
                   </TouchableOpacity>
                 </View>
@@ -554,6 +559,7 @@ Alert.alert("gift card purchased")
             <Text style={{ fontSize: 25, fontWeight: "bold", marginTop: 30 }}>
               Your gift cards
             </Text>
+                {/*Flatlist to show gift cards you currently own -Don*/}
             <FlatList
               style={{ flex: 1, width: "100%", marginTop: 10 }}
               contentContainerStyle={{ flexGrow: 1 }}
@@ -651,6 +657,7 @@ Alert.alert("gift card purchased")
   };
 
   return (
+    //code to show users gems and Exp -Don
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <View style={{ flexDirection: "row" }}>
@@ -674,6 +681,7 @@ Alert.alert("gift card purchased")
       </View>
       <View style={styles.bottomContainer}>
         <SafeAreaView style={styles.segmentButtonContainer}>
+               {/*Buttons to go to different screens -Don*/}
           <SegmentedButtons
             value={value}
             onValueChange={setValue}

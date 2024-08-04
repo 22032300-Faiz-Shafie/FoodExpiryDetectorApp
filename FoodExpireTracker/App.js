@@ -147,7 +147,7 @@ function FetchFoodData() {
 
     return () => unsubscribe();
   }, []);
- //edit function to edit fruit detail and for data collection -Don
+//edit function to edit fruit details and for data collection of user edits -Don
   function EditFood({ itemID }) {
     const [modalVisible, setModalVisible] = useState(false);
     const [version, setVersion] = useState(1);
@@ -178,8 +178,7 @@ function FetchFoodData() {
       setImageUri(data.fruitImageURI.toString());
       const daysUntilExpiry = dateToDayConversion(data.expiryDate);
       setExpiryInDays(daysUntilExpiry);
-      //edit
-
+//UI and functionality of slider such as it's length and max length is different depending on fruit -Don
       let maxLength;
       let ripeLength;
       if (data.foodName === "Mango") {
@@ -230,7 +229,7 @@ function FetchFoodData() {
       const newExpiryDate = new Date(
         Date.now() + newExpiryInDays * 24 * 60 * 60 * 1000
       );
-
+//sets the new ripeness category of fruit depending on the slider -Don
       let newRipeness = "";
       let daysUntilRipe = 0;
       if (foodName === "Mango") {
@@ -301,7 +300,7 @@ function FetchFoodData() {
           aiAccuracyRemark: aiAccuracyRemarkValue,
           aiSatisfactionResult: aiSatisfactionResultValue,
 
-          editedAt: serverTimestamp(), // Timestamp of when the edit was made
+          editedAt: serverTimestamp(), // Timestamp of when the edit was made -Don
         });
 
         await updateDoc(doc(db, "foodCollection", itemID), {
@@ -329,7 +328,7 @@ function FetchFoodData() {
       setSliderCurrentLength(sliderCurrentLengthBefore);
       setModalVisible(false);
     };
-
+//used for editing fruit photo -Don
     const takePhoto = async (setImageUri, loginID) => {
       const cameraResp = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -563,7 +562,7 @@ function FetchFoodData() {
   const handleButtonClick = (item) => {
     1;
     console.log(`Button ${item} clicked`);
-    setIsDropdownVisible(false); // Close the dropdown after a button is clicked
+    setIsDropdownVisible(false); 
   };
 
   const [visibleComponent, setVisibleComponent] = useState(null);
@@ -740,6 +739,7 @@ function FetchFoodData() {
           </Modal>
         </View>
       </Provider>
+       {/*Flatlist for fruit list -Don*/}
       <FlatList
         data={foodsfetch}
         renderItem={({ item }) => {
@@ -878,7 +878,6 @@ function FetchFoodData() {
     </View>
   );
 }
-//UI for showing fruits in fruit list -Don
 function Mango (){
   const foodsCol = collection(db, "foodCollection");
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);

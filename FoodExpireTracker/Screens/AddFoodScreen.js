@@ -106,7 +106,7 @@ const dateToDayConversion = (givenDate) => {
 
   return daysDifference;
 };
-//edit function to edit fruit detail and for data collection -Don
+//edit function to edit fruit details and for data collection of user edits -Don
 function EditFood({ itemID }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [version, setVersion] = useState(1);
@@ -267,7 +267,7 @@ function EditFood({ itemID }) {
         aiSatisfactionResult: aiSatisfactionResultValue,
 
 
-        editedAt: serverTimestamp(), // Timestamp of when the edit was made
+        editedAt: serverTimestamp(), // Timestamp of when the edit was made -Don
       });
 
       await updateDoc(doc(db, "foodCollection", itemID), {
@@ -296,7 +296,7 @@ function EditFood({ itemID }) {
     setSliderCurrentLength(sliderCurrentLengthBefore);
     setModalVisible(false);
   };
-
+//used for editing fruit photo -Don
   const takePhoto = async (setImageUri, loginID) => {
     const cameraResp = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -422,6 +422,7 @@ function EditFood({ itemID }) {
                 <Text>Overripe</Text>
               </View>
               <Text style={{ fontSize: 15 }}>
+                
                 {(() => {
                   if (foodName === "Mango") {
                     if (sliderCurrentLength < 8) {
@@ -549,6 +550,8 @@ const uploadFruitInformation = async (loginID) => {
           newItemID,
           "editHistory"
         );
+        {/*sets edit versions of fruit item in Firestore. 
+          Here it specifically sets version to 1 as this is the initial version upon creation of fruit item*/}  
         await setDoc(doc(editHistoryRef), {
           foodNameAfterEdit: fruit.name,
 
@@ -561,7 +564,7 @@ const uploadFruitInformation = async (loginID) => {
           futureRipeningDateAfterEdit: futureRipeningDate,
           version: 1,
 
-          editedAt: serverTimestamp(), // Timestamp of when the edit was made
+          editedAt: serverTimestamp(), // Timestamp of when the edit was made -Don
         });
       } catch (error) {
         console.error("Error updating document: ", error);
@@ -827,6 +830,7 @@ function FetchFoodData() {
             delete All
           </Button>
         </View>
+          {/*Flatlist for fruits in confirmation screen*/}
         <FlatList
           data={foodsfetch}
           renderItem={({ item }) => {
