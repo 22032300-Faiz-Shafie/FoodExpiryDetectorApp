@@ -58,7 +58,7 @@ var fruitInformation = [];
 // Delay function that returns a Promise. This was one of the optimization methods. This prevented 2 async functions from running simulateneously, instead making them run sequentially by implementing a delay in between -Faiz
 //const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-//This handles Inference, makes a http request using flask to our app.py python. -Faiz
+//This handles Inference, makes a http request using flask to our app.py python. Now it is also combined with Don's image saving code -Faiz
 //inserts image and sends it to python, the image will then be used for computer vision -Don
 const handleInference = async (uri, loginID) => {
   try {
@@ -499,9 +499,12 @@ function EditFood({ itemID }) {
 //This function uploads fruitinformation collected from inference into firebase database, officially adding them -Faiz
 const uploadFruitInformation = async (loginID) => {
   try {
+    //loops through the local fruitInformation array that contains the fruit information -Faiz
     for (const fruit of fruitInformation) {
+      //Code to convert expiry days to expiry date -Faiz
       const futureExpiryDate = new Date();
       futureExpiryDate.setDate(futureExpiryDate.getDate() + fruit.expiryInDays);
+      //Code to convert ripening days to ripening date -Faiz
       const futureRipeningDate = new Date();
       futureRipeningDate.setDate(
         futureRipeningDate.getDate() + fruit.ripenessInDays
@@ -519,7 +522,7 @@ const uploadFruitInformation = async (loginID) => {
         }
       );
       const base64CompressedImageFull = `data:image/jpg;base64,${base64CompressedImage}`;
-      
+      //Create a fruit object from the data collected -Faiz
       const fruitData = {
         fruitClass: fruit.class,
         currentRipenessStatus: fruit.currentRipenessStatus,
@@ -534,7 +537,7 @@ const uploadFruitInformation = async (loginID) => {
         version: 1,
         isDeleted: false,
       };
-
+      //Add the fruit Object to firebase -Faiz
       const docRef = await addDoc(collection(db, "foodCollection"), fruitData);
       console.log(
         "The following Fruit Information has been uploaded: ",
@@ -573,7 +576,7 @@ const uploadFruitInformation = async (loginID) => {
       }
     }
 
-    //Empty Array as fruit information has already been transferred to firebase -Faiz
+    //Empty Array as fruit information has already been transferred to firebase. This is important, otherwise fruits would remain in the local fruitInformation array that has already been added to the firebase and may been acidentally added in the future again -Faiz
     fruitInformation = [];
   } catch (error) {
     console.log("Error: ", error);
@@ -694,9 +697,12 @@ function FetchFoodData() {
 
   //This function checks the fruit that is being added if it's considered a waste or not, warns the user if they would like to proceed -Faiz
   const trackWastage = async (item) => {
+    //Variable that tracks if a fruit would be considered a waste or not -Faiz
     var waste = false;
 
+    //Loop through the list of fruits - Faiz
     allFruitsFetch.forEach((fruit) => {
+      //Add a conditional statement that if the fruit that you're trying to add has the same name as an existing fruit, has more than 0 in expiryDate meaning that it's not inedible, is added to the fruit list, and is not delted. Then the fruit is a waste. -Faiz 
       if (
         fruit.data.foodName === item.data.foodName &&
         dateToDayConversion(fruit.data.expiryDate) > 0 &&
@@ -707,6 +713,7 @@ function FetchFoodData() {
     });
 
     return new Promise((resolve) => {
+      //Conditional statement that if the fruit is considered a waste, warn the user through an Alert. User may choose to still add the fruit is they wish. If the fruit is not considered a waste, it will add automatically like the app's normal function -Faiz
       if (waste === true) {
         Alert.alert(
           "Confirm Action",
@@ -850,6 +857,7 @@ function FetchFoodData() {
                     height: 200
                   }}
                 >
+                  {/* View that returns the image of the fruit -Faiz */}
                   <View style={styles.imageContainer}>
                       <Image
                         style={styles.image}
@@ -865,6 +873,7 @@ function FetchFoodData() {
                         x{item.data.quantity}
                       </Text>
                     </Text>
+                  {/* Below is the code to display only certain information depending on the ripeness. If the ripeness is underripe display ripeness status, ripens in, best before. If the ripeness is ripe display ripeness status and best before. If the ripeness is overripe display ripeness status only. Also display Fruit family, if that variable isn't empty  -Faiz */}
                     {item.data.currentRipenessStatus === "Underripe" ? (
                       <View>
                         <Text style={styles.listText}>

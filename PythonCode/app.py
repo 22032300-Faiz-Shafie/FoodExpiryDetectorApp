@@ -146,7 +146,7 @@ def predict():
 
             return expiryInDays, currentRipenessStatus, ripenessInDays
 
-        #Function to find family of Mango. This will only run if the fruit name is Mango, ensuring that only mango will use the second AI Model -Faiz
+        #Function to find family of Mango. This will only run if the fruit name is Mango, ensuring that only mango will use the second AI Model. The code here is very similar to the code in the First AI Model. -Faiz
         def mangoFamilyFinder(mangoImage):
 
             fruitFamily = ""
@@ -253,8 +253,9 @@ def predict():
                                 if(fruit_name == "Mango"):
                                     fruitFamily = mangoFamilyFinder(fruitImagePath)
 
+                            #Fill the variables listed using the expiryDayFinder function -Faiz
                             expiryInDays, currentRipenessStatus, ripenessInDays = expiryDayFinder(fruit_class)
-
+                            #This is a fruit object. It has all the fields that a fruit listing would need -Faiz
                             class_info = {
                                     "name": fruit_name,
                                     "class": fruit_class,
@@ -269,14 +270,18 @@ def predict():
     
         print(fruitInformation)
 
+        #Obsolete. Currently existing as a troubleshooting function. Instead of saving and creating a JSON file, the information is instead sent back directly to the React Native as JSON file in one go -Faiz
         # Saving the results to a JSON file -Faiz
         # with open('C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\InferenceCode\\fruit_class_details.json', 'w') as json_file:
         #     json.dump(fruitInformation, json_file, indent=4)  
 
+        #A variable that holds the location of the second AI model results. This is used later to help delete the contents inside after a prediction has been made -Faiz
         secondModelImageResults = "C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\FruitFamilyResults"
 
-        #Delete all results after utilizing AI Model -Faiz
+        #Delete all results from the first AI Model after utilizing first AI Model -Faiz
+        #loop through the exp folders - Faiz
         for exp_folder in os.listdir(imageResultsFolderPath):
+            #get the full directory of the specific exp folder -Faiz
             exp_folder_path = os.path.join(imageResultsFolderPath, exp_folder)
             # Check if it's a directory that exists -Faiz
             if os.path.isdir(exp_folder_path):
@@ -286,8 +291,10 @@ def predict():
                     print(f"\nDeleted {exp_folder_path}\n")
                 except Exception as e:
                     print(f"\nFailed to delete {exp_folder_path}: {e}\n")
-        #Delete all results after utilizing second AI Model -Faiz
+        #Delete all results from the second AI Model after utilizing second AI Model -Faiz
+        #loop through the exp folders - Faiz
         for exp_folder in os.listdir(secondModelImageResults):
+            #get the full directory of the specific exp folder -Faiz
             exp_folder_path = os.path.join(secondModelImageResults, exp_folder)
             # Check if it's a directory that exists -Faiz
             if os.path.isdir(exp_folder_path):
@@ -298,12 +305,12 @@ def predict():
                 except Exception as e:
                     print(f"\nFailed to delete {exp_folder_path}: {e}\n")
 
-        #Remove unneeded files -Faiz
+        #Remove unneeded images -Faiz
         if os.path.isfile("C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\newImage.jpg"):
             os.remove("C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\newImage.jpg")
             print("newImage removed")
 
-        #Remove unneeded files -Faiz
+        #Remove unneeded images -Faiz
         if os.path.isfile("C:\\Users\\22032300\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\PythonCode\\images\\processedImage.jpg"):
             os.remove("C:\\Users\\22032300\\Documents\\FoodExpiryDetectorApp\\FoodExpiryDetectorApp\\PythonCode\\images\\processedImage.jpg")
             print("processedImage removed")
@@ -327,6 +334,7 @@ def predict():
         #     else:
         #         print (x+" has less than zero occurences\n")
 
+        #Return a json of the fruit information, that was created based on the AI result, back to the React Native application -Faiz
         return jsonify(fruitInformation)
 
     except Exception as e:

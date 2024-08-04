@@ -74,18 +74,25 @@ function FetchFoodData() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   //Function that helps do date comparison and produces the days remaining. Helpful for expiryDate and RipeningDate in particular -Faiz
   const dateToDayConversion = (givenDate) => {
+    //Variable to get the today's date -Faiz
     currentDate = new Date();
+    //Variable to get the best before date. This converts the previous data format into a JavaScript Date format -Faiz
     expiryDate = givenDate.toDate();
+    //Subtract the two to get the time difference -Faiz
     const timeDifference = expiryDate - currentDate;
+    //Convert miliseconds into Day -Faiz
     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-
+    //Return the variable for use -Faiz
     return daysDifference;
   };
 
   //An alert function that notifies user when fruits in the fruit list have been expired and are inedible. This function is triggered whenever the user is logged in or the fruit list has been updated -Faiz
   const alertFunction = async (fruits) => {
+    //Loops through the list of fruits -Faiz
     for (const fruit of fruits) {
+      //Add a conditional statement that when a fruit is past it's best before date, meaning that the best before date is 0 or less, it's considered inedible and a alert should be displayed -Faiz
       if (dateToDayConversion(fruit.data.expiryDate) <= 0) {
+        //Utilize React Native Alert to create an alert -Faiz
         Alert.alert(
           "Confirm Action",
           `${fruit.data.foodName} is already past Best Before Date.`,
@@ -764,6 +771,7 @@ function FetchFoodData() {
                   height: 200
                 }}
               >
+                {/* View that returns the image of the fruit -Faiz */}
                 <View style={styles.imageContainer}>
                   <Image
                     style={styles.image}
@@ -776,6 +784,7 @@ function FetchFoodData() {
 
                     <Text style={{ fontSize: 16 }}> x{item.data.quantity}</Text>
                   </Text>
+                  {/* Below is the code to display only certain information depending on the ripeness. If the ripeness is underripe display ripeness status, ripens in, best before. If the ripeness is ripe display ripeness status and best before. If the ripeness is overripe display ripeness status only. Also display Fruit family, if that variable isn't empty  -Faiz */}
                   {item.data.currentRipenessStatus === "Underripe" ? (
                     <View>
                       <Text style={styles.listText}>
