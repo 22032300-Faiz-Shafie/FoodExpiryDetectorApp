@@ -82,7 +82,7 @@ function FetchFoodData() {
     return daysDifference;
   };
 
-  //An alert function that notifies user when fruits in the fruit list have been expired -Faiz
+  //An alert function that notifies user when fruits in the fruit list have been expired and are inedible. This function is triggered whenever the user is logged in or the fruit list has been updated -Faiz
   const alertFunction = async (fruits) => {
     for (const fruit of fruits) {
       if (dateToDayConversion(fruit.data.expiryDate) <= 0) {
@@ -99,7 +99,7 @@ function FetchFoodData() {
       }
     }
   };
-
+  //This is the browser function for the Nutritional Value Information Function. Depending on the name of the fruit, it will lead to a different url of that fruit. Utilizing expo browser help open the url in an in-app browser. -Faiz 
   const browserFunction = async (fruit) => {
     if (fruit.data.foodName === "Pineapple") {
       let result = await WebBrowser.openBrowserAsync(
@@ -2149,7 +2149,7 @@ const HomeScreen = ({ navigation }) => {
     setIsLegendInformationViewable(!isLegendInformationViewable);
   }
 
-  //Handles legend information view -Faiz
+  //Handles legend information view also known as the help information. This is a function that returns a view, whenever the user presses the button, this function is displayed which is a modal explaning the different features of the application -Faiz
   const LegendInformationModalView = () => {  
 
     return(

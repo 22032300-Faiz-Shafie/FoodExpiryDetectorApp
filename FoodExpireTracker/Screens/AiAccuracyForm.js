@@ -53,6 +53,7 @@ export default function App() {
   const [selectedFruitRefID, setSelectedFruitRefID] = useState("");
   const [showDropDown2, setShowDropDown2] = useState(false);
 
+  //Everything here is technically obsolete because it is now merged with the Edit function but this was the original code for the seperate AI Accuracy Form -Faiz
   //Fetch Fruit Data to populate dropdown list -Faiz
   useEffect(() => {
     const q = query(foodsCol);

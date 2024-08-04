@@ -51,11 +51,11 @@ const Stack = createNativeStackNavigator();
 
 const windowHeight = Dimensions.get("window").height;
 const modalheight = windowHeight - 80;
-//A temporary Array that holds all fruit information -Faiz
+//A temporary Array that holds all fruit information. This is also important to reset the fruitInformation array, otherwise, previous information may still be here without it being 'cleared' -Faiz
 var fruitInformation = [];
 
 //Obsolete due to combined function -Faiz
-// Delay function that returns a Promise -Faiz
+// Delay function that returns a Promise. This was one of the optimization methods. This prevented 2 async functions from running simulateneously, instead making them run sequentially by implementing a delay in between -Faiz
 //const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 //This handles Inference, makes a http request using flask to our app.py python. -Faiz
@@ -98,6 +98,7 @@ const handleInference = async (uri, loginID) => {
     console.log("Error: ", error);
   }
 };
+//This function converts the Date receive by firebase and converts it into days. There are portions of the application that uses days over date hance this function is needed -Faiz
 const dateToDayConversion = (givenDate) => {
   currentDate = new Date();
   expiryDate = givenDate.toDate();
@@ -495,7 +496,7 @@ function EditFood({ itemID }) {
   );
 }
 
-//This function upload fruitinformation collected from inference into firebase database, officially adding them -Faiz
+//This function uploads fruitinformation collected from inference into firebase database, officially adding them -Faiz
 const uploadFruitInformation = async (loginID) => {
   try {
     for (const fruit of fruitInformation) {
@@ -505,6 +506,7 @@ const uploadFruitInformation = async (loginID) => {
       futureRipeningDate.setDate(
         futureRipeningDate.getDate() + fruit.ripenessInDays
       );
+      //Compression of cropped images for use to display in the fruit list. This is important because firebase has a strict character limit, compressed images would have shorter base64 uri string compared to non-compressed images -Faiz
       const compressedImage = await ImageManipulator.manipulateAsync(
         fruit.fruitDateURI,
         [],
@@ -517,7 +519,7 @@ const uploadFruitInformation = async (loginID) => {
         }
       );
       const base64CompressedImageFull = `data:image/jpg;base64,${base64CompressedImage}`;
-
+      
       const fruitData = {
         fruitClass: fruit.class,
         currentRipenessStatus: fruit.currentRipenessStatus,
