@@ -1,9 +1,9 @@
-# Fruit Ripeness Estimator
+# Fruit Expiry Detector
 
 ## About
 This is a React Native mobile application developed by three Republic Polytechnic students as their Final Year Project. 
-This React Native app leverages artificial intelligence and computer vision technology to help users track and manage their fruits' ripeness. 
-The application uses a YOLO v5 computer vision model trained to assess the ripeness of mangoes, pineapples, and avocados, providing specific day estimates. After scanning a fruit, users can verify, modify, or discard the AI's assessment. 
+This React Native app leverages artificial intelligence and computer vision technology to help users track and manage their fruits' ripeness and date of expiration. 
+The application uses a YOLO v5 computer vision model trained to assess the ripeness of mangoes, pineapples, and avocados, providing specific day estimates of the fruit's expiry date. After scanning a fruit, users can verify, modify, or discard the AI's assessment. 
 Once confirmed, the fruit's details—including its name, estimated days until ripeness/overripeness, estimated date until ripeness/overripeness and image—are saved to a tracking list.
 The tracking list features list management capabilities, allowing users to view, edit, and delete fruit entries as needed, ensuring they can effectively monitor their fruits' freshness over time.
 The application uses Firebase as its backend database for list Data, Python for computer vision processing, and Flask to establish communication between the frontend and backend components.
