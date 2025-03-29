@@ -9,6 +9,9 @@ The tracking list features list management capabilities, allowing users to view,
 The application uses Firebase as its backend database for list Data, Python for computer vision processing, and Flask to establish communication between the frontend and backend components.
 To enhance user engagement, the app includes gamification features that reward users with points for managing their fruit items and badges for completing various tasks. These points can be redeemed in a mock rewards store.
 
+## Test the model directly and download weights.
+https://universe.roboflow.com/fypproject-mzn8i/fruitexpirydetector
+
 ## Built With
 
 * [![React Native][ReactNative.js]][ReactNative-url]
